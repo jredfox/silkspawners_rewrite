@@ -5,6 +5,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import org.lwjgl.input.Keyboard;
 
 import com.EvilNotch.silkspawners.client.ToolTipEvent;
 import com.EvilNotch.silkspawners.client.proxy.ServerProxy;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.block.state.IBlockState;
@@ -30,6 +32,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
@@ -62,9 +65,11 @@ import net.minecraftforge.registries.GameData;
 public class MainJava
 {
     public static final String MODID = "silkspawners";
-    public static final String VERSION = "1.2.4";
+    public static final String VERSION = "1.2.4.4";
 	@SidedProxy(clientSide = "com.EvilNotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.EvilNotch.silkspawners.client.proxy.ServerProxy")
 	public static ServerProxy proxy;
+	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
+	public static boolean isDev = false;
     
     @EventHandler
     public void init(FMLInitializationEvent event)
@@ -103,9 +108,14 @@ public class MainJava
     		NBTTagCompound nbt = new NBTTagCompound();
     		tile.writeToNBT(nbt);
     		nbt.removeTag("Delay");
-    		nbt.removeTag("x");
-    		nbt.removeTag("y");
-    		nbt.removeTag("z");
+    		//Supports custom pos spawners
+    		if(!isCustomSpawnerPos(nbt))
+    		{
+    			nbt.removeTag("x");
+    			nbt.removeTag("y");
+    			nbt.removeTag("z");
+    		}
+    		nbt.removeTag("id");
     		int min = nbt.getInteger("MinSpawnDelay");
     		int max = nbt.getInteger("MaxSpawnDelay");
     		int spawncount = nbt.getInteger("SpawnCount");
@@ -126,15 +136,108 @@ public class MainJava
     		String entName = TranslateEntity(name,w);
     		if(entName == null)
     			entName = "Blank";
+    		String jockey = jockeyString(nbt);
+    		if(jockey != null)
+    			entName = MainJava.TranslateEntity(jockey, w) + " Jockey";
     		display.setString("Name", white + entName + " " + b.getLocalizedName() );
     		nbt.setTag("display", display);
     		nbt.setString("silkTag", name);
     		stack.setTagCompound(nbt);
     		DropBlock(w,p,stack);
+    		if(!player.isCreative())
+    		{
+    			int chance = (int)(Math.random()*11);
+    			if(chance >= 8 && s.getItem() == Items.GOLDEN_PICKAXE || s.getItem() != Items.GOLDEN_PICKAXE)
+    				s.getItem().setDamage(s,s.getItemDamage()+1);
+    		}
     		w.setBlockToAir(p);
     		e.setCanceled(true);
     	}
     }
+    public static void reAlignSpawnerPos(NBTTagCompound nbt,int newX,int newY,int newZ)
+    {
+    	//Custom Pos Repositioning
+    	if(!nbt.hasKey("x"))
+    		return;
+    	NBTTagCompound tag = nbt.getCompoundTag("SpawnData");
+    	int oldx = nbt.getInteger("x");
+    	int oldy = nbt.getInteger("y");
+    	int oldz = nbt.getInteger("z");
+    	alignPos(tag,oldx,oldy,oldz,newX,newY,newZ);
+    	//Does SpawnPotentials
+    	NBTTagList list = nbt.getTagList("SpawnPotentials", 10);
+    	for(int i=0;i<list.tagCount();i++)
+    	{
+    		NBTTagCompound compound = list.getCompoundTagAt(i);
+    		alignPos(compound.getCompoundTag("Entity"),oldx,oldy,oldz,newX,newY,newZ);
+    	}
+    }
+    public static void alignPos(NBTTagCompound tag, int oldx, int oldy, int oldz, int newX, int newY, int newZ) 
+    {
+	    if (!tag.hasKey("Pos"))
+	    	return;
+	     NBTTagList list = tag.getTagList("Pos", 6);
+	     for (int i=0;i<3;i++)
+	     {
+	      double pos = list.getDoubleAt(i);
+	      double print = pos;
+	      if (i == 0)
+	      {
+	    	 double new_pos = recalDouble(pos, oldx, newX);
+	    	 NBTTagDouble k = new NBTTagDouble(new_pos); 
+	    	 list.set(i, k);
+//	    	 System.out.println("D:" + recalDouble(pos, oldx, newX) + " blockX:" + oldx + " Old PosX:" + print);
+	      }
+	      if (i == 1)
+	      {
+	    	 double new_pos = recalDouble(pos, oldy, newY);
+	    	 NBTTagDouble k = new NBTTagDouble(new_pos); 
+	    	 list.set(i, k);
+//	    	 System.out.println("D:" + recalDouble(pos, oldy, newY) + " BlcokY:" + oldy + " Old PosY:" + print);
+	      }
+	      if (i == 2)
+	      {
+	    	 double new_pos = recalDouble(pos, oldz, newZ);
+	    	 NBTTagDouble k = new NBTTagDouble(new_pos); 
+	    	 list.set(i, k);
+//	    	 System.out.println("Silky D: ======>" + recalDouble(pos, oldz, newZ) + " blockZ:" + oldz + " Old PosZ:" + print);
+	       }
+	    }
+	}
+    public static double recalDouble(double p, int ox, int nx)
+	{
+		BigDecimal pos = new BigDecimal("" + p);
+		BigDecimal oldx = new BigDecimal("" + ox);
+		BigDecimal newx = new BigDecimal("" + nx);
+		BigDecimal offset = oldx.subtract(pos).multiply(new BigDecimal("-1") );
+		return newx.add(offset).doubleValue();
+	}
+	public static boolean isCustomSpawnerPos(NBTTagCompound nbt)
+	{
+		if (nbt == null || !(nbt.hasKey("SpawnData") ) && !(nbt.hasKey("SpawnPotentials")) )
+			return false;
+		if (nbt.getTag("SpawnData") != null)
+		{
+			NBTTagCompound tag = (NBTTagCompound)nbt.getTag("SpawnData");
+			if (tag.hasKey("Pos"))
+				return true;
+		}
+		if (nbt.getTag("SpawnPotentials") != null)
+		{
+			NBTTagList list = nbt.getTagList("SpawnPotentials",10);
+			if (list.tagCount() > 0)
+			{
+				for (int i=0;i<list.tagCount();i++)
+				{
+					NBTTagCompound tag = list.getCompoundTagAt(i);
+					NBTTagCompound ent = tag.getCompoundTag("Entity");
+					if (ent.hasKey("Pos"))
+						return true;
+				}
+			}
+		}
+		return false;
+	}
     public static int getHarvestLevel(Block b)
 	{
 		int lvl = -1;
@@ -149,13 +252,11 @@ public class MainJava
     @SubscribeEvent
     public void read(ClientBlockPlaceEvent e)
     {
-//    	System.out.println("client");
     	readSpawner(e.getState(),e.getWorld(),e.getPos(),e.getPlayer(),e.getHand());
     }
 	@SubscribeEvent
     public void read(BlockEvent.PlaceEvent e)
     {
-//		System.out.println("server:" + e.getWorld().isRemote);
     	readSpawner(e.getState(),e.getWorld(),e.getPos(),e.getPlayer(),e.getHand() );
     }
 	public void readSpawner(IBlockState state, World w,BlockPos p, EntityPlayer player,EnumHand hand) 
@@ -170,6 +271,8 @@ public class MainJava
 	   NBTTagCompound nbt = s.getTagCompound();
 	   nbt = nbt.copy();
 	   nbt.removeTag("silkTag");
+	   if(isStackCustomPos(nbt))
+		   reAlignSpawnerPos(nbt, p.getX(), p.getY(), p.getZ() );
 	   nbt.setInteger("x", p.getX());
 	   nbt.setInteger("y", p.getY());
 	   nbt.setInteger("z", p.getZ());
@@ -185,14 +288,14 @@ public class MainJava
 	{
 		return ForgeRegistries.ITEMS.getKey(item).toString();
 	}
-	 public void writeToClipboard(String s, ClipboardOwner owner) 
-		{
-			if(s == null)
-				s = "null";
-		    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		    Transferable transferable = new StringSelection(s);
-		    clipboard.setContents(transferable, owner);
-		}
+	public void writeToClipboard(String s, ClipboardOwner owner) 
+	{
+		if(s == null)
+			s = "null";
+	    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+	    Transferable transferable = new StringSelection(s);
+	    clipboard.setContents(transferable, owner);
+	}
 
     public static void DropBlock(World world, BlockPos p, ItemStack stack)
     {
@@ -326,4 +429,33 @@ public class MainJava
     	}catch(Exception e){}
     	return null;
     }
+    /**
+     * Checks for a soft coded non laggy way of detecting if a dropped spawner has custom pos
+     */
+    public static boolean isStackCustomPos(NBTTagCompound nbt) {
+		return nbt.hasKey("x");
+	}
+
+	public static String jockeyString(NBTTagCompound nbt) {
+		nbt = nbt.copy();
+		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
+		if(!data.hasKey("Passengers"))
+			return null;
+		NBTTagList list = data.getTagList("Passengers", 10);
+		NBTTagCompound entity = list.getCompoundTagAt(list.tagCount()-1);
+		return entity.getString("id");
+	}
+
+	public static boolean multiIndexSpawner(NBTTagCompound nbt) {
+		nbt = nbt.copy();
+		if(nbt == null || !nbt.hasKey("SpawnPotentials") || nbt.getTagList("SpawnPotentials", 10).tagCount() == 0)
+			return false;
+		if(nbt.getTagList("SpawnPotentials", 10).tagCount() == 1)
+		{
+			NBTTagCompound data = nbt.getCompoundTag("SpawnData");
+			NBTTagCompound compare = nbt.getTagList("SpawnPotentials", 10).getCompoundTagAt(0);
+			return !data.equals(compare.getCompoundTag("Entity"));
+		}
+		return true;
+	}
 }
