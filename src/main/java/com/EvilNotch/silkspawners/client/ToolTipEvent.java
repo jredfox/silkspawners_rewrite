@@ -4,6 +4,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.text.JTextComponent.KeyBinding;
+
+import org.lwjgl.input.Keyboard;
+
+import com.EvilNotch.silkspawners.Config;
 import com.EvilNotch.silkspawners.MainJava;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
@@ -24,8 +29,8 @@ public class ToolTipEvent {
 	@SubscribeEvent
 	public void devText(RenderGameOverlayEvent.Text e)
 	{
-		if(MainJava.isDev)
-			e.getLeft().add(ChatFormatting.DARK_PURPLE + "SilkSpanwers " + MainJava.versionType[0] + ChatFormatting.WHITE + ":" + ChatFormatting.AQUA + MainJava.VERSION);
+		if(Config.isDev)
+			e.getLeft().add(ChatFormatting.DARK_PURPLE + "SilkSpanwers " + MainJava.versionType[2] + ChatFormatting.WHITE + ":" + ChatFormatting.AQUA + MainJava.VERSION);
 	}
 	
 	@SubscribeEvent
@@ -44,31 +49,47 @@ public class ToolTipEvent {
 //		if(entity == null)
 //			return;
 //		list.set(0, ChatFormatting.WHITE + entity + " " + b.getLocalizedName() );
+		boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		if(MainJava.multiIndexSpawner(nbt))
 			list.add(ChatFormatting.LIGHT_PURPLE + "SpawnPotentials:" + nbt.getTagList("SpawnPotentials", 10).tagCount());
 		
 		if(MainJava.isStackCustomPos(nbt))
 		{
 			list.add(ChatFormatting.AQUA + "Custom Pos Spawner:true");
-			int x = nbt.getInteger("x");
-			int y = nbt.getInteger("y");
-			int z = nbt.getInteger("z");
-			list.add(ChatFormatting.YELLOW + "X:" + x + getOffset(nbt,0,x) );
-			list.add(ChatFormatting.YELLOW + "Y:" + y + getOffset(nbt,1,y));
-			list.add(ChatFormatting.YELLOW + "Z:" + z + getOffset(nbt,2,z));
+			if(shift)
+			{
+			  list.add(ChatFormatting.YELLOW + "offsetX:" + getOffset(nbt,0) );
+			  list.add(ChatFormatting.YELLOW + "offsetY:" + getOffset(nbt,1) );
+			  list.add(ChatFormatting.YELLOW + "offsetZ:" + getOffset(nbt,2) );
+			}
 		}
+		
+		if(!shift)
+			list.add(ChatFormatting.DARK_GRAY + "shift advanced:");
+		
+		if(nbt.hasKey("SpawnCount") && Config.tooltip_spawncount && shift)
+			list.add(ChatFormatting.DARK_AQUA + "SpawnCount:" + nbt.getInteger("SpawnCount"));
+		
+		if(nbt.hasKey("MaxNearbyEntities")&& Config.tooltip_maxnearbyents && shift)
+			list.add(ChatFormatting.DARK_PURPLE + "MaxNearbyEntities:" + nbt.getInteger("MaxNearbyEntities"));
+		
+		if(nbt.hasKey("Delay")&& Config.tooltip_delay && shift)
+			list.add(ChatFormatting.BLUE + "Delay: " + ChatFormatting.YELLOW + nbt.getInteger("Delay"));
+		if(nbt.hasKey("SpawnRange") && Config.tooltip_SpawnRange && shift)
+			list.add(ChatFormatting.DARK_GRAY + "SpawnRange:" + ChatFormatting.WHITE + nbt.getInteger("SpawnRange"));
+		if(nbt.hasKey("MinSpawnDelay") && Config.tooltip_MinSpawnDelay && shift)
+			list.add(ChatFormatting.DARK_GRAY + "MinSpawnDelay:" + ChatFormatting.WHITE + nbt.getInteger("MinSpawnDelay"));
+		if(nbt.hasKey("MaxSpawnDelay") && Config.tooltip_MaxSpawnDelay && shift)
+			list.add(ChatFormatting.DARK_GRAY + "MaxSpawnDelay:" + ChatFormatting.WHITE + nbt.getInteger("MaxSpawnDelay"));
+		if(nbt.hasKey("RequiredPlayerRange") && Config.tooltip_RequiredPlayerRange && shift)
+			list.add(ChatFormatting.DARK_GRAY + "RequiredPlayerRange:" + ChatFormatting.WHITE + nbt.getInteger("RequiredPlayerRange"));
 	}
 
-	public String getOffset(NBTTagCompound nbt,int index,int ox) {
-		if(!nbt.getCompoundTag("SpawnData").hasKey("Pos"))
-			return "";
-		NBTTagList list = nbt.getCompoundTag("SpawnData").getTagList("Pos", 6);
-		double p = list.getDoubleAt(index);
-		BigDecimal pos = new BigDecimal("" + p);
-		BigDecimal oldx = new BigDecimal("" + ox);
-		BigDecimal newx = new BigDecimal("" + ox);
-		BigDecimal offset = oldx.subtract(pos).multiply(new BigDecimal("-1") );
-		return " offset:" + offset;
+	public double getOffset(NBTTagCompound nbt,int index) {
+		if(!nbt.getCompoundTag("SpawnData").hasKey("offsets"))
+			return -1;
+		NBTTagList list = nbt.getCompoundTag("SpawnData").getTagList("offsets", 6);
+		return list.getDoubleAt(index);
 	}
 
 }

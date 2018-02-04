@@ -20,6 +20,7 @@ import com.EvilNotch.silkspawners.client.proxy.ServerProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -43,6 +44,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraft.world.GameRules;
+import net.minecraft.world.GameRules.ValueType;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -54,6 +57,8 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
@@ -65,18 +70,35 @@ import net.minecraftforge.registries.GameData;
 public class MainJava
 {
     public static final String MODID = "silkspawners";
-    public static final String VERSION = "1.2.4.4";
+    public static final String VERSION = "1.2.5";
 	@SidedProxy(clientSide = "com.EvilNotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.EvilNotch.silkspawners.client.proxy.ServerProxy")
 	public static ServerProxy proxy;
 	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
-	public static boolean isDev = false;
     
+	 @EventHandler
+	public void preinit(FMLPreInitializationEvent e)
+	{
+		 Config.loadConfig(e);
+	}
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
     	proxy.init();
     	MinecraftForge.EVENT_BUS.register(new MainJava());
     	ForgeRegistries.ITEMS.register(new ItemMobSpawner());
+    }
+    @EventHandler
+    public void worldLoad(FMLServerStartingEvent e)
+    {
+    	World w = e.getServer().getEntityWorld();
+    	GameRules g = w.getGameRules();
+    	String pos = "CustomPosSpawner";
+    	String readpos = "CustomPosSpawnerReading";
+    	ValueType type = GameRules.ValueType.BOOLEAN_VALUE;
+    	if(!g.hasRule(pos))
+    		g.addGameRule(pos, "true", type);
+    	if(!g.hasRule(readpos))
+    		g.addGameRule(readpos, "true", type);
     }
     @SubscribeEvent
     public void drop(BlockEvent.BreakEvent e)
@@ -107,29 +129,22 @@ public class MainJava
     		ItemStack stack = new ItemStack(b,1,meta);
     		NBTTagCompound nbt = new NBTTagCompound();
     		tile.writeToNBT(nbt);
-    		nbt.removeTag("Delay");
-    		//Supports custom pos spawners
-    		if(!isCustomSpawnerPos(nbt))
-    		{
-    			nbt.removeTag("x");
-    			nbt.removeTag("y");
-    			nbt.removeTag("z");
-    		}
-    		nbt.removeTag("id");
-    		int min = nbt.getInteger("MinSpawnDelay");
+    		int delay = nbt.getInteger("Delay");
     		int max = nbt.getInteger("MaxSpawnDelay");
-    		int spawncount = nbt.getInteger("SpawnCount");
+    		if(delay <= max)
+    			nbt.removeTag("Delay");//makes spanwers stack but, if custom delay will grab it note: delay is live and isn't the same you used in the command block
+    		int x = nbt.getInteger("x");
+    		int y = nbt.getInteger("y");
+    		int z = nbt.getInteger("z");
+    		nbt.removeTag("x");
+			nbt.removeTag("y");
+			nbt.removeTag("z");
+    		//Supports custom pos spawners
+    		if(isCustomSpawnerPos(nbt,"Pos") && w.getGameRules().getBoolean("CustomPosSpawner"))
+    			setOffsets(nbt,x,y,z);
+    		nbt.removeTag("id");
     		String white = ChatFormatting.WHITE;
     		String red = ChatFormatting.RED;
-    		if(min != 200 || max != 800)
-    			printChat(player, white, red, "Max Entity Count Bugged Report to mod owner:" + " min:" + min + " max:" + max);
-    		nbt.removeTag("MinSpawnDelay");
-    		nbt.removeTag("MaxSpawnDelay");
-    		if(spawncount == 0)
-    		{
-    			nbt.removeTag("SpawnCount");
-    			printChat(player, white, red, "SpawnCount Bugged Report to the mod owner:" + " spawnCount:" + spawncount);
-    		}
     		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
     		String name = data.getString("id");
     		NBTTagCompound display = new NBTTagCompound();
@@ -139,7 +154,12 @@ public class MainJava
     		String jockey = jockeyString(nbt);
     		if(jockey != null)
     			entName = MainJava.TranslateEntity(jockey, w) + " Jockey";
-    		display.setString("Name", white + entName + " " + b.getLocalizedName() );
+    		else
+    			jockey = "";
+    		String blockname = entName;
+    		if( (entName + b.getLocalizedName() + jockey).length() < Config.maxSpawnerName)
+    			blockname += " " + b.getLocalizedName();
+    		display.setString("Name", white + blockname );
     		nbt.setTag("display", display);
     		nbt.setString("silkTag", name);
     		stack.setTagCompound(nbt);
@@ -154,72 +174,90 @@ public class MainJava
     		e.setCanceled(true);
     	}
     }
-    public static void reAlignSpawnerPos(NBTTagCompound nbt,int newX,int newY,int newZ)
+    public static void setOffsets(NBTTagCompound nbt, int x, int y, int z)
     {
-    	//Custom Pos Repositioning
-    	if(!nbt.hasKey("x"))
-    		return;
+//    	System.out.println(nbt);
     	NBTTagCompound tag = nbt.getCompoundTag("SpawnData");
-    	int oldx = nbt.getInteger("x");
-    	int oldy = nbt.getInteger("y");
-    	int oldz = nbt.getInteger("z");
-    	alignPos(tag,oldx,oldy,oldz,newX,newY,newZ);
+    	setOffset(tag,x,y,z);
+//    	System.out.println(nbt);
+    	NBTTagList list = nbt.getTagList("SpawnPotentials", 10);
+    	for(int i=0;i<list.tagCount();i++)
+    	{
+    		NBTTagCompound compound = list.getCompoundTagAt(i).getCompoundTag("Entity");
+    		setOffset(compound,x,y,z);
+    	}
+//    	System.out.println(nbt);
+    }
+    public static void setOffset(NBTTagCompound nbt,int x,int y,int z)
+    {
+    	if(!nbt.hasKey("Pos"))
+    		return;
+    	NBTTagList list = nbt.getTagList("Pos", 6);
+    	NBTTagList offsets = new NBTTagList();
+    	offsets.appendTag(new NBTTagDouble(getOffset(list.getDoubleAt(0),x,x)));
+    	offsets.appendTag(new NBTTagDouble(getOffset(list.getDoubleAt(1),y,y)));
+    	offsets.appendTag(new NBTTagDouble(getOffset(list.getDoubleAt(2),z,z)));
+    	nbt.setTag("offsets", offsets);
+    	nbt.removeTag("Pos");//makes spawners stack
+    }
+    public static void reAlignSpawnerPos(NBTTagCompound nbt,int x,int y,int z)
+    {
+    	NBTTagCompound tag = nbt.getCompoundTag("SpawnData");
+    	alignPos(tag,x,y,z);
+    	
     	//Does SpawnPotentials
     	NBTTagList list = nbt.getTagList("SpawnPotentials", 10);
     	for(int i=0;i<list.tagCount();i++)
     	{
     		NBTTagCompound compound = list.getCompoundTagAt(i);
-    		alignPos(compound.getCompoundTag("Entity"),oldx,oldy,oldz,newX,newY,newZ);
+    		alignPos(compound.getCompoundTag("Entity"),x,y,z);
     	}
     }
-    public static void alignPos(NBTTagCompound tag, int oldx, int oldy, int oldz, int newX, int newY, int newZ) 
-    {
-	    if (!tag.hasKey("Pos"))
-	    	return;
-	     NBTTagList list = tag.getTagList("Pos", 6);
-	     for (int i=0;i<3;i++)
-	     {
-	      double pos = list.getDoubleAt(i);
-	      double print = pos;
-	      if (i == 0)
-	      {
-	    	 double new_pos = recalDouble(pos, oldx, newX);
-	    	 NBTTagDouble k = new NBTTagDouble(new_pos); 
-	    	 list.set(i, k);
-//	    	 System.out.println("D:" + recalDouble(pos, oldx, newX) + " blockX:" + oldx + " Old PosX:" + print);
-	      }
-	      if (i == 1)
-	      {
-	    	 double new_pos = recalDouble(pos, oldy, newY);
-	    	 NBTTagDouble k = new NBTTagDouble(new_pos); 
-	    	 list.set(i, k);
-//	    	 System.out.println("D:" + recalDouble(pos, oldy, newY) + " BlcokY:" + oldy + " Old PosY:" + print);
-	      }
-	      if (i == 2)
-	      {
-	    	 double new_pos = recalDouble(pos, oldz, newZ);
-	    	 NBTTagDouble k = new NBTTagDouble(new_pos); 
-	    	 list.set(i, k);
-//	    	 System.out.println("Silky D: ======>" + recalDouble(pos, oldz, newZ) + " blockZ:" + oldz + " Old PosZ:" + print);
-	       }
-	    }
-	}
-    public static double recalDouble(double p, int ox, int nx)
+    public static double getOffset(double p, int ox, int nx)
 	{
-		BigDecimal pos = new BigDecimal("" + p);
+    	BigDecimal pos = new BigDecimal("" + p);
 		BigDecimal oldx = new BigDecimal("" + ox);
 		BigDecimal newx = new BigDecimal("" + nx);
 		BigDecimal offset = oldx.subtract(pos).multiply(new BigDecimal("-1") );
+		return offset.doubleValue();
+	}
+    /**
+     * Does not require initial position since the offsets are pre-calculated now because of bigdeci
+     */
+    public static double recalDouble(int nx, double ofset)
+	{
+		BigDecimal newx = new BigDecimal("" + nx);
+		BigDecimal offset = new BigDecimal("" + ofset);
 		return newx.add(offset).doubleValue();
 	}
-	public static boolean isCustomSpawnerPos(NBTTagCompound nbt)
+    /**
+     * Create pos tags from the offsets
+     */
+    public static void alignPos(NBTTagCompound tag, int x, int y, int z) 
+    {
+	    if (!tag.hasKey("offsets"))
+	    	return;
+	     NBTTagList list = tag.getTagList("offsets", 6);
+	     NBTTagList pos = new NBTTagList();
+	     int[] li = {x,y,z};
+	     for (int i=0;i<3;i++)
+	     {
+	    	 double offset = list.getDoubleAt(i);
+	    	 double new_pos = recalDouble(li[i], offset);
+    		 pos.appendTag(new NBTTagDouble(new_pos));
+	     }
+	    tag.removeTag("offsets");//just in case tile entity has offsets array/tag doesn't effect stack since I modify nbt after I copy it
+	    tag.setTag("Pos", pos);
+	}
+    
+	public static boolean isCustomSpawnerPos(NBTTagCompound nbt,String pos)
 	{
 		if (nbt == null || !(nbt.hasKey("SpawnData") ) && !(nbt.hasKey("SpawnPotentials")) )
 			return false;
 		if (nbt.getTag("SpawnData") != null)
 		{
 			NBTTagCompound tag = (NBTTagCompound)nbt.getTag("SpawnData");
-			if (tag.hasKey("Pos"))
+			if (tag.hasKey(pos))
 				return true;
 		}
 		if (nbt.getTag("SpawnPotentials") != null)
@@ -231,7 +269,7 @@ public class MainJava
 				{
 					NBTTagCompound tag = list.getCompoundTagAt(i);
 					NBTTagCompound ent = tag.getCompoundTag("Entity");
-					if (ent.hasKey("Pos"))
+					if (ent.hasKey(pos))
 						return true;
 				}
 			}
@@ -271,7 +309,7 @@ public class MainJava
 	   NBTTagCompound nbt = s.getTagCompound();
 	   nbt = nbt.copy();
 	   nbt.removeTag("silkTag");
-	   if(isStackCustomPos(nbt))
+	   if(isCustomSpawnerPos(nbt,"offsets") && w.getGameRules().getBoolean("CustomPosSpawnerReading") )
 		   reAlignSpawnerPos(nbt, p.getX(), p.getY(), p.getZ() );
 	   nbt.setInteger("x", p.getX());
 	   nbt.setInteger("y", p.getY());
@@ -385,8 +423,12 @@ public class MainJava
 		//Corrects if there is no local translation back to default namming...
 	    if (EntityName.equals("entity." + s + ".name"))
 	     	EntityName = s;
+	    //1.12.2 update entity can be translated yet still freak out
+	    if(EntityName.startsWith("entity.") && EntityName.endsWith(".name"))
+	    	EntityName = EntityName.substring(7, EntityName.length()-5);
 	   }catch(Throwable t){return null;}
 	   
+	  
 	    //Experimental Code_______________________
 	    if(s.equals(EntityName))
 	    { 
@@ -394,11 +436,15 @@ public class MainJava
 	    	{
 	    		 Entity entity = createEntityByNameQuietly(EntityName, world);
 	    		 String commandsender = getcommandSenderName(entity);
+	    		 //mc 1.12 can still translate yet freak out
+	    		 if(commandsender.startsWith("entity.") && commandsender.endsWith(".name"))
+	    			 commandsender = commandsender.substring(7, commandsender.length()-5);
+	    		 
 	    		 if(commandsender == null)
 	    			 return EntityName;//If entity fails do this
 	    		if(!commandsender.equals("generic"))
 	    		{
-	    			if(!commandsender.equals(EntityName) && !commandsender.equals("entity." + EntityName + ".name"))
+	    			if(!commandsender.equals(EntityName) && !commandsender.equals("entity." + EntityName + ".name") && !commandsender.equals("entity." + s + ".name")  )
 	    				EntityName = commandsender;
 	    		}
 	    	}
@@ -433,7 +479,7 @@ public class MainJava
      * Checks for a soft coded non laggy way of detecting if a dropped spawner has custom pos
      */
     public static boolean isStackCustomPos(NBTTagCompound nbt) {
-		return nbt.hasKey("x");
+		return nbt.getCompoundTag("SpawnData").hasKey("offsets");
 	}
 
 	public static String jockeyString(NBTTagCompound nbt) {
