@@ -17,6 +17,7 @@ public class Config {
 	public static boolean tooltip_MaxSpawnDelay = false;
 	public static boolean tooltip_RequiredPlayerRange = false;
 	public static int maxSpawnerName = 35;
+	public static int default_Delay;
 	
 	public static void loadConfig(FMLPreInitializationEvent event)
 	{
@@ -25,7 +26,7 @@ public class Config {
 		canDebug = config.getBoolean("canDebug", "general", true, "");
 		isDev = config.getBoolean("isDev", "general", false, "gives you version on screen");
 		maxSpawnerName = config.getInt("maxCharSpawnerName", "general", 35, 0, 100, "");
-		
+		default_Delay = config.getInt("defaultDelay", "nbt", 20, 0, Integer.MAX_VALUE, "");
 		tooltip_spawncount = config.getBoolean("spawnCount", "tooltip", true, "");
 		tooltip_maxnearbyents = config.getBoolean("maxNearbyEntities", "tooltip", true, "");
 		tooltip_delay = config.getBoolean("delay", "tooltip", true, "");

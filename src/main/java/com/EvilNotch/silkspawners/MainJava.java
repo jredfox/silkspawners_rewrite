@@ -70,7 +70,7 @@ import net.minecraftforge.registries.GameData;
 public class MainJava
 {
     public static final String MODID = "silkspawners";
-    public static final String VERSION = "1.2.5";
+    public static final String VERSION = "1.2.5.2";
 	@SidedProxy(clientSide = "com.EvilNotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.EvilNotch.silkspawners.client.proxy.ServerProxy")
 	public static ServerProxy proxy;
 	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
@@ -93,14 +93,20 @@ public class MainJava
     	World w = e.getServer().getEntityWorld();
     	GameRules g = w.getGameRules();
     	String pos = "CustomPosSpawner";
-    	String readpos = "CustomPosSpawnerReading";
+    	String index = "MultiSpawnerCurrentIndex";
+    	String delay = "SpawnerSaveDelay";
     	ValueType type = GameRules.ValueType.BOOLEAN_VALUE;
-    	if(!g.hasRule(pos))
-    		g.addGameRule(pos, "true", type);
-    	if(!g.hasRule(readpos))
-    		g.addGameRule(readpos, "true", type);
+    	addGameRule(g,pos,true,type);
+    	addGameRule(g,index,false,type);//is false for stacking purposes true for data
+    	addGameRule(g,delay,false,type);//is false for stacking purposes true for data
     }
-    @SubscribeEvent
+    public void addGameRule(GameRules g,String pos, boolean init, ValueType type) {
+    	if(!g.hasRule(pos))
+    		g.addGameRule(pos, "" + init, type);
+    	else
+    		g.addGameRule(pos, "" + g.getBoolean(pos), type);
+	}
+	@SubscribeEvent
     public void drop(BlockEvent.BreakEvent e)
     {
     	Block b = e.getState().getBlock();
@@ -131,8 +137,8 @@ public class MainJava
     		tile.writeToNBT(nbt);
     		int delay = nbt.getInteger("Delay");
     		int max = nbt.getInteger("MaxSpawnDelay");
-    		if(delay <= max)
-    			nbt.removeTag("Delay");//makes spanwers stack but, if custom delay will grab it note: delay is live and isn't the same you used in the command block
+    		if(delay <= max && !w.getGameRules().getBoolean("SpawnerSaveDelay"))
+    			nbt.setInteger("Delay", Config.default_Delay);//makes spanwers stack but, if custom delay will grab it note: delay is live and isn't the same you used in the command block
     		int x = nbt.getInteger("x");
     		int y = nbt.getInteger("y");
     		int z = nbt.getInteger("z");
@@ -145,6 +151,12 @@ public class MainJava
     		nbt.removeTag("id");
     		String white = ChatFormatting.WHITE;
     		String red = ChatFormatting.RED;
+    		//if gamerule force multi index spawners to stack warning will loose initial index
+    		if(multiIndexSpawner(nbt) && !w.getGameRules().getBoolean("MultiSpawnerCurrentIndex"))
+    		{
+    			NBTTagCompound compound = nbt.getTagList("SpawnPotentials", 10).getCompoundTagAt(0).getCompoundTag("Entity");
+    			nbt.setTag("SpawnData", compound);
+    		}
     		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
     		String name = data.getString("id");
     		NBTTagCompound display = new NBTTagCompound();
@@ -309,7 +321,7 @@ public class MainJava
 	   NBTTagCompound nbt = s.getTagCompound();
 	   nbt = nbt.copy();
 	   nbt.removeTag("silkTag");
-	   if(isCustomSpawnerPos(nbt,"offsets") && w.getGameRules().getBoolean("CustomPosSpawnerReading") )
+	   if(isCustomSpawnerPos(nbt,"offsets"))
 		   reAlignSpawnerPos(nbt, p.getX(), p.getY(), p.getZ() );
 	   nbt.setInteger("x", p.getX());
 	   nbt.setInteger("y", p.getY());

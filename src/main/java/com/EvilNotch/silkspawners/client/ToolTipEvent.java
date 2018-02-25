@@ -23,6 +23,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ToolTipEvent {
 	
@@ -34,15 +35,16 @@ public class ToolTipEvent {
 	}
 	
 	@SubscribeEvent
-	public void dev(ItemTooltipEvent e)
+	public void spawnerToolTip(ItemTooltipEvent e)
 	{
-		if(e.getItemStack() == null || e.getItemStack().getTagCompound() == null || !(Block.getBlockFromItem(e.getItemStack().getItem()) instanceof BlockMobSpawner) )
+		if(e.getItemStack() == null || e.getItemStack().getTagCompound() == null || !(Block.getBlockFromItem(e.getItemStack().getItem()) instanceof BlockMobSpawner) && !e.getItemStack().getTagCompound().hasKey("silkTag"))
 			return;
 		List<String> list = e.getToolTip();
 		NBTTagCompound nbt = e.getItemStack().getTagCompound();
 		nbt = nbt.copy();
 		Block b = Block.getBlockFromItem(e.getItemStack().getItem() );
 		String jockey  = MainJava.TranslateEntity(MainJava.jockeyString(nbt), Minecraft.getMinecraft().world);
+		ArrayList<String> advanced = new ArrayList();
 //		String entity = MainJava.TranslateEntity(nbt.getCompoundTag("SpawnData").getString("id"),Minecraft.getMinecraft().world);
 //		if(jockey != null)
 //			entity = jockey + " Jockey";
@@ -63,26 +65,28 @@ public class ToolTipEvent {
 			  list.add(ChatFormatting.YELLOW + "offsetZ:" + getOffset(nbt,2) );
 			}
 		}
+		if(nbt.hasKey("SpawnCount") && Config.tooltip_spawncount)
+			advanced.add(ChatFormatting.DARK_AQUA + "SpawnCount:" + nbt.getInteger("SpawnCount"));
+		if(nbt.hasKey("MaxNearbyEntities")&& Config.tooltip_maxnearbyents)
+			advanced.add(ChatFormatting.DARK_PURPLE + "MaxNearbyEntities:" + nbt.getInteger("MaxNearbyEntities"));
+		if(nbt.hasKey("Delay")&& Config.tooltip_delay)
+			advanced.add(ChatFormatting.BLUE + "Delay: " + ChatFormatting.YELLOW + nbt.getInteger("Delay"));
+		if(nbt.hasKey("SpawnRange") && Config.tooltip_SpawnRange)
+			advanced.add(ChatFormatting.DARK_GRAY + "SpawnRange:" + ChatFormatting.WHITE + nbt.getInteger("SpawnRange"));
+		if(nbt.hasKey("MinSpawnDelay") && Config.tooltip_MinSpawnDelay)
+			advanced.add(ChatFormatting.DARK_GRAY + "MinSpawnDelay:" + ChatFormatting.WHITE + nbt.getInteger("MinSpawnDelay"));
+		if(nbt.hasKey("MaxSpawnDelay") && Config.tooltip_MaxSpawnDelay)
+			advanced.add(ChatFormatting.DARK_GRAY + "MaxSpawnDelay:" + ChatFormatting.WHITE + nbt.getInteger("MaxSpawnDelay"));
+		if(nbt.hasKey("RequiredPlayerRange") && Config.tooltip_RequiredPlayerRange)
+			advanced.add(ChatFormatting.DARK_GRAY + "RequiredPlayerRange:" + ChatFormatting.WHITE + nbt.getInteger("RequiredPlayerRange"));
 		
-		if(!shift)
+		//if enabled and shifing add advanced tooltips
+		for(String s : advanced)
+			if(shift)
+				list.add(s);
+		
+		if(!shift && advanced.size() > 0)
 			list.add(ChatFormatting.DARK_GRAY + "shift advanced:");
-		
-		if(nbt.hasKey("SpawnCount") && Config.tooltip_spawncount && shift)
-			list.add(ChatFormatting.DARK_AQUA + "SpawnCount:" + nbt.getInteger("SpawnCount"));
-		
-		if(nbt.hasKey("MaxNearbyEntities")&& Config.tooltip_maxnearbyents && shift)
-			list.add(ChatFormatting.DARK_PURPLE + "MaxNearbyEntities:" + nbt.getInteger("MaxNearbyEntities"));
-		
-		if(nbt.hasKey("Delay")&& Config.tooltip_delay && shift)
-			list.add(ChatFormatting.BLUE + "Delay: " + ChatFormatting.YELLOW + nbt.getInteger("Delay"));
-		if(nbt.hasKey("SpawnRange") && Config.tooltip_SpawnRange && shift)
-			list.add(ChatFormatting.DARK_GRAY + "SpawnRange:" + ChatFormatting.WHITE + nbt.getInteger("SpawnRange"));
-		if(nbt.hasKey("MinSpawnDelay") && Config.tooltip_MinSpawnDelay && shift)
-			list.add(ChatFormatting.DARK_GRAY + "MinSpawnDelay:" + ChatFormatting.WHITE + nbt.getInteger("MinSpawnDelay"));
-		if(nbt.hasKey("MaxSpawnDelay") && Config.tooltip_MaxSpawnDelay && shift)
-			list.add(ChatFormatting.DARK_GRAY + "MaxSpawnDelay:" + ChatFormatting.WHITE + nbt.getInteger("MaxSpawnDelay"));
-		if(nbt.hasKey("RequiredPlayerRange") && Config.tooltip_RequiredPlayerRange && shift)
-			list.add(ChatFormatting.DARK_GRAY + "RequiredPlayerRange:" + ChatFormatting.WHITE + nbt.getInteger("RequiredPlayerRange"));
 	}
 
 	public double getOffset(NBTTagCompound nbt,int index) {
