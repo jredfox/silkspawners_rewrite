@@ -457,7 +457,7 @@ public class MainJava
 	    //Experimental Code_______________________
 	    if(s.equals(EntityName))
 	    { 
-	    	System.out.println("trying command sender");
+//	    	System.out.println("trying command sender");
 	    	if (createEntityByNameQuietly(EntityName, world) != null)
 	    	{
 	    		 Entity entity = createEntityByNameQuietly(EntityName, world);
