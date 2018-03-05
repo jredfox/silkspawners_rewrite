@@ -440,10 +440,24 @@ public class MainJava
 	    	EntityName = EntityName.substring(7, EntityName.length()-5);
 	   }catch(Throwable t){return null;}
 	   
-	  
+	   //translate via forge for 2d try if that fails get command sender name
+	   if(s.equals(EntityName))
+	   {
+		   Entity entity = createEntityByNameQuietly(EntityName, world);
+		   if(entity != null)
+		   {
+			   String tocompare = EntityList.getEntityString(entity);
+			   if(tocompare != null)
+			   {
+				   if(!tocompare.equals("generic") && !tocompare.equals(EntityName) && !tocompare.equals("entity." + EntityName + ".name") && !tocompare.equals("entity." + s + ".name")  )
+					   EntityName = tocompare;
+			   }
+		   }
+	   }
 	    //Experimental Code_______________________
 	    if(s.equals(EntityName))
 	    { 
+	    	System.out.println("trying command sender");
 	    	if (createEntityByNameQuietly(EntityName, world) != null)
 	    	{
 	    		 Entity entity = createEntityByNameQuietly(EntityName, world);
