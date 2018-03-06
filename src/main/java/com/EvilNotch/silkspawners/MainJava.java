@@ -160,12 +160,12 @@ public class MainJava
     		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
     		String name = data.getString("id");
     		NBTTagCompound display = new NBTTagCompound();
-    		String entName = TranslateEntity(name,w);
+    		String entName = TranslateEntity(new ResourceLocation(name),w);
     		if(entName == null)
     			entName = "Blank";
     		String jockey = jockeyString(nbt);
     		if(jockey != null)
-    			entName = MainJava.TranslateEntity(jockey, w) + " Jockey";
+    			entName = MainJava.TranslateEntity(new ResourceLocation(jockey), w) + " Jockey";
     		else
     			jockey = "";
     		String blockname = entName;
@@ -422,57 +422,50 @@ public class MainJava
 	 * Translates non living and living entities along with a trying method to always get the proper translation...
 	 * It returns null if it can't find a translation This method is crashproof and null proof 
 	 */
-	public static String TranslateEntity(String s,World world)
-	{
-	   if (s == null || s.equals("blank") || s.equals("") || s.equals("\"\"") || s.equals("minecraft:blank") || s.equals("null") || s.equals("minecraft:null"))
+	public static String TranslateEntity(ResourceLocation loc,World world)
+	{  
+	   if (loc == null || loc.getResourcePath().equals("blank") || loc.getResourcePath().equals("") || loc.getResourcePath().equals("\"\"") || loc.getResourcePath().equals("minecraft:blank") || loc.getResourcePath().equals("null") || loc.toString().equals("minecraft:null"))
 		   return null;
-		
+	   
+	   String s = loc.toString().replaceAll(":", ".");
 	   String EntityName = null;
 	   try{
-		   EntityName = I18n.translateToLocal("entity." + s + ".name");
-	   if(EntityName == null)
+		   
+		EntityName = I18n.translateToLocal("entity." + s + ".name");
+		
+	   //Corrects if there is no local translation back to default namming...
+	   if(EntityName == null || EntityName.startsWith("entity.") && EntityName.endsWith(".name"))
 		   EntityName = s;
-		//Corrects if there is no local translation back to default namming...
-	    if (EntityName.equals("entity." + s + ".name"))
-	     	EntityName = s;
-	    //1.12.2 update entity can be translated yet still freak out
-	    if(EntityName.startsWith("entity.") && EntityName.endsWith(".name"))
-	    	EntityName = EntityName.substring(7, EntityName.length()-5);
-	   }catch(Throwable t){return null;}
 	   
-	   //translate via forge for 2d try if that fails get command sender name
+	   //if first method fails support vanilla 1.12.2
 	   if(s.equals(EntityName))
 	   {
-		   Entity entity = createEntityByNameQuietly(EntityName, world);
-		   if(entity != null)
+		   String str = loc.getResourcePath().replaceAll(":", ".");
+		   //vanilla derp settings
+		   if(loc.getResourceDomain().equals("minecraft"))
 		   {
-			   String tocompare = EntityList.getEntityString(entity);
-			   if(tocompare != null)
-			   {
-				   if(!tocompare.equals("generic") && !tocompare.equals(EntityName) && !tocompare.equals("entity." + EntityName + ".name") && !tocompare.equals("entity." + s + ".name")  )
-					   EntityName = tocompare;
-			   }
+			   String character = str.substring(0, 1).toUpperCase();
+			   str = character + str.substring(1, str.length() );
 		   }
+		   
+		   EntityName = I18n.translateToLocal("entity." + str + ".name");
+		   if(EntityName == null || EntityName.startsWith("entity.") && EntityName.endsWith(".name"))
+			   EntityName = s;
 	   }
+	   }catch(Throwable t){return null;}
+	   
 	    //Experimental Code_______________________
 	    if(s.equals(EntityName))
 	    { 
-//	    	System.out.println("trying command sender");
-	    	if (createEntityByNameQuietly(EntityName, world) != null)
+	    	Entity entity = createEntityByNameQuietly(loc, world);
+	    	if (entity != null)
 	    	{
-	    		 Entity entity = createEntityByNameQuietly(EntityName, world);
 	    		 String commandsender = getcommandSenderName(entity);
-	    		 //mc 1.12 can still translate yet freak out
-	    		 if(commandsender.startsWith("entity.") && commandsender.endsWith(".name"))
-	    			 commandsender = commandsender.substring(7, commandsender.length()-5);
+	    		 if(commandsender == null || commandsender.startsWith("entity.") && commandsender.endsWith(".name"))
+	    			 return EntityName;
 	    		 
-	    		 if(commandsender == null)
-	    			 return EntityName;//If entity fails do this
-	    		if(!commandsender.equals("generic"))
-	    		{
-	    			if(!commandsender.equals(EntityName) && !commandsender.equals("entity." + EntityName + ".name") && !commandsender.equals("entity." + s + ".name")  )
-	    				EntityName = commandsender;
-	    		}
+	    		if(!commandsender.equals("generic") && !(commandsender.startsWith("entity.") && commandsender.endsWith(".name")) )
+	    			EntityName = commandsender;
 	    	}
 	    }
 	    //End Experimental Code___________________
@@ -492,10 +485,9 @@ public class MainJava
 		return null;
 	}
     @Nullable
-    public static Entity createEntityByNameQuietly(String name, World worldIn)
+    public static Entity createEntityByNameQuietly(ResourceLocation loc, World worldIn)
     {
     	try{
-    	ResourceLocation loc = new ResourceLocation(name);
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(loc);
         return entry == null ? null : entry.newInstance(worldIn);
     	}catch(Exception e){}

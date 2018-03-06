@@ -1,10 +1,7 @@
 package com.EvilNotch.silkspawners.client;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.text.JTextComponent.KeyBinding;
 
 import org.lwjgl.input.Keyboard;
 
@@ -17,13 +14,10 @@ import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraftforge.client.GuiIngameForge;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ToolTipEvent {
 	
@@ -43,7 +37,10 @@ public class ToolTipEvent {
 		NBTTagCompound nbt = e.getItemStack().getTagCompound();
 		nbt = nbt.copy();
 		Block b = Block.getBlockFromItem(e.getItemStack().getItem() );
-		String jockey  = MainJava.TranslateEntity(MainJava.jockeyString(nbt), Minecraft.getMinecraft().world);
+		String jockey_test = MainJava.jockeyString(nbt);
+		String jockey  = null;
+		if(jockey_test != null)
+			jockey = MainJava.TranslateEntity(new ResourceLocation(jockey_test), Minecraft.getMinecraft().world);
 		ArrayList<String> advanced = new ArrayList();
 //		String entity = MainJava.TranslateEntity(nbt.getCompoundTag("SpawnData").getString("id"),Minecraft.getMinecraft().world);
 //		if(jockey != null)
