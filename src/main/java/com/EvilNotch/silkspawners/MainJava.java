@@ -490,7 +490,7 @@ public class MainJava
     	try{
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(loc);
         return entry == null ? null : entry.newInstance(worldIn);
-    	}catch(Exception e){}
+    	}catch(Throwable e){}
     	return null;
     }
     /**
