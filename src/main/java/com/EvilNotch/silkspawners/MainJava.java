@@ -423,7 +423,13 @@ public class MainJava
     {
     	nbt = nbt.copy();
     	nbt.removeTag("CustomName");
-    	Entity e = createEntityFromNBTQuietly(new ResourceLocation(nbt.getString("id")), nbt, w);
+    	String id = nbt.getString("id");
+    	Entity e = createEntityFromNBTQuietly(new ResourceLocation(id), nbt, w);
+    	
+    	//for broken mods no command sender names for you
+    	if(Config.cmdBlacklist.contains(new ResourceLocation(id)))
+    		return translateEntityGeneral(e,w);
+    	
     	return TransLateEntity(e,w);
     }
     
@@ -431,6 +437,12 @@ public class MainJava
     {
     	if(entity == null || w == null)
     		return null;
+    	ResourceLocation loc = getEntityResourceLocation(entity);
+    	if(loc != null)
+    	{
+    		if(Config.cmdBlacklist.contains(loc))
+        		return translateEntityGeneral(entity,w);
+    	}
     	String strentity = translateEntityCmd(entity,w);
     	if(strentity == null)
     		strentity = translateEntityGeneral(entity,w);
@@ -538,5 +550,12 @@ public class MainJava
 			return !data.equals(compare.getCompoundTag("Entity"));
 		}
 		return true;
+	}
+	public static ResourceLocation getEntityResourceLocation(Entity e)
+	{
+		net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(e.getClass());
+		if(entry != null)
+			return entry.getRegistryName();
+		return null;
 	}
 }
