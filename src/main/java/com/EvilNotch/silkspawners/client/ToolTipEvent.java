@@ -3,6 +3,7 @@ package com.EvilNotch.silkspawners.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.util.Strings;
 import org.lwjgl.input.Keyboard;
 
 import com.EvilNotch.silkspawners.Config;
@@ -12,6 +13,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
@@ -37,24 +39,20 @@ public class ToolTipEvent {
 		NBTTagCompound nbt = e.getItemStack().getTagCompound();
 		nbt = nbt.copy();
 		Block b = Block.getBlockFromItem(e.getItemStack().getItem() );
-		String jockey_test = MainJava.jockeyString(nbt);
-		String jockey  = null;
-		if(jockey_test != null)
-			jockey = MainJava.TranslateEntity(new ResourceLocation(jockey_test), Minecraft.getMinecraft().world);
-		ArrayList<String> advanced = new ArrayList();
-//		String entity = MainJava.TranslateEntity(nbt.getCompoundTag("SpawnData").getString("id"),Minecraft.getMinecraft().world);
-//		if(jockey != null)
-//			entity = jockey + " Jockey";
-//		if(entity == null)
-//			return;
-//		list.set(0, ChatFormatting.WHITE + entity + " " + b.getLocalizedName() );
 		boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+		ArrayList<String> advanced = new ArrayList();
+		
+		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
+		String custom = data.getString("CustomName");
+		if(Config.tooltip_CustomNames && Strings.isNotEmpty(custom))
+    		list.add(ChatFormatting.AQUA + "CustomName: " + ChatFormatting.YELLOW + custom);
 		if(MainJava.multiIndexSpawner(nbt))
 			list.add(ChatFormatting.LIGHT_PURPLE + "SpawnPotentials:" + nbt.getTagList("SpawnPotentials", 10).tagCount());
 		
 		if(MainJava.isStackCustomPos(nbt))
 		{
-			list.add(ChatFormatting.AQUA + "Custom Pos Spawner:true");
+			if(Config.tooltip_CustomPos)
+				list.add(ChatFormatting.AQUA + "Custom Pos Spawner:true");
 			if(shift)
 			{
 			  list.add(ChatFormatting.YELLOW + "offsetX:" + getOffset(nbt,0) );

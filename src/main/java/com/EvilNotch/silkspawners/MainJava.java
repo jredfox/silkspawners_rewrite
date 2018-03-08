@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.apache.commons.compress.compressors.pack200.Pack200Strategy;
+import org.apache.logging.log4j.util.Strings;
 import org.lwjgl.input.Keyboard;
 
 import com.EvilNotch.silkspawners.client.ToolTipEvent;
@@ -70,7 +71,7 @@ import net.minecraftforge.registries.GameData;
 public class MainJava
 {
     public static final String MODID = "silkspawners";
-    public static final String VERSION = "1.2.5.2";
+    public static final String VERSION = "1.6.4";
 	@SidedProxy(clientSide = "com.EvilNotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.EvilNotch.silkspawners.client.proxy.ServerProxy")
 	public static ServerProxy proxy;
 	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
@@ -127,6 +128,8 @@ public class MainJava
     		return;
     	
     	TileEntity tile = w.getTileEntity(p);
+    	if(tile == null)
+			return;
     	if(b instanceof BlockMobSpawner || tile instanceof TileEntityMobSpawner)
     	{
     		int meta = b.getMetaFromState(e.getState());
@@ -160,12 +163,12 @@ public class MainJava
     		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
     		String name = data.getString("id");
     		NBTTagCompound display = new NBTTagCompound();
-    		String entName = TranslateEntity(new ResourceLocation(name),w);
+    		String entName = TransLateEntity(data,w);
     		if(entName == null)
     			entName = "Blank";
     		String jockey = jockeyString(nbt);
     		if(jockey != null)
-    			entName = MainJava.TranslateEntity(new ResourceLocation(jockey), w) + " Jockey";
+    			entName = MainJava.TransLateEntity(data,w) + " Jockey";
     		else
     			jockey = "";
     		String blockname = entName;
@@ -417,60 +420,54 @@ public class MainJava
   			  e.setCanceled(true);
   		  }
   	  }
+    public static String TransLateEntity(NBTTagCompound nbt,World w)
+    {
+    	nbt = nbt.copy();
+    	nbt.removeTag("CustomName");
+    	Entity e = createEntityFromNBTQuietly(new ResourceLocation(nbt.getString("id")), nbt, w);
+    	return TransLateEntity(e,w);
+    }
     
+    public static String TransLateEntity(Entity entity, World w)
+    {
+    	if(entity == null || w == null)
+    		return null;
+    	String strentity = translateEntityCmd(entity,w);
+    	if(strentity == null)
+    		strentity = translateEntityGeneral(entity,w);
+    	
+    	return strentity;
+    }
     /**
 	 * Translates non living and living entities along with a trying method to always get the proper translation...
 	 * It returns null if it can't find a translation This method is crashproof and null proof 
 	 */
-	public static String TranslateEntity(ResourceLocation loc,World world)
-	{  
-	   if (loc == null || loc.getResourcePath().equals("blank") || loc.getResourcePath().equals("") || loc.getResourcePath().equals("\"\"") || loc.getResourcePath().equals("minecraft:blank") || loc.getResourcePath().equals("null") || loc.toString().equals("minecraft:null"))
-		   return null;
-	   
-	   String s = loc.toString().replaceAll(":", ".");
-	   String EntityName = null;
+	public static String translateEntityGeneral(Entity entity,World world)
+	{
+		if(entity == null)
+			return null;
+	   String s = EntityList.getEntityString(entity);
+	   String EntityName = EntityList.getEntityString(entity);
 	   try{
-		   
 		EntityName = I18n.translateToLocal("entity." + s + ".name");
-		
-	   //Corrects if there is no local translation back to default namming...
-	   if(EntityName == null || EntityName.startsWith("entity.") && EntityName.endsWith(".name"))
-		   EntityName = s;
-	   
-	   //if first method fails support vanilla 1.12.2
-	   if(s.equals(EntityName))
-	   {
-		   String str = loc.getResourcePath().replaceAll(":", ".");
-		   //vanilla derp settings
-		   if(loc.getResourceDomain().equals("minecraft"))
-		   {
-			   String character = str.substring(0, 1).toUpperCase();
-			   str = character + str.substring(1, str.length() );
-		   }
-		   
-		   EntityName = I18n.translateToLocal("entity." + str + ".name");
-		   if(EntityName == null || EntityName.startsWith("entity.") && EntityName.endsWith(".name"))
-			   EntityName = s;
-	   }
+		if(EntityName.startsWith("entity.") && EntityName.endsWith(".name") )
+			EntityName = s;
 	   }catch(Throwable t){return null;}
-	   
-	    //Experimental Code_______________________
-	    if(s.equals(EntityName))
-	    { 
-	    	Entity entity = createEntityByNameQuietly(loc, world);
-	    	if (entity != null)
-	    	{
-	    		 String commandsender = getcommandSenderName(entity);
-	    		 if(commandsender == null || commandsender.startsWith("entity.") && commandsender.endsWith(".name"))
-	    			 return EntityName;
-	    		 
-	    		if(!commandsender.equals("generic") && !(commandsender.startsWith("entity.") && commandsender.endsWith(".name")) )
-	    			EntityName = commandsender;
-	    	}
-	    }
-	    //End Experimental Code___________________
 	    
-	    return EntityName;
+	   return EntityName;
+	}
+	/**
+	 * get command sender name and returns null if vanilla does it's funky general thing
+	 */
+	public static String translateEntityCmd(Entity entity, World world)
+	{
+		String name = getcommandSenderName(entity);
+		if(name != null)
+		{
+			if(name.equals("generic") || name.equals("entity." + "generic" + ".name") )
+				return null;
+		}
+		return name;
 	}
 	
 	public static String getcommandSenderName(Entity entity) 
@@ -480,10 +477,22 @@ public class MainJava
 				return null;
 			return entity.getName();
 		}catch(Throwable t){
-			t.printStackTrace();
+			net.minecraftforge.fml.common.FMLLog.log.error("Entity Has Thrown an Error when entity.getName() Report to mod author:" + EntityList.getEntityString(entity));
 		}
 		return null;
 	}
+	 @Nullable
+	 public static Entity createEntityFromNBTQuietly(ResourceLocation loc,NBTTagCompound nbt, World worldIn)
+	 {
+	   try{
+		   Entity e = createEntityByNameQuietly(loc,worldIn);
+		   if(e != null)
+			   e.readFromNBT(nbt);
+		   return e;
+	  	}catch(Throwable e){}
+	  	return null;
+	 }
+	 
     @Nullable
     public static Entity createEntityByNameQuietly(ResourceLocation loc, World worldIn)
     {

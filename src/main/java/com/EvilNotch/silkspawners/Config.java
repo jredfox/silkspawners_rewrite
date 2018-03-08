@@ -18,23 +18,27 @@ public class Config {
 	public static boolean tooltip_RequiredPlayerRange = false;
 	public static int maxSpawnerName = 35;
 	public static int default_Delay;
+	public static boolean tooltip_CustomNames;
+	public static boolean tooltip_CustomPos;
 	
 	public static void loadConfig(FMLPreInitializationEvent event)
 	{
 		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(),"silkspawners.cfg") );
 		config.load();
-		canDebug = config.getBoolean("canDebug", "general", true, "");
-		isDev = config.getBoolean("isDev", "general", false, "gives you version on screen");
-		maxSpawnerName = config.getInt("maxCharSpawnerName", "general", 35, 0, 100, "");
-		default_Delay = config.getInt("defaultDelay", "nbt", 20, 0, Integer.MAX_VALUE, "");
-		tooltip_spawncount = config.getBoolean("spawnCount", "tooltip", true, "");
-		tooltip_maxnearbyents = config.getBoolean("maxNearbyEntities", "tooltip", true, "");
-		tooltip_delay = config.getBoolean("delay", "tooltip", true, "");
+		canDebug = config.get("general", "canDebug", true).getBoolean();
+		isDev = config.get("general", "isDev", false).getBoolean();
+		maxSpawnerName = config.get("general", "maxCharSpawnerName", 35).getInt();
+		default_Delay = config.get("general", "defaultDelay", 20).getInt();
 		
-		tooltip_SpawnRange = config.getBoolean("spawnRange", "tooltip_advanced", true, "");
-		tooltip_MinSpawnDelay = config.getBoolean("minSpawnDelay", "tooltip_advanced", true, "");
-		tooltip_MaxSpawnDelay = config.getBoolean("maxSpawnDelay", "tooltip_advanced", true, "");
-		tooltip_RequiredPlayerRange = config.getBoolean("requiredPlayerRange", "tooltip_advanced", true, "");
+		tooltip_spawncount = config.get("tooltip_advanced", "spawnCount", true).getBoolean();
+		tooltip_maxnearbyents = config.get("tooltip_advanced", "maxNearbyEntities", true).getBoolean();
+		tooltip_delay = config.get("tooltip_advanced", "delay", true).getBoolean();
+		tooltip_SpawnRange = config.get("tooltip_advanced", "spawnRange", true).getBoolean();
+		tooltip_MinSpawnDelay = config.get("tooltip_advanced", "minSpawnDelay", true).getBoolean();
+		tooltip_MaxSpawnDelay = config.get("tooltip_advanced", "maxSpawnDelay", true).getBoolean();
+		tooltip_RequiredPlayerRange = config.get("tooltip_advanced", "requiredPlayerRange", true).getBoolean();
+		tooltip_CustomNames = config.get("tooltip", "nameTag", true).getBoolean(true);
+		tooltip_CustomPos = config.get("tooltip", "CustomPos", true).getBoolean();
 		config.save();
 	}
 
