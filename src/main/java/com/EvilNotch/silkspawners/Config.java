@@ -16,8 +16,8 @@ public class Config {
 	public static boolean tooltip_MinSpawnDelay = false;
 	public static boolean tooltip_MaxSpawnDelay = false;
 	public static boolean tooltip_RequiredPlayerRange = false;
-	public static int maxSpawnerName = 35;
-	public static int default_Delay;
+	public static int maxSpawnerName = 34;
+	public static int default_Delay = 20;
 	public static boolean tooltip_CustomNames;
 	public static boolean tooltip_CustomPos;
 	
@@ -27,8 +27,8 @@ public class Config {
 		config.load();
 		canDebug = config.get("general", "canDebug", true).getBoolean();
 		isDev = config.get("general", "isDev", false).getBoolean();
-		maxSpawnerName = config.get("general", "maxCharSpawnerName", 35).getInt();
-		default_Delay = config.get("general", "defaultDelay", 20).getInt();
+		maxSpawnerName = config.get("general", "maxCharSpawnerName", maxSpawnerName).getInt();
+		default_Delay = config.get("general", "defaultDelay", default_Delay).getInt();
 		
 		tooltip_spawncount = config.get("tooltip_advanced", "spawnCount", true).getBoolean();
 		tooltip_maxnearbyents = config.get("tooltip_advanced", "maxNearbyEntities", true).getBoolean();

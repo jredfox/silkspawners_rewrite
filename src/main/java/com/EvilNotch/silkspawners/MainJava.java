@@ -166,13 +166,12 @@ public class MainJava
     		String entName = TransLateEntity(data,w);
     		if(entName == null)
     			entName = "Blank";
-    		String jockey = jockeyString(nbt);
+    		NBTTagCompound jockey = getJockieNBT(data);
     		if(jockey != null)
-    			entName = MainJava.TransLateEntity(data,w) + " Jockey";
-    		else
-    			jockey = "";
+    			entName = MainJava.TransLateEntity(jockey,w) + " Jockey";
+    		
     		String blockname = entName;
-    		if( (entName + b.getLocalizedName() + jockey).length() < Config.maxSpawnerName)
+    		if( (entName + " " + b.getLocalizedName() ).length() <= Config.maxSpawnerName)
     			blockname += " " + b.getLocalizedName();
     		display.setString("Name", white + blockname );
     		nbt.setTag("display", display);
@@ -509,14 +508,23 @@ public class MainJava
 		return nbt.getCompoundTag("SpawnData").hasKey("offsets");
 	}
 
-	public static String jockeyString(NBTTagCompound nbt) {
+	public static NBTTagCompound getJockieNBT(NBTTagCompound nbt) {
 		nbt = nbt.copy();
-		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
-		if(!data.hasKey("Passengers"))
+		if(!nbt.hasKey("Passengers"))
 			return null;
-		NBTTagList list = data.getTagList("Passengers", 10);
-		NBTTagCompound entity = list.getCompoundTagAt(list.tagCount()-1);
-		return entity.getString("id");
+		NBTTagList list = nbt.getTagList("Passengers", 10);
+		NBTTagList actualList = list;
+		NBTTagCompound compound = nbt;
+		while(list.tagCount() > 0)
+		{
+			list = compound.getTagList("Passengers", 10);
+			if(list.tagCount() > 0)
+				actualList = list;
+			compound = list.getCompoundTagAt(0);
+			if(compound == null)
+				break;
+		}
+		return actualList.getCompoundTagAt(0);
 	}
 
 	public static boolean multiIndexSpawner(NBTTagCompound nbt) {

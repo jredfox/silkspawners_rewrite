@@ -53,12 +53,9 @@ public class ToolTipEvent {
 		{
 			if(Config.tooltip_CustomPos)
 				list.add(ChatFormatting.AQUA + "Custom Pos Spawner:true");
-			if(shift)
-			{
-			  list.add(ChatFormatting.YELLOW + "offsetX:" + getOffset(nbt,0) );
-			  list.add(ChatFormatting.YELLOW + "offsetY:" + getOffset(nbt,1) );
-			  list.add(ChatFormatting.YELLOW + "offsetZ:" + getOffset(nbt,2) );
-			}
+			 advanced.add(ChatFormatting.YELLOW + "offsetX:" + getOffset(nbt,0) );
+			 advanced.add(ChatFormatting.YELLOW + "offsetY:" + getOffset(nbt,1) );
+			 advanced.add(ChatFormatting.YELLOW + "offsetZ:" + getOffset(nbt,2) );
 		}
 		if(nbt.hasKey("SpawnCount") && Config.tooltip_spawncount)
 			advanced.add(ChatFormatting.DARK_AQUA + "SpawnCount:" + nbt.getInteger("SpawnCount"));
