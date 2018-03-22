@@ -6,17 +6,15 @@ import java.util.List;
 import org.apache.logging.log4j.util.Strings;
 import org.lwjgl.input.Keyboard;
 
+import com.EvilNotch.lib.util.minecraft.SpawnerUtil;
 import com.EvilNotch.silkspawners.Config;
 import com.EvilNotch.silkspawners.MainJava;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -46,10 +44,10 @@ public class ToolTipEvent {
 		String custom = data.getString("CustomName");
 		if(Config.tooltip_CustomNames && Strings.isNotEmpty(custom))
     		list.add(ChatFormatting.AQUA + "CustomName: " + ChatFormatting.YELLOW + custom);
-		if(MainJava.multiIndexSpawner(nbt))
+		if(SpawnerUtil.multiIndexSpawner(nbt))
 			list.add(ChatFormatting.LIGHT_PURPLE + "SpawnPotentials:" + nbt.getTagList("SpawnPotentials", 10).tagCount());
 		
-		if(MainJava.isStackCustomPos(nbt))
+		if(SpawnerUtil.isStackCurrentCustomPos(nbt))
 		{
 			if(Config.tooltip_CustomPos)
 				list.add(ChatFormatting.AQUA + "Custom Pos Spawner:true");
