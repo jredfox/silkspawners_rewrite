@@ -6,15 +6,17 @@ import java.util.List;
 import org.apache.logging.log4j.util.Strings;
 import org.lwjgl.input.Keyboard;
 
-import com.EvilNotch.lib.util.minecraft.SpawnerUtil;
+import com.EvilNotch.lib.minecraft.events.DynamicTranslationEvent;
 import com.EvilNotch.silkspawners.Config;
 import com.EvilNotch.silkspawners.MainJava;
+import com.EvilNotch.silkspawners.SpawnerUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -26,6 +28,25 @@ public class ToolTipEvent {
 	{
 		if(Config.isDev)
 			e.getLeft().add(ChatFormatting.DARK_PURPLE + "SilkSpanwers " + MainJava.versionType[2] + ChatFormatting.WHITE + ":" + ChatFormatting.AQUA + MainJava.VERSION);
+	}
+	
+	@SubscribeEvent
+	public void translate(DynamicTranslationEvent e)
+	{
+		if(e.stack.getTagCompound() == null || !e.stack.getTagCompound().hasKey("silkTag"))
+			return;
+		NBTTagCompound display = e.stack.getTagCompound().getCompoundTag("display");
+		if(!display.hasKey("EntName"))
+			return;
+		String unlocal = display.getString("EntName");
+		String ent = I18n.translateToLocal(unlocal);
+		String block = I18n.translateToLocal(e.stack.getItem().getUnlocalizedName() + ".name");
+		String name = ent;
+		if(display.getBoolean("isJockey"))
+			name += " " + I18n.translateToLocal("silkspawners.jockey.name");
+		if((name + " " + block).length() < Config.maxSpawnerName)
+			name += " " + block;
+		e.translation = name;
 	}
 	
 	@SubscribeEvent
