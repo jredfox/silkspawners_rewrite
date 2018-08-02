@@ -13,18 +13,21 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameRules.ValueType;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -32,6 +35,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 @Mod(modid = MainJava.MODID,name = "silkspawners", version = MainJava.VERSION,acceptableRemoteVersions = "*", dependencies = "required-after:evilnotchlib@[1.2.3]")
 public class MainJava
@@ -41,6 +45,7 @@ public class MainJava
 	@SidedProxy(clientSide = "com.EvilNotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.EvilNotch.silkspawners.client.proxy.ServerProxy")
 	public static ServerProxy proxy;
 	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
+	public static boolean dungeontweaks = false;
     
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent e)
@@ -49,6 +54,9 @@ public class MainJava
 	     GeneralRegistry.registerGameRule("CustomPosSpawner", true);
 	     GeneralRegistry.registerGameRule("MultiSpawnerCurrentIndex", false);
 	     GeneralRegistry.registerGameRule("SpawnerSaveDelay", false);
+	     GeneralRegistry.registerCommand(new CommandMTHand());
+	 	 ForgeRegistries.ITEMS.register(new ItemSpawner());
+	 	 dungeontweaks = Loader.isModLoaded("dungeontweaks");
 	}
     @EventHandler
     public void init(FMLInitializationEvent event)
@@ -118,10 +126,22 @@ public class MainJava
     			entName = EntityUtil.getUnlocalizedName(jockey,w);
     			display.setBoolean("isJockey", true);
     		}
+    		
     		display.setString("EntName", entName);
     		nbt.setTag("display", display);
     		nbt.setString("silkTag", name);
     		stack.setTagCompound(nbt);
+    		
+        	if(dungeontweaks)
+        	{
+        		NBTTagCompound caps = nbt.getCompoundTag("ForgeCaps");
+        		if(caps == null)
+        		{
+        			caps = new NBTTagCompound();
+        			nbt.setTag("ForgeCaps", caps);
+        		}
+        		caps.setInteger("dungeontweaks:hasscanned", 1);
+        	}
 
     		BlockUtil.DropBlock(w,p,stack);
     		if(!player.isCreative())

@@ -12,6 +12,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class Config {
 	public static boolean canDebug = true;
 	public static boolean isDev = false;
+	
+	public static int maxSpawnerName = 34;
+	public static int default_Delay = 20;
+	
 	public static boolean tooltip_spawncount = true;
 	public static boolean tooltip_maxnearbyents = true;
 	public static boolean tooltip_delay = true;
@@ -20,10 +24,11 @@ public class Config {
 	public static boolean tooltip_MinSpawnDelay = false;
 	public static boolean tooltip_MaxSpawnDelay = false;
 	public static boolean tooltip_RequiredPlayerRange = false;
-	public static int maxSpawnerName = 34;
-	public static int default_Delay = 20;
 	public static boolean tooltip_CustomNames;
 	public static boolean tooltip_CustomPos;
+	public static boolean creativeTabSpawners = true;
+	public static boolean hasCustomName = false;
+	public static String spawnerBlockName = "";
 	
 	public static void loadConfig(FMLPreInitializationEvent event)
 	{
@@ -33,6 +38,10 @@ public class Config {
 		isDev = config.get("general", "isDev", false).getBoolean();
 		maxSpawnerName = config.get("general", "maxCharSpawnerName", maxSpawnerName).getInt();
 		default_Delay = config.get("general", "defaultDelay", default_Delay).getInt();
+		creativeTabSpawners = config.get("general", "creativeTabSpawners", creativeTabSpawners).getBoolean();
+		spawnerBlockName =  config.get("general", "spawnerBlockName", spawnerBlockName).getString();
+		if(!LineBase.toWhiteSpaced(spawnerBlockName).equals(""))
+			hasCustomName = true;
 		
 		tooltip_spawncount = config.get("tooltip_advanced", "spawnCount", true).getBoolean();
 		tooltip_maxnearbyents = config.get("tooltip_advanced", "maxNearbyEntities", true).getBoolean();

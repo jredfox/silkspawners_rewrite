@@ -7,6 +7,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.lwjgl.input.Keyboard;
 
 import com.EvilNotch.lib.minecraft.events.DynamicTranslationEvent;
+import com.EvilNotch.lib.util.Line.LineBase;
 import com.EvilNotch.silkspawners.Config;
 import com.EvilNotch.silkspawners.MainJava;
 import com.EvilNotch.silkspawners.SpawnerUtil;
@@ -19,6 +20,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ToolTipEvent {
@@ -29,18 +31,22 @@ public class ToolTipEvent {
 		if(Config.isDev)
 			e.getLeft().add(ChatFormatting.DARK_PURPLE + "SilkSpanwers " + MainJava.versionType[2] + ChatFormatting.WHITE + ":" + ChatFormatting.AQUA + MainJava.VERSION);
 	}
-	
-	@SubscribeEvent
+	/**
+	 * let other mods override this if needed
+	 */
+	@SubscribeEvent(priority=EventPriority.HIGH)
 	public void translate(DynamicTranslationEvent e)
 	{
 		if(e.stack.getTagCompound() == null || !e.stack.getTagCompound().hasKey("silkTag"))
 			return;
 		NBTTagCompound display = e.stack.getTagCompound().getCompoundTag("display");
-		if(!display.hasKey("EntName"))
+		if(!display.hasKey("EntName") && !display.hasKey("Name"))
 			return;
 		String unlocal = display.getString("EntName");
 		String ent = I18n.translateToLocal(unlocal);
-		String block = I18n.translateToLocal(e.stack.getItem().getUnlocalizedName() + ".name");
+		if(unlocal.equals(""))
+			ent = display.getString("Name");
+		String block = Config.hasCustomName ? Config.spawnerBlockName : I18n.translateToLocal(e.stack.getItem().getUnlocalizedName() + ".name");
 		String name = ent;
 		if(display.getBoolean("isJockey"))
 			name += " " + I18n.translateToLocal("silkspawners.jockey.name");
@@ -64,32 +70,33 @@ public class ToolTipEvent {
 		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
 		String custom = data.getString("CustomName");
 		if(Config.tooltip_CustomNames && Strings.isNotEmpty(custom))
-    		list.add(ChatFormatting.AQUA + "CustomName: " + ChatFormatting.YELLOW + custom);
+    		list.add(ChatFormatting.AQUA + I18n.translateToLocal("silkspawners.CustomName.name") + ": " + ChatFormatting.YELLOW + custom);
 		if(SpawnerUtil.multiIndexSpawner(nbt))
-			list.add(ChatFormatting.LIGHT_PURPLE + "SpawnPotentials:" + nbt.getTagList("SpawnPotentials", 10).tagCount());
+			list.add(ChatFormatting.LIGHT_PURPLE + I18n.translateToLocal("silkspawners.SpawnPotentials.name") +  ":" + nbt.getTagList("SpawnPotentials", 10).tagCount());
 		
 		if(SpawnerUtil.isStackCurrentCustomPos(nbt))
 		{
 			if(Config.tooltip_CustomPos)
 				list.add(ChatFormatting.AQUA + "Custom Pos Spawner:true");
-			 advanced.add(ChatFormatting.YELLOW + "offsetX:" + getOffset(nbt,0) );
-			 advanced.add(ChatFormatting.YELLOW + "offsetY:" + getOffset(nbt,1) );
-			 advanced.add(ChatFormatting.YELLOW + "offsetZ:" + getOffset(nbt,2) );
+			 String offset = I18n.translateToLocal("silkspawners.offset.name");
+			 advanced.add(ChatFormatting.YELLOW +  offset + "X:" + getOffset(nbt,0) );
+			 advanced.add(ChatFormatting.YELLOW +  offset + "Y:" + getOffset(nbt,1) );
+			 advanced.add(ChatFormatting.YELLOW +  offset + "Z:" + getOffset(nbt,2) );
 		}
 		if(nbt.hasKey("SpawnCount") && Config.tooltip_spawncount)
-			advanced.add(ChatFormatting.DARK_AQUA + "SpawnCount:" + nbt.getInteger("SpawnCount"));
+			advanced.add(ChatFormatting.DARK_AQUA + I18n.translateToLocal("silkspawners.SpawnCount.name") + ":" + nbt.getInteger("SpawnCount"));
 		if(nbt.hasKey("MaxNearbyEntities")&& Config.tooltip_maxnearbyents)
-			advanced.add(ChatFormatting.DARK_PURPLE + "MaxNearbyEntities:" + nbt.getInteger("MaxNearbyEntities"));
+			advanced.add(ChatFormatting.DARK_PURPLE + I18n.translateToLocal("silkspawners.MaxNearbyEntities.name") + ":" + nbt.getInteger("MaxNearbyEntities"));
 		if(nbt.hasKey("Delay")&& Config.tooltip_delay)
-			advanced.add(ChatFormatting.BLUE + "Delay: " + ChatFormatting.YELLOW + nbt.getInteger("Delay"));
+			advanced.add(ChatFormatting.BLUE + I18n.translateToLocal("silkspawners.Delay.name") + ": " + ChatFormatting.YELLOW + nbt.getInteger("Delay"));
 		if(nbt.hasKey("SpawnRange") && Config.tooltip_SpawnRange)
-			advanced.add(ChatFormatting.DARK_GRAY + "SpawnRange:" + ChatFormatting.WHITE + nbt.getInteger("SpawnRange"));
+			advanced.add(ChatFormatting.DARK_GRAY + I18n.translateToLocal("silkspawners.SpawnRange.name") + ":" + ChatFormatting.WHITE + nbt.getInteger("SpawnRange"));
 		if(nbt.hasKey("MinSpawnDelay") && Config.tooltip_MinSpawnDelay)
-			advanced.add(ChatFormatting.DARK_GRAY + "MinSpawnDelay:" + ChatFormatting.WHITE + nbt.getInteger("MinSpawnDelay"));
+			advanced.add(ChatFormatting.DARK_GRAY + I18n.translateToLocal("silkspawners.MinSpawnDelay.name") + ":" + ChatFormatting.WHITE + nbt.getInteger("MinSpawnDelay"));
 		if(nbt.hasKey("MaxSpawnDelay") && Config.tooltip_MaxSpawnDelay)
-			advanced.add(ChatFormatting.DARK_GRAY + "MaxSpawnDelay:" + ChatFormatting.WHITE + nbt.getInteger("MaxSpawnDelay"));
+			advanced.add(ChatFormatting.DARK_GRAY + I18n.translateToLocal("silkspawners.MaxSpawnDelay.name") + ":" + ChatFormatting.WHITE + nbt.getInteger("MaxSpawnDelay"));
 		if(nbt.hasKey("RequiredPlayerRange") && Config.tooltip_RequiredPlayerRange)
-			advanced.add(ChatFormatting.DARK_GRAY + "RequiredPlayerRange:" + ChatFormatting.WHITE + nbt.getInteger("RequiredPlayerRange"));
+			advanced.add(ChatFormatting.DARK_GRAY + I18n.translateToLocal("silkspawners.RequiredPlayerRange.name") + ":" + ChatFormatting.WHITE + nbt.getInteger("RequiredPlayerRange"));
 		
 		//if enabled and shifing add advanced tooltips
 		for(String s : advanced)
@@ -97,7 +104,7 @@ public class ToolTipEvent {
 				list.add(s);
 		
 		if(!shift && advanced.size() > 0)
-			list.add(ChatFormatting.DARK_GRAY + "shift advanced:");
+			list.add(ChatFormatting.DARK_GRAY + I18n.translateToLocal("silkspawners.shift_advanced.name") + ":");
 	}
 
 	public double getOffset(NBTTagCompound nbt,int index) {

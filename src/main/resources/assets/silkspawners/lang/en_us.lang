@@ -1,1 +1,10 @@
+silkspawners.SpawnCount.name=SpawnCount
+silkspawners.MaxNearbyEntities.name=MaxNearbyEntities
+silkspawners.Delay.name=Delay
+silkspawners.SpawnRange.name=SpawnRange
+silkspawners.MinSpawnDelay.name=MinSpawnDelay
+silkspawners.MaxSpawnDelay.name=MaxSpawnDelay
+silkspawners.RequiredPlayerRange.name=RequiredPlayerRange
+silkspawners.CustomName.name=CustomName
 silkspawners.jockey.name=Jockey
+silkspawners.shift_advanced.name=shift advanced
