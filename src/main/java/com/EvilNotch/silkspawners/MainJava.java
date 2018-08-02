@@ -3,6 +3,8 @@ package com.EvilNotch.silkspawners;
 import com.EvilNotch.lib.minecraft.BlockUtil;
 import com.EvilNotch.lib.minecraft.EntityUtil;
 import com.EvilNotch.lib.minecraft.MinecraftUtil;
+import com.EvilNotch.lib.minecraft.content.LangEntry;
+import com.EvilNotch.lib.minecraft.content.client.creativetab.BasicCreativeTab;
 import com.EvilNotch.lib.minecraft.events.ClientBlockPlaceEvent;
 import com.EvilNotch.lib.minecraft.registry.GeneralRegistry;
 import com.EvilNotch.silkspawners.client.proxy.ServerProxy;
@@ -12,6 +14,7 @@ import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -32,6 +35,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -46,6 +50,8 @@ public class MainJava
 	public static ServerProxy proxy;
 	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
 	public static boolean dungeontweaks = false;
+	public static BasicCreativeTab tab_living;
+	public static BasicCreativeTab tab_nonliving;
     
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent e)
@@ -63,6 +69,13 @@ public class MainJava
     {
     	proxy.init();
     	MinecraftForge.EVENT_BUS.register(new MainJava());
+    	tab_living = new BasicCreativeTab(new ResourceLocation("silkspawners:living"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("Living Mob Spawners","en_us"));
+    	tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("NonLiving Mob Spawners","en_us"));
+    }
+    @EventHandler
+    public void postinit(FMLPostInitializationEvent event)
+    {
+    	proxy.postinit();
     }
    
 	@SubscribeEvent
@@ -119,15 +132,24 @@ public class MainJava
     		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
     		String name = data.getString("id");
     		NBTTagCompound display = new NBTTagCompound();
-    		String entName = EntityUtil.getUnlocalizedName(data,w);
+    		
+    		String entName = null;
     		NBTTagCompound jockey = SpawnerUtil.getJockieNBT(data);
+			Entity e2 = null;
     		if(jockey != null)
     		{
-    			entName = EntityUtil.getUnlocalizedName(jockey,w);
+    			e2 = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation(name), jockey, w);
+    			entName = EntityUtil.getUnlocalizedName(e2);
     			display.setBoolean("isJockey", true);
+    		}
+    		else
+    		{
+    			e2 = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation(name), data, w);
+    			entName = EntityUtil.getUnlocalizedName(e2);	
     		}
     		
     		display.setString("EntName", entName);
+    		display.setString("EntColor", EntityUtil.getColoredEntityText(e2, false));
     		nbt.setTag("display", display);
     		nbt.setString("silkTag", name);
     		stack.setTagCompound(nbt);

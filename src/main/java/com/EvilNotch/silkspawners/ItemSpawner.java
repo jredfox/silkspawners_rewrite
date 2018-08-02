@@ -1,12 +1,16 @@
 package com.EvilNotch.silkspawners;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.EvilNotch.lib.minecraft.EntityUtil;
 import com.EvilNotch.lib.util.JavaUtil;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -49,67 +53,79 @@ public class ItemSpawner extends ItemBlock{
      */
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        if (!this.isInCreativeTab(tab) || !Config.creativeTabSpawners)
+        if (!Config.creativeTabSpawners)
         {
         	return;
         }
-        
-        List<ResourceLocation> li = JavaUtil.asList(net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getKeys());
-        Collections.sort(li);//Alphabetize them first
-        
-        for(ResourceLocation loc :  li)
+        if(tab == MainJava.tab_living)
+        	populateTab(tab,EntityUtil.living,items);
+        else if(tab == MainJava.tab_nonliving)
         {
-        	ItemStack spawner = new ItemStack(Blocks.MOB_SPAWNER,1);
-        	NBTTagCompound nbt = new NBTTagCompound();
-        	
-        	new TileEntityMobSpawner().writeToNBT(nbt);
-    		nbt.removeTag("x");
-			nbt.removeTag("y");
-			nbt.removeTag("z");
-			nbt.removeTag("id");
-			
-        	nbt.setString("silkTag", loc.toString());
-        	nbt.setTag("SpawnData", new NBTTagCompound());
-        	NBTTagCompound data = (NBTTagCompound) nbt.getTag("SpawnData");
-        	data.setString("id", loc.toString());
-        	
-        	//generate default tags so spawners stack
-        	nbt.setShort("SpawnCount", (short)4);
-        	nbt.setShort("MaxNearbyEntities", (short)6);
-        	nbt.setInteger("Delay", Config.default_Delay);
-        	nbt.setShort("SpawnRange", (short)4);
-        	nbt.setShort("MinSpawnDelay", (short)200);
-        	nbt.setShort("MaxSpawnDelay", (short)800);
-        	nbt.setShort("SpawnCount", (short)4);
-        	nbt.setShort("RequiredPlayerRange", (short)16);
-        	NBTTagList list = new NBTTagList();
-        	NBTTagCompound entry = new NBTTagCompound();
-        	NBTTagCompound entity = new NBTTagCompound();
-        	entity.setString("id", loc.toString());
-        	entry.setTag("Entity", entity);
-        	entry.setInteger("Weight", 1);
-        	list.appendTag(entry);
-        	nbt.setTag("SpawnPotentials", list);
-        	
-        	if(MainJava.dungeontweaks)
-        	{
-        		NBTTagCompound caps = nbt.getCompoundTag("ForgeCaps");
-        		if(caps == null)
-        		{
-        			caps = new NBTTagCompound();
-        			nbt.setTag("ForgeCaps", caps);
-        		}
-        		caps.setInteger("dungeontweaks:hasscanned", 1);
-        	}
-        	
-        	//display name
-        	nbt.setTag("display", new NBTTagCompound());
-        	NBTTagCompound display = (NBTTagCompound) nbt.getTag("display");
-        	display.setString("EntName", EntityUtil.getUnlocalizedName(data, com.EvilNotch.lib.main.MainJava.fake_world));
-        	
-        	spawner.setTagCompound(nbt);
-        	items.add(spawner);
+        	populateTab(tab,EntityUtil.livingbase,items);
+        	populateTab(tab,EntityUtil.nonliving,items);
         }
     }
+	protected void populateTab(CreativeTabs redstone, HashMap<ResourceLocation, String[]> living,NonNullList<ItemStack> items) 
+	{
+	       Iterator<Map.Entry<ResourceLocation,String[]>> it = living.entrySet().iterator();
+	        while(it.hasNext())
+	        {
+	        	Map.Entry<ResourceLocation, String[]> map = it.next();
+	        	ResourceLocation loc = map.getKey();
+	        	String[] value = map.getValue();
+	        	
+	        	ItemStack spawner = new ItemStack(Blocks.MOB_SPAWNER,1);
+	        	NBTTagCompound nbt = new NBTTagCompound();
+	        	
+	        	new TileEntityMobSpawner().writeToNBT(nbt);
+	    		nbt.removeTag("x");
+				nbt.removeTag("y");
+				nbt.removeTag("z");
+				nbt.removeTag("id");
+				
+	        	nbt.setString("silkTag", loc.toString());
+	        	nbt.setTag("SpawnData", new NBTTagCompound());
+	        	NBTTagCompound data = (NBTTagCompound) nbt.getTag("SpawnData");
+	        	data.setString("id", loc.toString());
+	        	
+	        	//generate default tags so spawners stack
+	        	nbt.setShort("SpawnCount", (short)4);
+	        	nbt.setShort("MaxNearbyEntities", (short)6);
+	        	nbt.setInteger("Delay", Config.default_Delay);
+	        	nbt.setShort("SpawnRange", (short)4);
+	        	nbt.setShort("MinSpawnDelay", (short)200);
+	        	nbt.setShort("MaxSpawnDelay", (short)800);
+	        	nbt.setShort("SpawnCount", (short)4);
+	        	nbt.setShort("RequiredPlayerRange", (short)16);
+	        	NBTTagList list = new NBTTagList();
+	        	NBTTagCompound entry = new NBTTagCompound();
+	        	NBTTagCompound entity = new NBTTagCompound();
+	        	entity.setString("id", loc.toString());
+	        	entry.setTag("Entity", entity);
+	        	entry.setInteger("Weight", 1);
+	        	list.appendTag(entry);
+	        	nbt.setTag("SpawnPotentials", list);
+	        	
+	        	if(MainJava.dungeontweaks)
+	        	{
+	        		NBTTagCompound caps = nbt.getCompoundTag("ForgeCaps");
+	        		if(caps == null)
+	        		{
+	        			caps = new NBTTagCompound();
+	        			nbt.setTag("ForgeCaps", caps);
+	        		}
+	        		caps.setInteger("dungeontweaks:hasscanned", 1);
+	        	}
+	        	
+	        	//display name
+	        	nbt.setTag("display", new NBTTagCompound());
+	        	NBTTagCompound display = (NBTTagCompound) nbt.getTag("display");
+	        	display.setString("EntName", value[0]);
+	        	display.setString("EntColor", value[2]);
+	        	
+	        	spawner.setTagCompound(nbt);
+	        	items.add(spawner);
+	        }
+	}
 	
 }

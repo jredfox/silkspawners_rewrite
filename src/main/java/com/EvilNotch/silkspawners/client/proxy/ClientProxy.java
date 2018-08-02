@@ -1,5 +1,6 @@
 package com.EvilNotch.silkspawners.client.proxy;
 
+import com.EvilNotch.lib.minecraft.EntityUtil;
 import com.EvilNotch.silkspawners.CommandMTHand;
 import com.EvilNotch.silkspawners.client.ToolTipEvent;
 
@@ -21,6 +22,7 @@ public class ClientProxy extends ServerProxy{
 	@Override
 	public void postinit()
 	{
+		EntityUtil.cacheEnts();
 	}
 
 }

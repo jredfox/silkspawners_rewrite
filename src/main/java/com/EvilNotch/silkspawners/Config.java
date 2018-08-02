@@ -29,6 +29,7 @@ public class Config {
 	public static boolean creativeTabSpawners = true;
 	public static boolean hasCustomName = false;
 	public static String spawnerBlockName = "";
+	public static boolean coloredSpawners = true;
 	
 	public static void loadConfig(FMLPreInitializationEvent event)
 	{
@@ -39,6 +40,7 @@ public class Config {
 		maxSpawnerName = config.get("general", "maxCharSpawnerName", maxSpawnerName).getInt();
 		default_Delay = config.get("general", "defaultDelay", default_Delay).getInt();
 		creativeTabSpawners = config.get("general", "creativeTabSpawners", creativeTabSpawners).getBoolean();
+		coloredSpawners = config.get("general", "coloredSpawnerNames", coloredSpawners).getBoolean();
 		spawnerBlockName =  config.get("general", "spawnerBlockName", spawnerBlockName).getString();
 		if(!LineBase.toWhiteSpaced(spawnerBlockName).equals(""))
 			hasCustomName = true;

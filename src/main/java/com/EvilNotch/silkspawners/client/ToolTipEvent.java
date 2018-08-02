@@ -40,18 +40,20 @@ public class ToolTipEvent {
 		if(e.stack.getTagCompound() == null || !e.stack.getTagCompound().hasKey("silkTag"))
 			return;
 		NBTTagCompound display = e.stack.getTagCompound().getCompoundTag("display");
-		if(!display.hasKey("EntName") && !display.hasKey("Name"))
+		if(!display.hasKey("EntName"))
 			return;
 		String unlocal = display.getString("EntName");
 		String ent = I18n.translateToLocal(unlocal);
-		if(unlocal.equals(""))
-			ent = display.getString("Name");
 		String block = Config.hasCustomName ? Config.spawnerBlockName : I18n.translateToLocal(e.stack.getItem().getUnlocalizedName() + ".name");
 		String name = ent;
 		if(display.getBoolean("isJockey"))
 			name += " " + I18n.translateToLocal("silkspawners.jockey.name");
 		if((name + " " + block).length() < Config.maxSpawnerName)
 			name += " " + block;
+		if(Config.coloredSpawners)
+		{
+			name = display.getString("EntColor") + name;
+		}
 		e.translation = name;
 	}
 	
