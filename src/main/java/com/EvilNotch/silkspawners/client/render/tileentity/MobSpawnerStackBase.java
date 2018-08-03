@@ -26,30 +26,18 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     public void render(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
     	MobSpawnerBaseLogic logic = ((TileEntityMobSpawner)te).getSpawnerBaseLogic();
-    	List<Entity> ents = logic.getCachedEntities();
-    	Set<UUID> checked = new HashSet();
+    	List<Entity> ents = logic.getCachedEntities();;
         this.setLightmapDisabled(false);
-    	double offset = 0;
-    	boolean mount = false;
-        for(Entity e : ents)
+
+        for(int i=0;i<ents.size();i++)
         {
+        	Entity e = ents.get(i);
         	if(e == null)
         		continue;
-        	if(mount)
-        	{
-        		Entity riding = e.getRidingEntity();
-        		UUID id = riding.getUniqueID();
-        		if(!checked.contains(id))
-        		{
-        			offset += riding.getMountedYOffset() + e.getYOffset();
-        			checked.add(id);
-        		}
-        	}
         	GL11.glPushMatrix();
         	GL11.glTranslatef((float)x + 0.5F, (float)y, (float)z + 0.5F);
-        	renderSpawnerEntity(e,offset,logic,x,y,z,partialTicks,destroyStage,alpha);
+        	renderSpawnerEntity(e,logic.offsets[i],logic,x,y,z,partialTicks,destroyStage,alpha);
         	GL11.glPopMatrix();
-        	mount = true;
         }
     }
 
