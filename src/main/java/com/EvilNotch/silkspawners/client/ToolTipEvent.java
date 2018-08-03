@@ -40,6 +40,8 @@ public class ToolTipEvent {
 		if(e.stack.getTagCompound() == null || !e.stack.getTagCompound().hasKey("silkTag"))
 			return;
 		NBTTagCompound display = e.stack.getTagCompound().getCompoundTag("display");
+		if(display.hasKey("Name"))
+			return;
 		if(!display.hasKey("EntName"))
 			return;
 		String unlocal = display.getString("EntName");

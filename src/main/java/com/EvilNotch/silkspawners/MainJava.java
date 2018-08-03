@@ -56,21 +56,22 @@ public class MainJava
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent e)
 	{
-		 Config.loadConfig(e);
-	     GeneralRegistry.registerGameRule("CustomPosSpawner", true);
-	     GeneralRegistry.registerGameRule("MultiSpawnerCurrentIndex", false);
-	     GeneralRegistry.registerGameRule("SpawnerSaveDelay", false);
-	     GeneralRegistry.registerCommand(new CommandMTHand());
-	 	 ForgeRegistries.ITEMS.register(new ItemSpawner());
-	 	 dungeontweaks = Loader.isModLoaded("dungeontweaks");
+		Config.loadConfig(e);
+	    GeneralRegistry.registerGameRule("CustomPosSpawner", true);
+	    GeneralRegistry.registerGameRule("MultiSpawnerCurrentIndex", false);
+	    GeneralRegistry.registerGameRule("SpawnerSaveDelay", false);
+	    GeneralRegistry.registerCommand(new CommandMTHand());
+	 	ForgeRegistries.ITEMS.register(new ItemSpawner());
+	 	dungeontweaks = Loader.isModLoaded("dungeontweaks");
+	 	 
+	    tab_living = new BasicCreativeTab(new ResourceLocation("silkspawners:living"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("Living Mob Spawners","en_us"));
+	    tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("NonLiving Mob Spawners","en_us"));
 	}
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
     	proxy.init();
     	MinecraftForge.EVENT_BUS.register(new MainJava());
-    	tab_living = new BasicCreativeTab(new ResourceLocation("silkspawners:living"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("Living Mob Spawners","en_us"));
-    	tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("NonLiving Mob Spawners","en_us"));
     }
     @EventHandler
     public void postinit(FMLPostInitializationEvent event)

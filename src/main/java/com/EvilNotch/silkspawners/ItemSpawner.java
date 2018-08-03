@@ -35,17 +35,6 @@ public class ItemSpawner extends ItemBlock{
 		this.setHasSubtypes(true);
 		this.setMaxDamage(0);
 	}
-	@Override
-    public CreativeTabs getCreativeTab()
-    {
-    	return this.tab;
-    }
-	@Override
-	public Item setCreativeTab(CreativeTabs tab)
-	{
-		this.tab = tab;
-		return this;
-	}
     /**
      * returns a list of items with the same ID, but different meta (eg: dye returns 16 items)
      * hashmap between resourcelocation,actual client name
@@ -57,9 +46,11 @@ public class ItemSpawner extends ItemBlock{
         {
         	return;
         }
-        if(tab == MainJava.tab_living)
+        
+        if(tab == MainJava.tab_living || tab == CreativeTabs.SEARCH)
         	populateTab(tab,EntityUtil.living,items);
-        else if(tab == MainJava.tab_nonliving)
+        
+        if(tab == MainJava.tab_nonliving || tab == CreativeTabs.SEARCH)
         {
         	populateTab(tab,EntityUtil.livingbase,items);
         	populateTab(tab,EntityUtil.nonliving,items);
