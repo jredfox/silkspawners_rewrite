@@ -131,7 +131,7 @@ public class MainJava
     			nbt.setTag("SpawnData", compound);
     		}
     		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
-    		String name = data.getString("id");
+    		String name = null;
     		NBTTagCompound display = new NBTTagCompound();
     		
     		String entName = null;
@@ -139,14 +139,16 @@ public class MainJava
 			Entity e2 = null;
     		if(jockey != null)
     		{
+    			name = jockey.getString("id");
     			e2 = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation(name), jockey, w);
     			entName = EntityUtil.getUnlocalizedName(e2);
     			display.setBoolean("isJockey", true);
     		}
     		else
     		{
+    			name = data.getString("id");
     			e2 = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation(name), data, w);
-    			entName = EntityUtil.getUnlocalizedName(e2);	
+    			entName = EntityUtil.getUnlocalizedName(e2);
     		}
     		
     		display.setString("EntName", entName);
