@@ -8,6 +8,7 @@ import com.EvilNotch.lib.minecraft.content.client.creativetab.BasicCreativeTab;
 import com.EvilNotch.lib.minecraft.events.ClientBlockPlaceEvent;
 import com.EvilNotch.lib.minecraft.registry.GeneralRegistry;
 import com.EvilNotch.silkspawners.client.proxy.ServerProxy;
+import com.EvilNotch.silkspawners.client.render.item.NEISpawnerRender;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
@@ -18,6 +19,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -40,6 +42,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import zdoctor.lazymodder.client.render.itemrender.IItemRendererHandler;
 
 @Mod(modid = MainJava.MODID,name = "silkspawners", version = MainJava.VERSION,acceptableRemoteVersions = "*", dependencies = "required-after:evilnotchlib@[1.2.3]")
 public class MainJava
@@ -61,11 +64,13 @@ public class MainJava
 	    GeneralRegistry.registerGameRule("MultiSpawnerCurrentIndex", false);
 	    GeneralRegistry.registerGameRule("SpawnerSaveDelay", false);
 	    GeneralRegistry.registerCommand(new CommandMTHand());
-	 	ForgeRegistries.ITEMS.register(new ItemSpawner());
+	    Item i = new ItemSpawner();
+	 	ForgeRegistries.ITEMS.register(i);
 	 	dungeontweaks = Loader.isModLoaded("dungeontweaks");
 	 	 
 	    tab_living = new BasicCreativeTab(new ResourceLocation("silkspawners:living"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("Living Mob Spawners","en_us"));
 	    tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("NonLiving Mob Spawners","en_us"));
+	    IItemRendererHandler.registerIItemRenderer(i, new NEISpawnerRender());
 	}
     @EventHandler
     public void init(FMLInitializationEvent event)
@@ -131,7 +136,7 @@ public class MainJava
     			nbt.setTag("SpawnData", compound);
     		}
     		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
-    		String name = null;
+    		String name = data.getString("id");
     		NBTTagCompound display = new NBTTagCompound();
     		
     		String entName = null;
@@ -139,14 +144,12 @@ public class MainJava
 			Entity e2 = null;
     		if(jockey != null)
     		{
-    			name = jockey.getString("id");
     			e2 = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation(name), jockey, w);
     			entName = EntityUtil.getUnlocalizedName(e2);
     			display.setBoolean("isJockey", true);
     		}
     		else
     		{
-    			name = data.getString("id");
     			e2 = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation(name), data, w);
     			entName = EntityUtil.getUnlocalizedName(e2);
     		}
@@ -154,7 +157,7 @@ public class MainJava
     		display.setString("EntName", entName);
     		display.setString("EntColor", EntityUtil.getColoredEntityText(e2, false));
     		nbt.setTag("display", display);
-    		nbt.setString("silkTag", name);
+    		nbt.setString("silkTag", name);//have the current index of the spawners resource location become the silktag not the jockeyname
     		stack.setTagCompound(nbt);
     		
         	if(dungeontweaks)

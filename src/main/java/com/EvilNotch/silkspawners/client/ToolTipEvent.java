@@ -22,9 +22,40 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 public class ToolTipEvent {
 	
+	@SubscribeEvent
+	public void devText(ClientTickEvent e)
+	{
+		
+	}
+    public static int renderTime;
+    public static float renderFrame;
+
+    @SubscribeEvent
+    public void clientTick(TickEvent.ClientTickEvent event) {
+        if(event.phase == Phase.END) {
+            renderTime++;
+        }
+    }
+
+    @SubscribeEvent
+    public void renderTick(TickEvent.RenderTickEvent event) {
+        if(event.phase == Phase.START)
+            renderFrame = event.renderTickTime;
+    }
+    
+   public static float getRenderFrame() {
+        return renderFrame;
+    }
+	public static double getRenderTime() {
+	    return renderTime + getRenderFrame();
+	}
+	    
 	@SubscribeEvent
 	public void devText(RenderGameOverlayEvent.Text e)
 	{
