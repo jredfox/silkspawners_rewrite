@@ -182,6 +182,7 @@ public class MainJava
     		e.setCanceled(true);
     	}
     }
+	public static int index = 0;
 	@SubscribeEvent
     public void read(ClientBlockPlaceEvent e)
     {
@@ -192,16 +193,19 @@ public class MainJava
     {
     	readSpawner(e.getState(),e.getWorld(),e.getPos(),e.getPlayer(),e.getHand() );
     }
-	public void readSpawner(IBlockState state, World w,BlockPos p, EntityPlayer player,EnumHand hand) 
+	public static void readSpawner(IBlockState state, World w,BlockPos p, EntityPlayer player,EnumHand hand) 
 	{
 	   if(state == null || player == null || p == null || hand == null || w == null)
 		   return;
+	   index++;
 	   Block b = state.getBlock();
 	   TileEntity tile = w.getTileEntity(p);
 	   ItemStack s = player.getHeldItem(hand);
 	   if(!(tile instanceof TileEntityMobSpawner) || s == null || s.getTagCompound() == null)
 		   return;
 	   NBTTagCompound nbt = s.getTagCompound();
+	   if(nbt.hasKey("BlockEntityTag"))
+		   return;
 	   nbt = nbt.copy();
 	   nbt.removeTag("silkTag");
 	   if(SpawnerUtil.isCustomSpawnerPos(nbt,"offsets"))

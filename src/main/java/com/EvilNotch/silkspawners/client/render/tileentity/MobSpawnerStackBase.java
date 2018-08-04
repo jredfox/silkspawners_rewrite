@@ -1,24 +1,26 @@
 package com.EvilNotch.silkspawners.client.render.tileentity;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 import org.lwjgl.opengl.GL11;
 
-import com.EvilNotch.lib.util.JavaUtil;
+import com.EvilNotch.lib.main.Config;
+import com.EvilNotch.lib.util.primitive.BooleanObj;
+import com.EvilNotch.silkspawners.MainJava;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.util.math.BlockPos;
 
 public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
+	
 	/**
 	 * this has the capability of rendering an entire stack of mobs via the tile entity with 1.9+ passenger support
 	 */
@@ -26,7 +28,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     public void render(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
     	MobSpawnerBaseLogic logic = ((TileEntityMobSpawner)te).getSpawnerBaseLogic();
-    	List<Entity> ents = logic.getCachedEntities();;
+    	List<Entity> ents = logic.getCachedEntities();
         this.setLightmapDisabled(false);
 
         for(int i=0;i<ents.size();i++)
@@ -34,6 +36,16 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	Entity e = ents.get(i);
         	if(e == null)
         		continue;
+        	if(e instanceof EntityPig && !logic.updated)
+        	{
+        		System.out.println("returning from render isPig with no update:" + MainJava.index);
+        		return;
+        	}
+        	else if(e instanceof EntityPig)
+        	{
+        		if(Config.debug)
+        			System.out.println("why you here you pig:" + MainJava.index);
+        	}
         	GL11.glPushMatrix();
         	GL11.glTranslatef((float)x + 0.5F, (float)y, (float)z + 0.5F);
         	renderSpawnerEntity(e,logic.offsets[i],logic,x,y,z,partialTicks,destroyStage,alpha);
