@@ -94,7 +94,8 @@ public class NEISpawnerRender implements IItemRenderer{
 	}
 	/**
 	 * a method for getting the entity based on nbt. if size <= 1 will fetch from main cache for easy rendering
-	 * since this is direct port from 1.7.10 doesn't support any data at all
+	 * since this is direct port from 1.7.10 doesn't support any data at all and also without jockey support. It's nice
+	 * if you don't want to go through a huge process and only except to render static ids.
 	 */
 	protected Entity getEntity(ResourceLocation loc, NBTTagCompound data) 
 	{
@@ -107,7 +108,6 @@ public class NEISpawnerRender implements IItemRenderer{
 	
 	public static boolean entCached = false;
 	public static HashMap<ResourceLocation,Entity> ents = new LinkedHashMap();
-	public static HashMap<NBTTagCompound,Entity> entsNBT = new HashMap();
 	public void cacheEnts() 
 	{
 		if(entCached)
