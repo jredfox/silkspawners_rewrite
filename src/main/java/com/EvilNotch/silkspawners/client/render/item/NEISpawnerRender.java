@@ -30,6 +30,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import zdoctor.lazymodder.client.render.itemrender.IItemRenderer;
 
+/**
+ * this is the nei port from 1.7.10 > 1.12.2 with using resource locations instead of integer values
+ * @author jredfox
+ */
 public class NEISpawnerRender implements IItemRenderer{
 
 	@Override
@@ -90,19 +94,10 @@ public class NEISpawnerRender implements IItemRenderer{
 	}
 	/**
 	 * a method for getting the entity based on nbt. if size <= 1 will fetch from main cache for easy rendering
+	 * since this is direct port from 1.7.10 doesn't support any data at all
 	 */
 	protected Entity getEntity(ResourceLocation loc, NBTTagCompound data) 
 	{
-		if(data.getSize() > 1)
-		{
-			Entity e = entsNBT.get(data);
-			if(e == null)
-			{
-				e = EntityUtil.createEntityFromNBTQuietly(loc, data, Minecraft.getMinecraft().world, true);
-				entsNBT.put(data, e);
-			}
-			return e;
-		}
 		return ents.get(loc);
 	}
 

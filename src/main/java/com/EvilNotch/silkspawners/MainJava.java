@@ -55,6 +55,7 @@ public class MainJava
 	public static boolean dungeontweaks = false;
 	public static BasicCreativeTab tab_living;
 	public static BasicCreativeTab tab_nonliving;
+	public static ItemSpawner mob_spawner;
     
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent e)
@@ -64,13 +65,12 @@ public class MainJava
 	    GeneralRegistry.registerGameRule("MultiSpawnerCurrentIndex", false);
 	    GeneralRegistry.registerGameRule("SpawnerSaveDelay", false);
 	    GeneralRegistry.registerCommand(new CommandMTHand());
-	    Item i = new ItemSpawner();
-	 	ForgeRegistries.ITEMS.register(i);
+	    mob_spawner = new ItemSpawner();
+	 	ForgeRegistries.ITEMS.register(mob_spawner);
 	 	dungeontweaks = Loader.isModLoaded("dungeontweaks");
 	 	 
 	    tab_living = new BasicCreativeTab(new ResourceLocation("silkspawners:living"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("Living Mob Spawners","en_us"));
 	    tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("NonLiving Mob Spawners","en_us"));
-	    IItemRendererHandler.registerIItemRenderer(i, new NEISpawnerRender());
 	}
     @EventHandler
     public void init(FMLInitializationEvent event)
