@@ -92,10 +92,11 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	public void renderEntity(Entity entity, World world,double offset) {
 		float lastX = OpenGlHelper.lastBrightnessX;
 		float lastY = OpenGlHelper.lastBrightnessY;
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.enableAlpha();
 		
         GL11.glPushMatrix();
+        
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.enableAlpha();
         
         entity.setWorld(world);
         float f1 = 0.4375F;
@@ -109,13 +110,14 @@ public class MobSpawnerItemRender implements IItemRenderer{
         
         Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, 0,false);
         
-        GL11.glPopMatrix();
-        
         GlStateManager.enableRescaleNormal();
         GlStateManager.disableBlend();
+//        System.out.println("debug");
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
-        RenderHelper.enableStandardItemLighting();
+//        RenderHelper.enableStandardItemLighting();
         setLightmapDisabled(true);
+        
+        GL11.glPopMatrix();
         
 
         /*GL11.glEnable(GL12.GL_RESCALE_NORMAL);
