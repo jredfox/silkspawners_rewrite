@@ -77,7 +77,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
             	Entity e = toRender.get(i);
             	if(e == null)
             		continue;
-            	renderEntity(e,world,offsets[i]);
+            	renderEntity(e,world,offsets[i],type);
             }
         }
         catch(Exception e)
@@ -89,7 +89,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         }
 	}
 	
-	public void renderEntity(Entity entity, World world,double offset) {
+	public void renderEntity(Entity entity, World world,double offset,TransformType type) {
 		float lastX = OpenGlHelper.lastBrightnessX;
 		float lastY = OpenGlHelper.lastBrightnessY;
 		
@@ -97,6 +97,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
         
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.enableAlpha();
+    	boolean disableLight = type == TransformType.GUI;
+        setLightmapDisabled(disableLight);//don't enable light mapping to false if it's rendering in the gui
         
         entity.setWorld(world);
         float f1 = 0.4375F;
@@ -112,9 +114,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         
         GlStateManager.enableRescaleNormal();
         GlStateManager.disableBlend();
-//        System.out.println("debug");
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
-//        RenderHelper.enableStandardItemLighting();
         setLightmapDisabled(true);
         
         GL11.glPopMatrix();
