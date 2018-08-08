@@ -18,6 +18,7 @@ import com.EvilNotch.silkspawners.client.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
@@ -89,6 +90,11 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	}
 	
 	public void renderEntity(Entity entity, World world,double offset) {
+		float lastX = OpenGlHelper.lastBrightnessX;
+		float lastY = OpenGlHelper.lastBrightnessY;
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.enableAlpha();
+		
         GL11.glPushMatrix();
         
         entity.setWorld(world);
@@ -100,15 +106,39 @@ public class MobSpawnerItemRender implements IItemRenderer{
         GL11.glTranslatef(0.0F, -0.4F, 0.0F);
         GL11.glScalef(f1, f1, f1);
         entity.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
+        
         Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, 0,false);
         
         GL11.glPopMatrix();
+        
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.disableBlend();
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
+        RenderHelper.enableStandardItemLighting();
+        setLightmapDisabled(true);
+        
 
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        /*GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+        OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);*/
 	}
+    public static void setLightmapDisabled(boolean disabled)
+    {
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+
+        if (disabled)
+        {
+            GlStateManager.disableTexture2D();
+        }
+        else
+        {
+            GlStateManager.enableTexture2D();
+        }
+
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+    }
+
 	
 	@Override
 	public boolean renderItemOverlayIntoGUIPre(RenderItem renderItem, FontRenderer fontRenderer, ItemStack itemstack,int xPosition, int yPosition, String text) {
@@ -119,8 +149,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	public void renderItemOverlayIntoGUIPost(RenderItem renderItem, FontRenderer fontRenderer, ItemStack itemstack,int xPosition, int yPosition, String text) {
 	}
 	
-	public static final List<Entity> li = new ArrayList();
-	public static PairObj<List<Entity>,Double[]> defaultPair = null;
+	public static List<Entity> li = new ArrayList();
+	public static final PairObj<List<Entity>,Double[]> defaultPair = new PairObj<List<Entity>,Double[]>(li,new Double[]{0D});
 	protected PairObj<List<Entity>,Double[]> getCachedList(ResourceLocation loc, NBTTagCompound data) 
 	{
 		if(data.getSize() > 1)
@@ -136,9 +166,6 @@ public class MobSpawnerItemRender implements IItemRenderer{
 			}
 			return ents;
 		}
-		//convert default entity into the new format using list<Entity> offsets[] while still being optimzied
-		if(defaultPair == null)
-			defaultPair = new PairObj<List<Entity>,Double[]>(li,new Double[]{0D});
 			
 		Entity e = ents.get(loc);
 		if(e == null)
@@ -150,7 +177,9 @@ public class MobSpawnerItemRender implements IItemRenderer{
 			li.set(0,e);
 		return defaultPair;
 	}
-
+	/**
+	 * returns a pair of List<Entity>(passengers and entity base) as well as offsets array
+	 */
 	public PairObj<List<Entity>,Double[]> getEnts(Entity entity) {
 		List<Entity> toRender = JavaUtil.toArray(entity.getRecursivePassengers());
 		toRender.add(0,entity);
