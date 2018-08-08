@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -12,6 +13,7 @@ import com.EvilNotch.lib.Api.ReflectionUtil;
 import com.EvilNotch.lib.minecraft.EntityUtil;
 import com.EvilNotch.lib.util.JavaUtil;
 import com.EvilNotch.lib.util.simple.PairObj;
+import com.EvilNotch.silkspawners.Config;
 import com.EvilNotch.silkspawners.client.ToolTipEvent;
 import com.EvilNotch.silkspawners.client.proxy.ClientProxy;
 
@@ -28,9 +30,11 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformT
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import zdoctor.lazymodder.client.render.itemrender.IItemRenderer;
@@ -160,7 +164,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 			PairObj<List<Entity>,Double[]> ents = entsNBT.get(data);
 			if(ents == null)
 			{
-				Entity e = EntityUtil.getEntityJockey(data, Minecraft.getMinecraft().world, 0, 0, 0, true);
+				Entity e = EntityUtil.getEntityJockey(data, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn);
 				if(e == null)
 					return null;
 				ents = getEnts(e);
@@ -229,6 +233,10 @@ public class MobSpawnerItemRender implements IItemRenderer{
 			{
 				EntityLiving living = (EntityLiving)e;
 				living.isChild();
+				if(Config.renderUseInitSpawn)
+				{
+					living.onInitialSpawn(living.world.getDifficultyForLocation(new BlockPos(0,0,0)), (IEntityLivingData)null);
+				}
 			}
 			ents.put(loc,e);
 		}
