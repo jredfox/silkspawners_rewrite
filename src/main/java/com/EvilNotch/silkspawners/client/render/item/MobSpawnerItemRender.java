@@ -28,6 +28,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityLivingData;
@@ -42,7 +43,6 @@ import zdoctor.lazymodder.client.render.itemrender.IItemRenderer;
 /**
  * this is the copied modified class of NEISpawnerRender port
  * @author jredfox
- *
  */
 public class MobSpawnerItemRender implements IItemRenderer{
 	
@@ -91,6 +91,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
             System.out.println("exception drawing:" + loc + " removing from hashmap for render");
             ents.remove(loc);
         }
+        if(type != TransformType.GUI)
+        	setLightmapDisabled(false);
 	}
 	
 	public void renderEntity(Entity entity, World world,double offset,TransformType type) {
@@ -131,18 +133,14 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	}
     public static void setLightmapDisabled(boolean disabled)
     {
-        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
-
         if (disabled)
         {
-            GlStateManager.disableTexture2D();
+            Minecraft.getMinecraft().entityRenderer.disableLightmap();
         }
         else
         {
-            GlStateManager.enableTexture2D();
+        	Minecraft.getMinecraft().entityRenderer.enableLightmap();
         }
-
-        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 
 	
