@@ -6,15 +6,20 @@ import java.util.List;
 import org.apache.logging.log4j.util.Strings;
 import org.lwjgl.input.Keyboard;
 
+import com.EvilNotch.lib.minecraft.EnumChatFormatting;
 import com.EvilNotch.lib.minecraft.events.DynamicTranslationEvent;
 import com.EvilNotch.lib.util.Line.LineBase;
+import com.EvilNotch.lib.util.simple.PairObj;
 import com.EvilNotch.silkspawners.Config;
+import com.EvilNotch.silkspawners.ItemSpawner;
 import com.EvilNotch.silkspawners.MainJava;
 import com.EvilNotch.silkspawners.SpawnerUtil;
+import com.EvilNotch.silkspawners.client.render.item.MobSpawnerItemRender;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.translation.I18n;
@@ -28,10 +33,34 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 public class ToolTipEvent {
 	
+	public int time = 0;
 	@SubscribeEvent
-	public void devText(ClientTickEvent e)
+	public void sptick(ClientTickEvent e)
 	{
+		if(e.phase != Phase.END)
+			return;
+		if(time >=(20*Config.spawnerCacheItem))
+		{
+			MobSpawnerItemRender.entsNBT.clear();
+			System.out.println("client data size:" + MobSpawnerItemRender.entsNBT.size());
+			time = 0;
+		}
+		time++;
 		
+		if(Config.animationItemData)
+		for(PairObj<List<Entity>,Double[]> pair : MobSpawnerItemRender.entsNBT.values())
+		{
+			for(Entity ent : pair.obj1)
+			{
+				ent.ticksExisted++;
+			}
+		}
+			
+		if(Config.animationItem)
+		for(Entity ent : MobSpawnerItemRender.ents.values())
+		{
+			ent.ticksExisted++;
+		}
 	}
     public static int renderTime;
     public static float renderFrame;
@@ -85,7 +114,7 @@ public class ToolTipEvent {
 			name += " " + block;
 		if(Config.coloredSpawners)
 		{
-			name = display.getString("EntColor") + name;
+			name = display.getString("EntColor") + name + EnumChatFormatting.RESET;
 		}
 		e.translation = name;
 	}

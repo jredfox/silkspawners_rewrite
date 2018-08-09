@@ -1,8 +1,10 @@
 package com.EvilNotch.silkspawners.client.proxy;
 
 import com.EvilNotch.lib.minecraft.EntityUtil;
-import com.EvilNotch.silkspawners.CommandMTHand;
+import com.EvilNotch.silkspawners.Config;
+import com.EvilNotch.silkspawners.ItemSpawner;
 import com.EvilNotch.silkspawners.MainJava;
+import com.EvilNotch.silkspawners.client.CommandMTHand;
 import com.EvilNotch.silkspawners.client.ToolTipEvent;
 import com.EvilNotch.silkspawners.client.render.item.MobSpawnerItemRender;
 import com.EvilNotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
@@ -26,7 +28,8 @@ public class ClientProxy extends ServerProxy{
 	public void init()
 	{
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMobSpawner.class, new MobSpawnerStackBase());
-	    IItemRendererHandler.registerIItemRenderer(MainJava.mob_spawner, new MobSpawnerItemRender());
+		if(Config.mobItemRender)
+			IItemRendererHandler.registerIItemRenderer(MainJava.mob_spawner, new MobSpawnerItemRender());
 	    
 		ClientCommandHandler.instance.registerCommand(new CommandMTHand());
 		MinecraftForge.EVENT_BUS.register(new ToolTipEvent());
@@ -34,7 +37,9 @@ public class ClientProxy extends ServerProxy{
 	@Override
 	public void postinit()
 	{
-		EntityUtil.cacheEnts();
+		if(Config.mobItemRender || Config.creativeTabSpawners)
+			EntityUtil.cacheEnts();
+		ItemSpawner.registerCreativeTabs();
 	}
 	public static void changeTexture(ResourceLocation loc) 
 	{

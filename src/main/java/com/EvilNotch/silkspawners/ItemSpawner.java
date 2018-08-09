@@ -1,14 +1,17 @@
 package com.EvilNotch.silkspawners;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
 import com.EvilNotch.lib.minecraft.EntityUtil;
+import com.EvilNotch.lib.minecraft.NBTUtil;
 import com.EvilNotch.lib.util.JavaUtil;
 
 import net.minecraft.advancements.CriteriaTriggers;
@@ -47,27 +50,20 @@ public class ItemSpawner extends ItemBlock{
 	}
 	
     /**
-     * returns a list of items with the same ID, but different meta (eg: dye returns 16 items)
-     * hashmap between resourcelocation,actual client name
-     * hashmap between resourcelocation,unloalized name
+     * returns a list of items mob spawners with living,livingbase,and non living supported
+     * it uses a cache so it doesn't lag each time
      */
+	public static HashMap<CreativeTabs,List<ItemStack>> map = new LinkedHashMap();
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        if (!Config.creativeTabSpawners)
+        List<ItemStack> stacks = map.get(tab);
+        if(stacks != null)
         {
-        	return;
-        }
-        
-        if(tab == MainJava.tab_living || tab == CreativeTabs.SEARCH)
-        	populateTab(tab,EntityUtil.living,items);
-        
-        if(tab == MainJava.tab_nonliving || tab == CreativeTabs.SEARCH)
-        {
-        	populateTab(tab,EntityUtil.livingbase,items);
-        	populateTab(tab,EntityUtil.nonliving,items);
+        	for(ItemStack stack : stacks)
+        		items.add(stack);
         }
     }
-	protected void populateTab(CreativeTabs redstone, HashMap<ResourceLocation, String[]> living,NonNullList<ItemStack> items) 
+	protected static void populateTab(CreativeTabs redstone, HashMap<ResourceLocation, String[]> living,List<ItemStack> items) 
 	{
 	       Iterator<Map.Entry<ResourceLocation,String[]>> it = living.entrySet().iterator();
 	        while(it.hasNext())
@@ -128,5 +124,74 @@ public class ItemSpawner extends ItemBlock{
 	        	spawner.setTagCompound(nbt);
 	        	items.add(spawner);
 	        }
+	}
+	public static void registerCreativeTabs() 
+	{
+        if (!Config.creativeTabSpawners)
+        {
+        	return;
+        }
+		List<ItemStack> living = new ArrayList();
+ 		populateTab(MainJava.tab_living,EntityUtil.living,living);
+ 		
+		List<ItemStack> nonliving = new ArrayList();
+		populateTab(MainJava.tab_nonliving,EntityUtil.livingbase,nonliving);
+		if(Config.nonLivingTab)
+			populateTab(MainJava.tab_nonliving,EntityUtil.nonliving,nonliving);
+		
+		List<ItemStack> stacks = new ArrayList();
+		populateCustomSpawnerEntries(stacks);
+ 		
+ 		map.put(MainJava.tab_living, living);
+ 		map.put(MainJava.tab_custom, stacks);
+ 		map.put(MainJava.tab_nonliving,nonliving);
+		
+		List<ItemStack> all = new ArrayList();
+		for(List<ItemStack> li : map.values())
+		{
+			for(ItemStack stack : li)
+			{
+				all.add(stack);
+			}
+		}
+		map.put(CreativeTabs.SEARCH,all);
+	}
+	private static void populateCustomSpawnerEntries(List<ItemStack> stacks) {
+    	ItemStack skele = new ItemStack(Blocks.MOB_SPAWNER,1);
+    	skele.setTagCompound(NBTUtil.getNBTFromString("{SpawnData:{id:spider,Passengers:[{id:skeleton}] } }"));
+    	
+    	ItemStack wither = new ItemStack(Blocks.MOB_SPAWNER,1);
+    	wither.setTagCompound(NBTUtil.getNBTFromString("{SpawnData:{id:spider,Passengers:[{id:wither_skeleton}] } }"));
+    	
+    	ItemStack chicken = new ItemStack(Blocks.MOB_SPAWNER,1);
+    	chicken.setTagCompound(NBTUtil.getNBTFromString("{SpawnData:{id:chicken,Passengers:[{id:zombie,IsBaby:1}] } }"));
+    	
+    	ItemStack stray = new ItemStack(Blocks.MOB_SPAWNER,1);
+    	stray.setTagCompound(NBTUtil.getNBTFromString("{SpawnData:{id:spider,Passengers:[{id:stray}] } }"));
+    	
+    	ItemStack skeletrap = new ItemStack(Blocks.MOB_SPAWNER,1);
+    	skeletrap.setTagCompound(NBTUtil.getNBTFromString("{SpawnData:{id:skeleton_horse,SkeletonTrap:1}}"));
+    	
+    	ItemStack sheep = new ItemStack(Blocks.MOB_SPAWNER,1);
+    	sheep.setTagCompound(NBTUtil.getNBTFromString("{SpawnData:{id:sheep,CustomName:\"jeb_\" } }"));
+    	
+    	ItemStack toast = new ItemStack(Blocks.MOB_SPAWNER,1);
+    	toast.setTagCompound(NBTUtil.getNBTFromString("{SpawnData:{id:rabbit,CustomName:\"Toast\" } }"));
+    	
+    	ItemStack killerrabbit = new ItemStack(Blocks.MOB_SPAWNER,1);
+    	killerrabbit.setTagCompound(NBTUtil.getNBTFromString("{SpawnData:{id:rabbit,RabbitType:99} }"));
+    	
+    	ItemStack johnny = new ItemStack(Blocks.MOB_SPAWNER,1);
+    	johnny.setTagCompound(NBTUtil.getNBTFromString("{SpawnData:{id:vindication_illager,CustomName:\"Johnny\",HandItems: [{id:\"minecraft:iron_axe\", Count: 1b}] } }"));
+
+    	stacks.add(skele);
+    	stacks.add(wither);
+    	stacks.add(chicken);
+    	stacks.add(stray);
+    	stacks.add(skeletrap);
+    	stacks.add(sheep);
+    	stacks.add(toast);
+    	stacks.add(killerrabbit);
+    	stacks.add(johnny);
 	}
 }

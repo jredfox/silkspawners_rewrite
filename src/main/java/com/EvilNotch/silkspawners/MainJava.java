@@ -7,12 +7,14 @@ import com.EvilNotch.lib.minecraft.content.LangEntry;
 import com.EvilNotch.lib.minecraft.content.client.creativetab.BasicCreativeTab;
 import com.EvilNotch.lib.minecraft.events.ClientBlockPlaceEvent;
 import com.EvilNotch.lib.minecraft.registry.GeneralRegistry;
+import com.EvilNotch.silkspawners.client.CommandMTHand;
 import com.EvilNotch.silkspawners.client.proxy.ServerProxy;
 import com.EvilNotch.silkspawners.client.render.item.NEISpawnerRender;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -48,13 +50,14 @@ import zdoctor.lazymodder.client.render.itemrender.IItemRendererHandler;
 public class MainJava
 {
     public static final String MODID = "silkspawners";
-    public static final String VERSION = "1.7";
+    public static final String VERSION = "1.7.2";
 	@SidedProxy(clientSide = "com.EvilNotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.EvilNotch.silkspawners.client.proxy.ServerProxy")
 	public static ServerProxy proxy;
 	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
 	public static boolean dungeontweaks = false;
 	public static BasicCreativeTab tab_living;
 	public static BasicCreativeTab tab_nonliving;
+	public static BasicCreativeTab tab_custom;
 	public static ItemSpawner mob_spawner;
     
 	@EventHandler
@@ -71,6 +74,7 @@ public class MainJava
 	 	 
 	    tab_living = new BasicCreativeTab(new ResourceLocation("silkspawners:living"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("Living Mob Spawners","en_us"));
 	    tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("NonLiving Mob Spawners","en_us"));
+	    tab_custom = new BasicCreativeTab(new ResourceLocation("silkspawners:custom"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("Jockeys & Custom Entries","en_us"));
 	}
     @EventHandler
     public void init(FMLInitializationEvent event)
@@ -137,6 +141,8 @@ public class MainJava
     		}
     		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
     		String name = data.getString("id");
+    		nbt.setString("silkTag", name);//have the current index of the spawners resource location become the silktag not the jockeyname
+    		
     		NBTTagCompound display = new NBTTagCompound();
     		
     		String entName = null;
@@ -144,20 +150,26 @@ public class MainJava
 			Entity e2 = null;
     		if(jockey != null)
     		{
+    			name = jockey.getString("id");
     			e2 = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation(name), jockey, w);
     			entName = EntityUtil.getUnlocalizedName(e2);
-    			display.setBoolean("isJockey", true);
+    			display.setBoolean("isJockey", true);//used for dynamic translation append jockey to the end of the entity name
     		}
     		else
     		{
     			e2 = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation(name), data, w);
-    			entName = EntityUtil.getUnlocalizedName(e2);
+    			if(e2 == null)
+    			{
+    				entName = "silkspawners.blankspawner.name";
+    				nbt.setBoolean("isBlank", true);//this is checked for the render code so it's not unoptimized used litterally for nothing else
+    			}
+    			else
+    				entName = EntityUtil.getUnlocalizedName(e2);
     		}
     		
     		display.setString("EntName", entName);
     		display.setString("EntColor", EntityUtil.getColoredEntityText(e2, false));
     		nbt.setTag("display", display);
-    		nbt.setString("silkTag", name);//have the current index of the spawners resource location become the silktag not the jockeyname
     		stack.setTagCompound(nbt);
     		
         	if(dungeontweaks)
@@ -193,19 +205,16 @@ public class MainJava
     {
     	readSpawner(e.getState(),e.getWorld(),e.getPos(),e.getPlayer(),e.getHand() );
     }
-	public static void readSpawner(IBlockState state, World w,BlockPos p, EntityPlayer player,EnumHand hand) 
+	public void readSpawner(IBlockState state, World w,BlockPos p, EntityPlayer player,EnumHand hand) 
 	{
 	   if(state == null || player == null || p == null || hand == null || w == null)
 		   return;
-	   index++;
 	   Block b = state.getBlock();
 	   TileEntity tile = w.getTileEntity(p);
 	   ItemStack s = player.getHeldItem(hand);
 	   if(!(tile instanceof TileEntityMobSpawner) || s == null || s.getTagCompound() == null)
 		   return;
 	   NBTTagCompound nbt = s.getTagCompound();
-	   if(nbt.hasKey("BlockEntityTag"))
-		   return;
 	   nbt = nbt.copy();
 	   nbt.removeTag("silkTag");
 	   if(SpawnerUtil.isCustomSpawnerPos(nbt,"offsets"))

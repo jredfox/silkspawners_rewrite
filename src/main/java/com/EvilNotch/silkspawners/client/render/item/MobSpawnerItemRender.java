@@ -48,7 +48,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	
 
 	@Override
-	public boolean renderPre(RenderItem renderItem, ItemStack stack, IBakedModel model, TransformType type) {
+	public boolean renderPre(RenderItem renderItem, ItemStack stack, IBakedModel model, TransformType type) 
+	{
         ClientProxy.changeTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		return true;
 	}
@@ -65,7 +66,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
             World world = Minecraft.getMinecraft().world;
 
             NBTTagCompound nbt = itemstack.getTagCompound();
-            if(nbt == null || !nbt.hasKey("SpawnData") && !nbt.hasKey("BlockEntityTag"))
+            if(nbt == null || !nbt.hasKey("SpawnData") && !nbt.hasKey("BlockEntityTag") || nbt.getBoolean("isBlank"))
             	return;
             cacheEnts();
             NBTTagCompound data = nbt.hasKey("SpawnData") ? nbt.getCompoundTag("SpawnData") : nbt.getCompoundTag("BlockEntityTag").getCompoundTag("SpawnData");
@@ -93,6 +94,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
         }
         if(type != TransformType.GUI)
         	setLightmapDisabled(false);
+        else
+        	setLightmapDisabled(true);
 	}
 	
 	public void renderEntity(Entity entity, World world,double offset,TransformType type) {
@@ -162,7 +165,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 			PairObj<List<Entity>,Double[]> ents = entsNBT.get(data);
 			if(ents == null)
 			{
-				Entity e = EntityUtil.getEntityJockey(data, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn);
+				Entity e = EntityUtil.getEntityJockey(data, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn,false);
 				if(e == null)
 					return null;
 				ents = getEnts(e);

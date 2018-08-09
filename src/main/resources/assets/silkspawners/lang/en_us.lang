@@ -1,3 +1,6 @@
+itemGroup.silkspawners.custom=Jockeys & Custom Entries
+itemGroup.silkspawners.living=Living Mob Spawners
+itemGroup.silkspawners.nonliving=NonLiving Mob Spawners
 silkspawners.CustomName.name=CustomName
 silkspawners.Delay.name=Delay
 silkspawners.MaxNearbyEntities.name=MaxNearbyEntities
@@ -7,6 +10,5 @@ silkspawners.RequiredPlayerRange.name=RequiredPlayerRange
 silkspawners.SpawnCount.name=SpawnCount
 silkspawners.SpawnRange.name=SpawnRange
 silkspawners.jockey.name=Jockey
+silkspawners.blankspawner.name=Blank
 silkspawners.shift_advanced.name=shift advanced
-itemGroup.silkspawners.living=Living Mob Spawners
-itemGroup.silkspawners.nonliving=NonLiving Mob Spawners

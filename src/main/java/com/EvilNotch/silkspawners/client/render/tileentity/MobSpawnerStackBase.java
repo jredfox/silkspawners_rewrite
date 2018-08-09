@@ -8,9 +8,11 @@ import org.lwjgl.opengl.GL11;
 import com.EvilNotch.lib.main.Config;
 import com.EvilNotch.lib.util.primitive.BooleanObj;
 import com.EvilNotch.silkspawners.MainJava;
+import com.EvilNotch.silkspawners.client.render.item.MobSpawnerItemRender;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityPig;
@@ -48,7 +50,10 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	}
         	GL11.glPushMatrix();
         	GL11.glTranslatef((float)x + 0.5F, (float)y, (float)z + 0.5F);
+        	float posX = OpenGlHelper.lastBrightnessX;
+        	float posY = OpenGlHelper.lastBrightnessY;
         	renderSpawnerEntity(e,logic.offsets[i],logic,x,y,z,partialTicks,destroyStage,alpha);
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, posX, posY);
         	GL11.glPopMatrix();
         }
     }

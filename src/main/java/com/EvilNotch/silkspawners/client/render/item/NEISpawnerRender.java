@@ -43,7 +43,7 @@ public class NEISpawnerRender implements IItemRenderer{
 	}
 
 	/**
-	 * ported from nei 1.7.10
+	 * ported from nei 1.7.10 note the open gl reset is broken on lightmapping thus do not use this but, as a reference
 	 */
 	@Override
 	public void renderPost(RenderItem renderItem, ItemStack itemstack, IBakedModel model, TransformType type) 
