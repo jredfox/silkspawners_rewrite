@@ -37,7 +37,7 @@ public class ToolTipEvent {
 	@SubscribeEvent
 	public void sptick(ClientTickEvent e)
 	{
-		if(e.phase != Phase.END)
+		if(e.phase != Phase.START)
 			return;
 		if(time >=(20*Config.spawnerCacheItem))
 		{
@@ -89,7 +89,7 @@ public class ToolTipEvent {
 	public void devText(RenderGameOverlayEvent.Text e)
 	{
 		if(Config.isDev)
-			e.getLeft().add(ChatFormatting.DARK_PURPLE + "SilkSpanwers " + MainJava.versionType[4] + ChatFormatting.WHITE + ":" + ChatFormatting.AQUA + MainJava.VERSION);
+			e.getLeft().add(ChatFormatting.DARK_PURPLE + "SilkSpawners " + MainJava.versionType[4] + ChatFormatting.WHITE + ":" + ChatFormatting.AQUA + MainJava.VERSION);
 	}
 	/**
 	 * let other mods override this if needed

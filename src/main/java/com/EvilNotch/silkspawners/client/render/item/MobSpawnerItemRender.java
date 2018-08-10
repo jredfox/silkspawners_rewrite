@@ -5,9 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import com.EvilNotch.lib.Api.ReflectionUtil;
 import com.EvilNotch.lib.minecraft.EntityUtil;
@@ -22,22 +20,21 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import zdoctor.lazymodder.client.render.itemrender.IItemRenderer;
 
 /**
@@ -165,7 +162,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 			PairObj<List<Entity>,Double[]> ents = entsNBT.get(data);
 			if(ents == null)
 			{
-				Entity e = EntityUtil.getEntityJockey(data, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn,false);
+				Entity e = MobSpawnerBaseLogic.getEntityJockey(data, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn,false);
 				if(e == null)
 					return null;
 				ents = getEnts(e);
@@ -234,7 +231,14 @@ public class MobSpawnerItemRender implements IItemRenderer{
 			{
 				EntityLiving living = (EntityLiving)e;
 				living.isChild();
-				if(Config.renderUseInitSpawn)
+				
+				if(e instanceof EntitySlime)
+				{
+					NBTTagCompound nbt = EntityUtil.getEntityNBT(e);
+					nbt.setInteger("Size", Config.slimeSize);
+					e.readFromNBT(nbt);
+				}
+				else if(Config.renderUseInitSpawn)
 				{
 					living.onInitialSpawn(living.world.getDifficultyForLocation(new BlockPos(0,0,0)), (IEntityLivingData)null);
 				}

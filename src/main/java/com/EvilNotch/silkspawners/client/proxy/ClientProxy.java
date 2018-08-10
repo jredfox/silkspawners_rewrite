@@ -38,7 +38,10 @@ public class ClientProxy extends ServerProxy{
 	public void postinit()
 	{
 		if(Config.mobItemRender || Config.creativeTabSpawners)
-			EntityUtil.cacheEnts();
+		{
+			EntityUtil.slimeSize = Config.slimeSize;
+			EntityUtil.cacheEnts();//gets data of bad entities and what can/can't be used as well as information
+		}
 		ItemSpawner.registerCreativeTabs();
 	}
 	public static void changeTexture(ResourceLocation loc) 
