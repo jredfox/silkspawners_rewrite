@@ -168,7 +168,7 @@ public class MainJava
     		}
     		
     		display.setString("EntName", entName);
-    		display.setString("EntColor", EntityUtil.getColoredEntityText(e2, false));
+    		display.setString("EntColor", EntityUtil.getColor(e2));
     		nbt.setTag("display", display);
     		stack.setTagCompound(nbt);
     		
