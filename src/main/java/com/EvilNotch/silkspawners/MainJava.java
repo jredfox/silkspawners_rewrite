@@ -2,6 +2,7 @@ package com.EvilNotch.silkspawners;
 
 import com.EvilNotch.lib.minecraft.BlockUtil;
 import com.EvilNotch.lib.minecraft.EntityUtil;
+import com.EvilNotch.lib.minecraft.EnumChatFormatting;
 import com.EvilNotch.lib.minecraft.MinecraftUtil;
 import com.EvilNotch.lib.minecraft.content.LangEntry;
 import com.EvilNotch.lib.minecraft.content.client.creativetab.BasicCreativeTab;
@@ -18,12 +19,14 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.EnumHand;
@@ -43,6 +46,7 @@ import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import zdoctor.lazymodder.client.render.itemrender.IItemRendererHandler;
@@ -92,6 +96,11 @@ public class MainJava
     public void postinit(FMLLoadCompleteEvent event)
     {
     	proxy.onLoadComplete();
+    }
+    @EventHandler
+    public void serverClose(FMLServerStoppingEvent event)
+    {
+    	proxy.serverClose();
     }
    
 	@SubscribeEvent
@@ -151,30 +160,29 @@ public class MainJava
     		
     		NBTTagCompound display = new NBTTagCompound();
     		
-    		String entName = null;
-    		NBTTagCompound jockey = SpawnerUtil.getJockieNBT(data);
-			Entity e2 = null;
+    		NBTTagCompound jockey = getJockieNBT(data);
     		if(jockey != null)
     		{
     			name = jockey.getString("id");
-    			e2 = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation(name), jockey, w);
-    			entName = EntityUtil.getUnlocalizedName(e2);
+    			ResourceLocation loc = new ResourceLocation(name);
+    			String entName = getUnlocalizedName(loc,jockey);
     			display.setBoolean("isJockey", true);//used for dynamic translation append jockey to the end of the entity name
+    			display.setString("EntName", entName);
+    			display.setString("EntColor", getColor(loc,jockey));
     		}
     		else
     		{
-    			e2 = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation(name), data, w);
-    			if(e2 == null)
+    			ResourceLocation loc = new ResourceLocation(name);
+    			String entName = getUnlocalizedName(loc,data);
+    			if(entName == null)
     			{
     				entName = "silkspawners.blankspawner.name";
-    				nbt.setBoolean("isBlank", true);//this is checked for the render code so it's not unoptimized used litterally for nothing else
+    				nbt.setBoolean("isBlank", true);
     			}
-    			else
-    				entName = EntityUtil.getUnlocalizedName(e2);
+        		display.setString("EntName", entName);
+        		display.setString("EntColor", getColor(loc,data));
     		}
     		
-    		display.setString("EntName", entName);
-    		display.setString("EntColor", EntityUtil.getColor(e2));
     		nbt.setTag("display", display);
     		stack.setTagCompound(nbt);
     		
@@ -200,6 +208,93 @@ public class MainJava
     		e.setCanceled(true);
     	}
     }
+	/**
+	 * supports chicken jockeys as their names are the one below it
+	 * @param data
+	 * @return
+	 */
+	public NBTTagCompound getJockieNBT(NBTTagCompound data) 
+	{
+		ResourceLocation loc = new ResourceLocation(data.getString("id"));
+		if(loc.toString().equals("minecraft:chicken"))
+		{
+			NBTTagList list = data.getTagList("Passengers",10);
+			if(!list.hasNoTags())
+			{
+				for(int i=0;i<list.tagCount();i++)
+				{
+					if(list.getCompoundTagAt(i).hasKey("Passengers"))
+					{
+						return SpawnerUtil.getJockieNBT(data);
+					}
+				}
+				return data;
+			}
+		}
+		return SpawnerUtil.getJockieNBT(data);
+	}
+	public static String getColor(ResourceLocation loc, NBTTagCompound data) 
+	{
+		String str = loc.toString();
+		if(str.equals("minecraft:skeleton_horse") && data.getBoolean("SkeletonTrap"))
+		{
+			return EnumChatFormatting.DARK_RED;
+		}
+		else if(str.equals("minecraft:rabbit") && data.getInteger("RabbitType") == 99)
+		{
+			return EnumChatFormatting.RED;
+		}
+		else if(str.equals("minecraft:sheep") && data.getString("CustomName").equals("jeb_"))
+		{
+			return "rainbow";
+		}
+		else if(str.equals("minecraft:chicken"))
+		{
+			//get the color from above it
+			if(data.hasKey("Passengers"))
+			{
+				NBTTagCompound nbt = data.getTagList("Passengers", 10).getCompoundTagAt(0);
+				return getCachedInfo(new ResourceLocation(nbt.getString("id")))[2];
+			}
+		}
+		String[] parts = getCachedInfo(loc);
+		if(parts == null)
+			return null;
+		return parts[2];
+	}
+	public static String getUnlocalizedName(ResourceLocation loc,NBTTagCompound data) 
+	{
+		String str = loc.toString();
+		if(str.equals("minecraft:skeleton_horse") && data.getBoolean("SkeletonTrap"))
+		{
+			return "silkspawners.skeletontrap.name";
+		}
+		else if(str.equals("minecraft:rabbit") && data.getInteger("RabbitType") == 99)
+		{
+			return "silkspawners.killerrabbit.name";
+		}
+		else if(str.equals("minecraft:creeper") && data.getInteger("powered") == 1)
+		{
+			return "silkspawners.poweredcreeper.name";
+		}
+		String[] parts = getCachedInfo(loc);
+		if(parts == null)
+			return null;
+		return parts[0];
+	}
+	/**
+	 * null means the entity is either blacklisted or doesn't exists
+	 */
+	public static String[] getCachedInfo(ResourceLocation loc) {
+		String[] parts = EntityUtil.living.containsKey(loc) ? EntityUtil.living.get(loc) : (EntityUtil.livingbase.containsKey(loc) ? EntityUtil.livingbase.get(loc) : EntityUtil.nonliving.get(loc) );
+		return parts;
+	}
+	public static ResourceLocation getResourceLocation(NBTTagCompound tag, String key) {
+		if(tag == null)
+			return null;
+		return new ResourceLocation(tag.getString(key));
+	}
+	
 	public static int index = 0;
 	@SubscribeEvent
     public void read(ClientBlockPlaceEvent e)

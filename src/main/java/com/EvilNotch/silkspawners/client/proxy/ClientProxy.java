@@ -51,6 +51,11 @@ public class ClientProxy extends ServerProxy{
 		}
 		ItemSpawner.registerCreativeTabs();
 	}
+	@Override
+	public void serverClose() {
+		ToolTipEvent.rainbows.clear();
+	}
+	
 	public static void changeTexture(ResourceLocation loc) 
 	{
 		 Minecraft.getMinecraft().renderEngine.bindTexture(loc);

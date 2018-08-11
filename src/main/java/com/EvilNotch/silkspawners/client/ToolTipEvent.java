@@ -1,17 +1,17 @@
 package com.EvilNotch.silkspawners.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.logging.log4j.util.Strings;
 import org.lwjgl.input.Keyboard;
 
 import com.EvilNotch.lib.minecraft.EnumChatFormatting;
 import com.EvilNotch.lib.minecraft.events.DynamicTranslationEvent;
-import com.EvilNotch.lib.util.Line.LineBase;
 import com.EvilNotch.lib.util.simple.PairObj;
 import com.EvilNotch.silkspawners.Config;
-import com.EvilNotch.silkspawners.ItemSpawner;
 import com.EvilNotch.silkspawners.MainJava;
 import com.EvilNotch.silkspawners.SpawnerUtil;
 import com.EvilNotch.silkspawners.client.render.item.MobSpawnerItemRender;
@@ -114,11 +114,56 @@ public class ToolTipEvent {
 			name += " " + block;
 		if(Config.coloredSpawners)
 		{
-			name = display.getString("EntColor") + name + EnumChatFormatting.RESET;
+			String color = display.getString("EntColor");
+			if(color.equals("rainbow"))
+			{
+				name = toRainbow(name,pattern);
+			}
+			else
+				name = color + name + EnumChatFormatting.RESET;
 		}
 		e.translation = name;
 	}
+	public static HashMap<String,String> rainbows = new HashMap();
+	char[] pattern = "4c6ea2b915d".toCharArray();
+	public String toRainbow(String input, char[] pattern)
+	{
+	  if(rainbows.containsKey(input))
+		  return rainbows.get(input);
+	  char flag = "\u00A7".toCharArray()[0];
+	  char[] chars = input.toCharArray();
+	  StringBuilder colorBuilder = new StringBuilder();
+	  int start = 0;
+	  if (chars[0] == flag)
+	  {
+	    Character c = Character.valueOf(chars[1]);
+	    if (c.toString().matches("[0-9a-fk-o]")) {
+	      start = 2;
+	    }
+	  }
+	  int patternPos = 0;
+	  for (int i = start; i < chars.length; i++)
+	  {
+	    colorBuilder.append(flag).append(pattern[(patternPos % pattern.length)]);
+	    if (start != 0) {
+	      colorBuilder.append(flag).append(chars[1]);
+	    }
+	    colorBuilder.append(chars[i]);
+	    if (!Character.isWhitespace(chars[i])) {
+	      patternPos++;
+	    }
+	  }
+	  String resault = colorBuilder.toString() + EnumChatFormatting.RESET;
+	  rainbows.put(input, resault);
+	  return resault;
+	}
 	
+	private static String getRandomColor() {
+		String[] colors = {EnumChatFormatting.RED, EnumChatFormatting.YELLOW, EnumChatFormatting.BLUE, EnumChatFormatting.DARK_PURPLE, EnumChatFormatting.GREEN, EnumChatFormatting.BLACK, EnumChatFormatting.GRAY, EnumChatFormatting.AQUA, EnumChatFormatting.DARK_BLUE, EnumChatFormatting.DARK_GREEN, EnumChatFormatting.DARK_AQUA, EnumChatFormatting.DARK_GRAY, EnumChatFormatting.DARK_RED, EnumChatFormatting.GOLD, EnumChatFormatting.LIGHT_PURPLE, EnumChatFormatting.WHITE };
+	    Random r = new Random();
+	    return colors[r.nextInt(colors.length)];
+	}
+
 	@SubscribeEvent
 	public void spawnerToolTip(ItemTooltipEvent e)
 	{

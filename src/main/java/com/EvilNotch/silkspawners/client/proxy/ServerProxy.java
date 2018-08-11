@@ -12,4 +12,6 @@ public class ServerProxy {
 		// TODO Auto-generated method stub
 		
 	}
+	public void serverClose() {
+	}
 }
