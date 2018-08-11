@@ -1,5 +1,9 @@
 package com.EvilNotch.silkspawners.client.proxy;
 
+import java.util.Map;
+
+import com.EvilNotch.lib.Api.FieldAcess;
+import com.EvilNotch.lib.Api.ReflectionUtil;
 import com.EvilNotch.lib.minecraft.EntityUtil;
 import com.EvilNotch.silkspawners.Config;
 import com.EvilNotch.silkspawners.ItemSpawner;
@@ -10,6 +14,9 @@ import com.EvilNotch.silkspawners.client.render.item.MobSpawnerItemRender;
 import com.EvilNotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
