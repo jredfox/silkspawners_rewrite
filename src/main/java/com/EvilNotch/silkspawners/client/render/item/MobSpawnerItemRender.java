@@ -89,6 +89,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
             System.out.println("exception drawing:" + loc + " removing from hashmap for render");
             ents.remove(loc);
         }
+
         if(type != TransformType.GUI)
         	setLightmapDisabled(false);
         else
@@ -122,6 +123,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
         GlStateManager.disableBlend();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
         setLightmapDisabled(true);
+        GlStateManager.depthMask(true);
+        GlStateManager.enableRescaleNormal();
         
         GL11.glPopMatrix();
         

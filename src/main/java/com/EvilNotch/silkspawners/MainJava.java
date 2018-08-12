@@ -174,13 +174,14 @@ public class MainJava
     		{
     			ResourceLocation loc = new ResourceLocation(name);
     			String entName = getUnlocalizedName(loc,data);
+    			String color = getColor(loc,data);
     			if(entName == null)
     			{
     				entName = "silkspawners.blankspawner.name";
     				nbt.setBoolean("isBlank", true);
     			}
         		display.setString("EntName", entName);
-        		display.setString("EntColor", getColor(loc,data));
+        		display.setString("EntColor", color);
     		}
     		
     		nbt.setTag("display", display);
@@ -259,7 +260,7 @@ public class MainJava
 		}
 		String[] parts = getCachedInfo(loc);
 		if(parts == null)
-			return null;
+			return EnumChatFormatting.WHITE;
 		return parts[2];
 	}
 	public static String getUnlocalizedName(ResourceLocation loc,NBTTagCompound data) 

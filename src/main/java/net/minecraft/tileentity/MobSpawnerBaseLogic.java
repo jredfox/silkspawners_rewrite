@@ -341,13 +341,14 @@ public abstract class MobSpawnerBaseLogic
     }
     
 	/**
-	 * Doesn't force nbt if you don't need it to unlike vanilla this is the forum of the /summon command
-	 * silkspawners eggs will support multiple indexes but, not to this extent not requring recursion use only when fully supporting new format
+	 * Doesn't force nbt on anything unlike vanilla's methods.
+	 * Supports silkspawners rendering for skeleton traps
 	 */
 	public static Entity getEntityJockey(NBTTagCompound compound,World worldIn, double x, double y, double z,boolean useInterface,boolean attemptSpawn) 
 	{	
-		
         Entity entity = getEntity(compound,worldIn,new BlockPos(x,y,z),useInterface);
+        if(entity == null)
+        	return null;
         Entity toMount = entity;
 		if(new ResourceLocation(compound.getString("id")).toString().equals("minecraft:skeleton_horse"))
 		{
@@ -358,8 +359,6 @@ public abstract class MobSpawnerBaseLogic
 				return entity;
 			}
 		}
-        if(entity == null)
-        	return null;
         
         if(attemptSpawn)
         {
@@ -396,6 +395,8 @@ public abstract class MobSpawnerBaseLogic
 		}
 		else{
 			e = EntityUtil.createEntityByNameQuietly(new ResourceLocation(nbt.getString("id")),world);
+			if(e == null)
+				return null;
 			if(e instanceof EntityLiving && useInterface)
 			{
 				((EntityLiving) e).onInitialSpawn(world.getDifficultyForLocation(pos), (IEntityLivingData)null);
