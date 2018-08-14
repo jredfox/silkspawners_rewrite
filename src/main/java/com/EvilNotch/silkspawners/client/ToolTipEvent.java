@@ -39,6 +39,7 @@ public class ToolTipEvent {
 	{
 		if(e.phase != Phase.START)
 			return;
+		/*
 		if(time >=(20*Config.spawnerCacheItem))
 		{
 			System.out.println("client data size:" + MobSpawnerItemRender.entsNBT.size());
@@ -60,7 +61,7 @@ public class ToolTipEvent {
 		for(Entity ent : MobSpawnerItemRender.ents.values())
 		{
 			ent.ticksExisted++;
-		}
+		}*/
 	}
     public static int renderTime;
     public static float renderFrame;

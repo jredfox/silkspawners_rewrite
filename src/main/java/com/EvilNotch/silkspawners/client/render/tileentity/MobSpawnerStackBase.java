@@ -52,10 +52,12 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	GL11.glTranslatef((float)x + 0.5F, (float)y, (float)z + 0.5F);
         	float posX = OpenGlHelper.lastBrightnessX;
         	float posY = OpenGlHelper.lastBrightnessY;
-        	MobSpawnerItemRender.setLightmapDisabled(false);
+//        	MobSpawnerItemRender.setLightmapDisabled(false);
         	renderSpawnerEntity(e,logic.offsets[i],logic,x,y,z,partialTicks,destroyStage,alpha);
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, posX, posY);
+            GlStateManager.depthMask(true);
         	GL11.glPopMatrix();
+        	GlStateManager.enableRescaleNormal();
         }
     }
 

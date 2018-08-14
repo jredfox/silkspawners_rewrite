@@ -43,11 +43,13 @@ import zdoctor.lazymodder.client.render.itemrender.IItemRenderer;
  */
 public class MobSpawnerItemRender implements IItemRenderer{
 	
+	public static float lastBrightnessX = 0.0F;
+	public static float lastBrightnessY = 0.0F;
 
 	@Override
 	public boolean renderPre(RenderItem renderItem, ItemStack stack, IBakedModel model, TransformType type) 
 	{
-        ClientProxy.changeTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        prepare(type);
 		return true;
 	}
 
@@ -57,6 +59,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	@Override
 	public void renderPost(RenderItem renderItem, ItemStack itemstack, IBakedModel model, TransformType type) 
 	{
+		Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 		ResourceLocation loc = null;
         try
         {
@@ -89,11 +92,16 @@ public class MobSpawnerItemRender implements IItemRenderer{
             System.out.println("exception drawing:" + loc + " removing from hashmap for render");
             ents.remove(loc);
         }
-
-        if(type != TransformType.GUI)
-        	setLightmapDisabled(false);
+        if(type == TransformType.GUI)
+        {
+        	Minecraft.getMinecraft().entityRenderer.disableLightmap();
+        	GlStateManager.disableLighting();
+        }
         else
-        	setLightmapDisabled(true);
+        {
+        	 Minecraft.getMinecraft().entityRenderer.enableLightmap();
+        	 GlStateManager.enableLighting();
+        }
 	}
 	
 	public void renderEntity(Entity entity, World world,double offset,TransformType type) {
@@ -119,20 +127,54 @@ public class MobSpawnerItemRender implements IItemRenderer{
         
         Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, 0,false);
         
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.disableBlend();
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
-        setLightmapDisabled(true);
-        GlStateManager.depthMask(true);
-        GlStateManager.enableRescaleNormal();
-        
         GL11.glPopMatrix();
         
-
+        resetOpenGL(type);
         /*GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);*/
+	}
+	/**
+	 * call this after rendering some entities
+	 */
+	public void resetOpenGL(TransformType type) 
+	{
+        if(type == TransformType.THIRD_PERSON_LEFT_HAND || type == TransformType.THIRD_PERSON_RIGHT_HAND)
+        {
+        	GlStateManager.disableCull();
+        }
+        GlStateManager.depthMask(true);
+        GlStateManager.enableBlend();
+        GlStateManager.enableAlpha();
+        GlStateManager.blendFunc(org.lwjgl.opengl.GL11.GL_SRC_ALPHA, org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.enableRescaleNormal();
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastBrightnessX, lastBrightnessY);
+        
+        ClientProxy.changeTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
+	}
+
+	public static void prepare(TransformType type){
+        ClientProxy.changeTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        GlStateManager.blendFunc(org.lwjgl.opengl.GL11.GL_SRC_ALPHA, org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GlStateManager.enableBlend();
+
+        if (net.minecraft.client.Minecraft.isAmbientOcclusionEnabled())
+        {
+            GlStateManager.shadeModel(org.lwjgl.opengl.GL11.GL_SMOOTH);
+        }
+        else
+        {
+            GlStateManager.shadeModel(org.lwjgl.opengl.GL11.GL_FLAT);
+        }
+        
+        if(type != TransformType.GUI)
+        {
+        	lastBrightnessX = OpenGlHelper.lastBrightnessX;
+        	lastBrightnessY = OpenGlHelper.lastBrightnessY;
+        }
+        GlStateManager.enableAlpha();
 	}
     public static void setLightmapDisabled(boolean disabled)
     {

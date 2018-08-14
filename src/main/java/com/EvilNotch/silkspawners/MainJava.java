@@ -8,9 +8,10 @@ import com.EvilNotch.lib.minecraft.content.LangEntry;
 import com.EvilNotch.lib.minecraft.content.client.creativetab.BasicCreativeTab;
 import com.EvilNotch.lib.minecraft.events.ClientBlockPlaceEvent;
 import com.EvilNotch.lib.minecraft.registry.GeneralRegistry;
-import com.EvilNotch.silkspawners.client.CommandMTHand;
 import com.EvilNotch.silkspawners.client.proxy.ServerProxy;
 import com.EvilNotch.silkspawners.client.render.item.NEISpawnerRender;
+import com.EvilNotch.silkspawners.commands.CommandMTHand;
+import com.EvilNotch.silkspawners.commands.CommandSpawner;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
@@ -73,6 +74,7 @@ public class MainJava
 	    GeneralRegistry.registerGameRule("MultiSpawnerCurrentIndex", false);
 	    GeneralRegistry.registerGameRule("SpawnerSaveDelay", false);
 	    GeneralRegistry.registerCommand(new CommandMTHand());
+	    GeneralRegistry.registerCommand(new CommandSpawner());
 	    mob_spawner = new ItemSpawner();
 	 	ForgeRegistries.ITEMS.register(mob_spawner);
 	 	dungeontweaks = Loader.isModLoaded("dungeontweaks");
