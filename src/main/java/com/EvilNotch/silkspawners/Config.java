@@ -25,7 +25,6 @@ public class Config {
 	public static boolean nonLivingTab = false;
 	public static boolean animationSpawner = true;
 	public static boolean animationItem = true;
-	public static boolean animationItemData = true;
 	public static boolean mobItemRender = true;
 	
 	public static boolean tooltip_spawncount = true;
@@ -55,7 +54,6 @@ public class Config {
 		nonLivingTab = config.get("render", "nonLivingEntsInTab", nonLivingTab).getBoolean();
 		animationSpawner = config.get("render", "animationSpawnerBlock", animationSpawner).getBoolean();
 		animationItem = config.get("render", "animationSpawnerItem", animationItem).getBoolean();
-		animationItemData = config.get("render", "animationSpawnerItemData", animationItemData).getBoolean();
 		mobItemRender = config.get("render", "mobItemRender", mobItemRender).getBoolean();
 		if(!LineBase.toWhiteSpaced(spawnerBlockName).equals(""))
 			hasCustomName = true;

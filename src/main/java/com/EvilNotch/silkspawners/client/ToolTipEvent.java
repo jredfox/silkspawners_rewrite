@@ -37,9 +37,9 @@ public class ToolTipEvent {
 	@SubscribeEvent
 	public void sptick(ClientTickEvent e)
 	{
-		if(e.phase != Phase.START)
+		if(e.phase != Phase.END)
 			return;
-		/*
+		
 		if(time >=(20*Config.spawnerCacheItem))
 		{
 			System.out.println("client data size:" + MobSpawnerItemRender.entsNBT.size());
@@ -48,20 +48,20 @@ public class ToolTipEvent {
 		}
 		time++;
 		
-		if(Config.animationItemData)
-		for(PairObj<List<Entity>,Double[]> pair : MobSpawnerItemRender.entsNBT.values())
+		if(Config.animationItem)
 		{
-			for(Entity ent : pair.obj1)
+			for(Entity ent : MobSpawnerItemRender.ents.values())
 			{
 				ent.ticksExisted++;
 			}
+			for(PairObj<List<Entity>,Double[]> pair : MobSpawnerItemRender.entsNBT.values())
+			{
+				for(Entity ent : pair.obj1)
+				{
+					ent.ticksExisted++;
+				}
+			}
 		}
-			
-		if(Config.animationItem)
-		for(Entity ent : MobSpawnerItemRender.ents.values())
-		{
-			ent.ticksExisted++;
-		}*/
 	}
     public static int renderTime;
     public static float renderFrame;
