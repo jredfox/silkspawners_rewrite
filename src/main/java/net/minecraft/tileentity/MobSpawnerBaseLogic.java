@@ -57,7 +57,7 @@ public abstract class MobSpawnerBaseLogic
     public boolean updated = false;
 
     @Nullable
-    private ResourceLocation getEntityId()
+    public ResourceLocation getEntityId()
     {
         String s = this.spawnData.getNbt().getString("id");
         return StringUtils.isNullOrEmpty(s) ? null : new ResourceLocation(s);
@@ -349,6 +349,7 @@ public abstract class MobSpawnerBaseLogic
         Entity entity = getEntity(compound,worldIn,new BlockPos(x,y,z),useInterface);
         if(entity == null)
         	return null;
+		
         Entity toMount = entity;
 		if(new ResourceLocation(compound.getString("id")).toString().equals("minecraft:skeleton_horse"))
 		{
