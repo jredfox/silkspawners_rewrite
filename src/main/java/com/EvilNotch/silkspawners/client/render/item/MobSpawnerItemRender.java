@@ -286,6 +286,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 				catch(Throwable t)
 				{
 					System.out.println("error cacheing entity to find out if it's a child:" + loc);
+					continue;
 				}
 			}
 			if(e == null)
