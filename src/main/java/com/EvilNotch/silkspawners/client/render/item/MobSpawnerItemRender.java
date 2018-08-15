@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.EvilNotch.lib.Api.ReflectionUtil;
 import com.EvilNotch.lib.minecraft.EntityUtil;
+import com.EvilNotch.lib.minecraft.NBTUtil;
 import com.EvilNotch.lib.util.JavaUtil;
 import com.EvilNotch.lib.util.simple.PairObj;
 import com.EvilNotch.silkspawners.Config;
@@ -272,22 +273,25 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	{
 		for(ResourceLocation loc : map.keySet())
 		{
-			Entity e = EntityUtil.createEntityByNameQuietly(loc, Minecraft.getMinecraft().world,true);
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setString("id", loc.toString());
+			Entity e = MobSpawnerBaseLogic.getEntityJockey(nbt, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn, false);
 			if(e instanceof EntityLiving)
 			{
 				EntityLiving living = (EntityLiving)e;
-				living.isChild();
-				
-				if(e instanceof EntitySlime)
+				try
 				{
-					NBTTagCompound nbt = EntityUtil.getEntityNBT(e);
-					nbt.setInteger("Size", Config.slimeSize);
-					e.readFromNBT(nbt);
+					living.isChild();
 				}
-				else if(Config.renderUseInitSpawn)
+				catch(Throwable t)
 				{
-					living.onInitialSpawn(living.world.getDifficultyForLocation(new BlockPos(0,0,0)), (IEntityLivingData)null);
+					System.out.println("error cacheing entity to find out if it's a child:" + loc);
 				}
+			}
+			if(e == null)
+			{
+				System.out.println("error caching entity to silkspawners render:" + loc);
+				continue;
 			}
 			ents.put(loc,e);
 		}
