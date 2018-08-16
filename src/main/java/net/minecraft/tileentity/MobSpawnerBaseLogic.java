@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -57,7 +58,7 @@ public abstract class MobSpawnerBaseLogic
     public boolean updated = false;
 
     @Nullable
-    private ResourceLocation getEntityId()
+    public ResourceLocation getEntityId()
     {
         String s = this.spawnData.getNbt().getString("id");
         return StringUtils.isNullOrEmpty(s) ? null : new ResourceLocation(s);
@@ -98,6 +99,8 @@ public abstract class MobSpawnerBaseLogic
             	{
             		for(Entity e : this.cachedEntities)
             		{
+            			if(e instanceof EntityShulker)
+            				continue;
             			e.ticksExisted++;
             		}
             	}
@@ -349,6 +352,7 @@ public abstract class MobSpawnerBaseLogic
         Entity entity = getEntity(compound,worldIn,new BlockPos(x,y,z),useInterface);
         if(entity == null)
         	return null;
+		
         Entity toMount = entity;
 		if(new ResourceLocation(compound.getString("id")).toString().equals("minecraft:skeleton_horse"))
 		{
@@ -390,30 +394,45 @@ public abstract class MobSpawnerBaseLogic
 		Entity e = null;
 		if(getEntityProps(nbt).getSize() > 0)
 		{
-			//for rendering
-			e = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation(nbt.getString("id")), nbt, world);
+			e = createEntityFromNBTRender(nbt,pos,world);
 		}
-		else{
+		else
+		{
 			e = EntityUtil.createEntityByNameQuietly(new ResourceLocation(nbt.getString("id")),world);
 			if(e == null)
 				return null;
-			if(e instanceof EntityLiving && useInterface)
-			{
-				((EntityLiving) e).onInitialSpawn(world.getDifficultyForLocation(pos), (IEntityLivingData)null);
-			}
+			e.setLocationAndAngles(0, 0, 0,0.0F, 0.0F);
 			NBTTagCompound tag = EntityUtil.getEntityNBT(e);
-			tag.removeTag("Pos");
-			tag.removeTag("Motion");
-			tag.removeTag("Rotation");
 			
 			if(!useInterface && e instanceof EntitySlime)
 			{
 				tag.setInteger("Size", Config.slimeSize);
 			}
 			e.readFromNBT(tag);
+			if(e instanceof EntityLiving && useInterface || e instanceof EntityShulker)
+			{
+				((EntityLiving) e).onInitialSpawn(world.getDifficultyForLocation(pos), (IEntityLivingData)null);
+			}
 		}
 		return e;
 	}
+	/**
+	 * create an entity from nbt with full rendering capabilities
+	 */
+	public static Entity createEntityFromNBTRender(NBTTagCompound nbt,BlockPos pos, World world) {
+		Entity e = EntityUtil.createEntityByNameQuietly(new ResourceLocation(nbt.getString("id")),world);
+		if(e == null)
+			return null;
+		e.setLocationAndAngles(0,0,0,0.0F,0.0F);
+		e.readFromNBT(nbt);
+		//hard coded dynamic fix for a shitty thing now it doesn't change it's type only it's render stuffs
+		if(e instanceof EntityShulker)
+		{
+			((EntityLiving) e).onInitialSpawn(world.getDifficultyForLocation(pos), (IEntityLivingData)null);
+		}
+		return e;
+	}
+
 	private static NBTTagCompound getEntityProps(NBTTagCompound nbt) {
 		if(nbt == null)
 			return null;

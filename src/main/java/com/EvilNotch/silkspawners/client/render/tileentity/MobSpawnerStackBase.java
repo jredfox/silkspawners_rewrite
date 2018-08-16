@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import com.EvilNotch.lib.main.Config;
 import com.EvilNotch.lib.util.primitive.BooleanObj;
+import com.EvilNotch.silkspawners.Config;
 import com.EvilNotch.silkspawners.MainJava;
 import com.EvilNotch.silkspawners.client.render.item.MobSpawnerItemRender;
 
@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
@@ -45,7 +46,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	}
         	else if(e instanceof EntityPig)
         	{
-        		if(Config.debug)
+        		if(Config.isDev)
         			System.out.println("why you here you pig:" + MainJava.index);
         	}
         	GL11.glPushMatrix();
@@ -56,8 +57,8 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	renderSpawnerEntity(e,logic.offsets[i],logic,x,y,z,partialTicks,destroyStage,alpha);
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, posX, posY);
             GlStateManager.depthMask(true);
-        	GL11.glPopMatrix();
         	GlStateManager.enableRescaleNormal();
+        	GL11.glPopMatrix();
         }
     }
 
@@ -73,6 +74,9 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
             GL11.glTranslatef(0.0F, -0.4F, 0.0F);
             GL11.glScalef(f1, f1, f1);
             entity.setLocationAndAngles(x, y, z, 0.0F, 0.0F);
+            if(entity instanceof EntityBlaze && !Config.animationSpawner || Config.noPartialTickBlock && !Config.animationSpawner)
+            	partialTicks = 0;
+            
             Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, false);
         }
 	}

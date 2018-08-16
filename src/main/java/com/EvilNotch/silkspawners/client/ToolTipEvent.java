@@ -20,6 +20,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.translation.I18n;
@@ -52,12 +53,16 @@ public class ToolTipEvent {
 		{
 			for(Entity ent : MobSpawnerItemRender.ents.values())
 			{
+    			if(ent instanceof EntityShulker)
+    				continue;
 				ent.ticksExisted++;
 			}
 			for(PairObj<List<Entity>,Double[]> pair : MobSpawnerItemRender.entsNBT.values())
 			{
 				for(Entity ent : pair.obj1)
 				{
+        			if(ent instanceof EntityShulker)
+        				continue;
 					ent.ticksExisted++;
 				}
 			}
