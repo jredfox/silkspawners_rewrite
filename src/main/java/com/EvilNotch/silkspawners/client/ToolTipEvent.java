@@ -121,7 +121,9 @@ public class ToolTipEvent {
 		if(Config.coloredSpawners)
 		{
 			String color = display.getString("EntColor");
-			if(color.equals("rainbow"))
+			if(color.startsWith("type_"))
+				name = Config.configToColor.get(color) + name + EnumChatFormatting.RESET;
+			else if(color.equals("rainbow"))
 			{
 				name = toRainbow(name,pattern);
 			}

@@ -56,6 +56,7 @@ public abstract class MobSpawnerBaseLogic
     @SideOnly(Side.CLIENT)
 	public double[] offsets;
     public boolean updated = false;
+	public boolean active = false;
 
     @Nullable
     public ResourceLocation getEntityId()
@@ -87,9 +88,11 @@ public abstract class MobSpawnerBaseLogic
         if (!this.isActivated())
         {
             this.prevMobRotation = this.mobRotation;
+            active = false;
         }
         else
         {
+        	active = true;
             BlockPos blockpos = this.getSpawnerPosition();
 
             if (this.getSpawnerWorld().isRemote)

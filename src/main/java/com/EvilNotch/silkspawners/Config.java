@@ -1,11 +1,19 @@
 package com.EvilNotch.silkspawners;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
+import com.EvilNotch.lib.minecraft.EntityUtil;
+import com.EvilNotch.lib.minecraft.EnumChatFormatting;
+import com.EvilNotch.lib.minecraft.content.entity.EntityDefintions.EntityType;
 import com.EvilNotch.lib.util.Line.LineBase;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntityBlaze;
+import net.minecraft.entity.monster.EntityGolem;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.passive.EntityBat;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -38,6 +46,25 @@ public class Config {
 	public static boolean tooltip_CustomNames;
 	public static boolean tooltip_CustomPos;
 	
+	/**
+	 * gets the array list of types then returns them in an order which makes since
+	 */
+	public static HashMap<String,String> colorToConfig = new HashMap();
+	public static HashMap<String,String> configToColor = new HashMap();
+	public static String text_boss = EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD;
+	public static String text_tameable = EnumChatFormatting.DARK_BLUE;
+	public static String text_ender = EnumChatFormatting.DARK_PURPLE;
+	public static String text_areaeffectcloud = EnumChatFormatting.DARK_AQUA;
+	public static String text_flying = EnumChatFormatting.YELLOW;
+	public static String text_ambient = EnumChatFormatting.DARK_GRAY;
+	public static String text_ranged = EnumChatFormatting.DARK_RED;
+	public static String text_fire = EnumChatFormatting.GOLD;
+	public static String text_water = EnumChatFormatting.AQUA;
+	public static String text_monster = EnumChatFormatting.RED;
+	public static String text_npc = EnumChatFormatting.GREEN;
+	public static String text_creature = EnumChatFormatting.LIGHT_PURPLE;
+	public static String text_default = EnumChatFormatting.WHITE;
+	
 	public static void loadConfig(FMLPreInitializationEvent event)
 	{
 		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(),"silkspawners.cfg") );
@@ -69,7 +96,49 @@ public class Config {
 		tooltip_RequiredPlayerRange = config.get("tooltip", "requiredPlayerRange", true).getBoolean();
 		tooltip_CustomNames = config.get("tooltip", "nameTag", true).getBoolean(true);
 		tooltip_CustomPos = config.get("tooltip", "CustomPos", true).getBoolean();
+		
+		text_boss = config.get("text", "type_boss", text_boss).getString();
+		text_tameable = config.get("text", "type_tameable", text_tameable).getString();
+		text_ender = config.get("text", "type_ender", text_ender).getString();
+		text_areaeffectcloud = config.get("text", "type_areaeffectcloud", text_areaeffectcloud).getString();
+		text_flying =  config.get("text", "type_flying", text_flying).getString();
+		text_ambient =  config.get("text", "type_ambient", text_ambient).getString();
+		text_ranged =  config.get("text", "type_ranged", text_ranged).getString();
+		text_fire =  config.get("text", "type_fire", text_fire).getString();
+		text_water =  config.get("text", "type_water", text_water).getString();
+		text_monster = config.get("text", "type_monster", text_monster).getString();
+		text_npc =  config.get("text", "type_npc", text_npc).getString();
+		text_creature = config.get("text", "type_creature", text_creature).getString();
+		text_default =  config.get("text", "type_default", text_default).getString();
+		
+		colorToConfig.put(EnumChatFormatting.DARK_PURPLE + EnumChatFormatting.BOLD, "type_boss");
+		colorToConfig.put(EnumChatFormatting.DARK_BLUE, "type_tameable");
+		colorToConfig.put(EnumChatFormatting.DARK_PURPLE, "type_ender");
+		colorToConfig.put(EnumChatFormatting.DARK_AQUA, "type_areaeffectcloud");
+		colorToConfig.put(EnumChatFormatting.YELLOW, "type_flying");
+		colorToConfig.put(EnumChatFormatting.DARK_GRAY, "type_ambient");
+		colorToConfig.put(EnumChatFormatting.DARK_RED, "type_ranged");
+		colorToConfig.put(EnumChatFormatting.GOLD, "type_fire");
+		colorToConfig.put(EnumChatFormatting.AQUA, "type_water");
+		colorToConfig.put(EnumChatFormatting.RED, "type_monster");
+		colorToConfig.put(EnumChatFormatting.GREEN, "type_npc");
+		colorToConfig.put(EnumChatFormatting.LIGHT_PURPLE, "type_creature");
+		colorToConfig.put(EnumChatFormatting.WHITE, "type_default");
+		
+		configToColor.put("type_boss", Config.text_boss);
+		configToColor.put("type_tameable", Config.text_tameable);
+		configToColor.put("type_ender", Config.text_ender);
+		configToColor.put("type_areaeffectcloud", Config.text_areaeffectcloud);
+		configToColor.put("type_flying", Config.text_flying);
+		configToColor.put("type_ambient", Config.text_ambient);
+		configToColor.put("type_ranged", Config.text_ranged);
+		configToColor.put("type_fire", Config.text_fire);
+		configToColor.put("type_water", Config.text_water);
+		configToColor.put("type_monster", Config.text_monster);
+		configToColor.put("type_npc", Config.text_npc);
+		configToColor.put("type_creature", Config.text_creature);
+		configToColor.put("type_default", Config.text_default);
+		
 		config.save();
 	}
-
 }

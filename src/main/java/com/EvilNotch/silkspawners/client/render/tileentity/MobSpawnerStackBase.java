@@ -74,8 +74,10 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
             GL11.glTranslatef(0.0F, -0.4F, 0.0F);
             GL11.glScalef(f1, f1, f1);
             entity.setLocationAndAngles(x, y, z, 0.0F, 0.0F);
-            if(entity instanceof EntityBlaze && !Config.animationSpawner || Config.noPartialTickBlock && !Config.animationSpawner)
+            if(!mobSpawnerLogic.active && mobSpawnerLogic.updated|| entity instanceof EntityBlaze && !Config.animationSpawner || Config.noPartialTickBlock && !Config.animationSpawner)
+            {
             	partialTicks = 0;
+            }
             
             Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, false);
         }

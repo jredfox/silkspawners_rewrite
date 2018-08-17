@@ -241,11 +241,11 @@ public class MainJava
 		String str = loc.toString();
 		if(str.equals("minecraft:skeleton_horse") && data.getBoolean("SkeletonTrap"))
 		{
-			return EnumChatFormatting.DARK_RED;
+			return Config.colorToConfig.get(EnumChatFormatting.DARK_RED);
 		}
 		else if(str.equals("minecraft:rabbit") && data.getInteger("RabbitType") == 99)
 		{
-			return EnumChatFormatting.RED;
+			return Config.colorToConfig.get(EnumChatFormatting.RED);
 		}
 		else if(str.equals("minecraft:sheep") && data.getString("CustomName").equals("jeb_"))
 		{
@@ -257,13 +257,13 @@ public class MainJava
 			if(data.hasKey("Passengers"))
 			{
 				NBTTagCompound nbt = data.getTagList("Passengers", 10).getCompoundTagAt(0);
-				return getCachedInfo(new ResourceLocation(nbt.getString("id")))[2];
+				return Config.colorToConfig.get(getCachedInfo(new ResourceLocation(nbt.getString("id")))[2]);
 			}
 		}
 		String[] parts = getCachedInfo(loc);
 		if(parts == null)
-			return EnumChatFormatting.WHITE;
-		return parts[2];
+			return Config.text_default;
+		return Config.colorToConfig.get(parts[2]);
 	}
 	public static String getUnlocalizedName(ResourceLocation loc,NBTTagCompound data) 
 	{

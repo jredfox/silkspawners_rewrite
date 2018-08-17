@@ -13,6 +13,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.client.IClientCommand;
@@ -34,16 +35,10 @@ public class CommandMTHand extends CommandBase implements IClientCommand{
 	{
 		EntityPlayer player = (EntityPlayer) sender;
 		ItemStack stack = player.getHeldItem(EnumHand.MAIN_HAND);
-		EntityUtil.sendClipBoard("", "",player, "",stack.getItem().getRegistryName().toString());
-		writeToClipboard(("" + stack.getTagCompound()),null);
-	}
-	public static void writeToClipboard(String s, ClipboardOwner owner) 
-	{
-		if(s == null)
-			s = "null";
-	    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-	    Transferable transferable = new StringSelection(s);
-	    clipboard.setContents(transferable, owner);
+		NBTTagCompound nbt = stack.getTagCompound();
+		EntityUtil.sendClipBoard("", "",player, "",stack.getItem().getRegistryName().toString(),false);
+		if(nbt != null)
+			EntityUtil.sendToClientClipBoard(player, stack.getTagCompound().toString());
 	}
 
 	@Override
