@@ -1,10 +1,12 @@
 package net.minecraft.tileentity;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.EvilNotch.lib.Api.FieldAcess;
 import com.EvilNotch.lib.minecraft.EntityUtil;
 import com.EvilNotch.lib.minecraft.NBTUtil;
 import com.EvilNotch.lib.util.JavaUtil;
@@ -407,11 +409,8 @@ public abstract class MobSpawnerBaseLogic
 			e.setLocationAndAngles(0, 0, 0,0.0F, 0.0F);
 			NBTTagCompound tag = EntityUtil.getEntityNBT(e);
 			
-			if(!useInterface && e instanceof EntitySlime)
-			{
-				tag.setInteger("Size", Config.slimeSize);
-			}
 			e.readFromNBT(tag);
+			
 			if(e instanceof EntityLiving && useInterface || e instanceof EntityShulker)
 			{
 				((EntityLiving) e).onInitialSpawn(world.getDifficultyForLocation(pos), (IEntityLivingData)null);

@@ -1,5 +1,6 @@
 package com.EvilNotch.silkspawners.client.render.item;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -7,6 +8,7 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import com.EvilNotch.lib.Api.FieldAcess;
 import com.EvilNotch.lib.Api.ReflectionUtil;
 import com.EvilNotch.lib.minecraft.EntityUtil;
 import com.EvilNotch.lib.minecraft.NBTUtil;
@@ -287,6 +289,17 @@ public class MobSpawnerItemRender implements IItemRenderer{
 				{
 					System.out.println("error cacheing entity to find out if it's a child:" + loc);
 					continue;
+				}
+				if(e instanceof EntitySlime)
+				{
+					try 
+					{
+						FieldAcess.method_setSlimeSize.invoke(e,Config.slimeSize+1,true);
+					} 
+					catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) 
+					{
+						e1.printStackTrace();
+					}
 				}
 			}
 			if(e == null)
