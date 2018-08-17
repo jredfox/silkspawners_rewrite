@@ -294,6 +294,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 				{
 					try 
 					{
+						FieldAcess.method_setSlimeSize.setAccessible(true);
 						FieldAcess.method_setSlimeSize.invoke(e,Config.slimeSize+1,true);
 					} 
 					catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) 

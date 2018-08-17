@@ -59,6 +59,7 @@ public abstract class MobSpawnerBaseLogic
 	public double[] offsets;
     public boolean updated = false;
 	public boolean active = false;
+	public boolean placedLast = false;
 
     @Nullable
     public ResourceLocation getEntityId()
@@ -219,6 +220,7 @@ public abstract class MobSpawnerBaseLogic
 
     public void readFromNBT(NBTTagCompound nbt)
     {
+    	System.out.println("readingFromNBT:" + this.getSpawnerWorld().isRemote);
         this.spawnDelay = nbt.getShort("Delay");
         this.potentialSpawns.clear();
 
@@ -259,11 +261,14 @@ public abstract class MobSpawnerBaseLogic
             this.spawnRange = nbt.getShort("SpawnRange");
         }
 
-        if (this.getSpawnerWorld() != null)
+        if (!placedLast && this.getSpawnerWorld() != null)
         {
             this.cachedEntity = null;
             this.cachedEntities.clear();
         }
+        else
+        	System.out.println("skipping ressetting cachedEntity");
+        placedLast = false;
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound p_189530_1_)

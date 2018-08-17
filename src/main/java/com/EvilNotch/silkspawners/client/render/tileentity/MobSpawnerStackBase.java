@@ -41,13 +41,13 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         		continue;
         	if(e instanceof EntityPig && !logic.updated)
         	{
-        		System.out.println("returning from render isPig with no update:" + MainJava.index);
+        		System.out.println("returning from render isPig with no update:");
         		return;
         	}
         	else if(e instanceof EntityPig)
         	{
         		if(Config.isDev)
-        			System.out.println("why you here you pig:" + MainJava.index);
+        			System.out.println("why you here you pig:");
         	}
         	GL11.glPushMatrix();
         	GL11.glTranslatef((float)x + 0.5F, (float)y, (float)z + 0.5F);

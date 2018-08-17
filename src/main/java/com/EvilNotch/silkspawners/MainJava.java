@@ -298,7 +298,6 @@ public class MainJava
 		return new ResourceLocation(tag.getString(key));
 	}
 	
-	public static int index = 0;
 	@SubscribeEvent
     public void read(ClientBlockPlaceEvent e)
     {
@@ -329,5 +328,10 @@ public class MainJava
 	   tile.readFromNBT(nbt);
 	   tile.markDirty();
 	   w.notifyBlockUpdate(p, state, w.getBlockState(p), 3);//fixes issues
+	   if(w.isRemote)
+	   {
+		   TileEntityMobSpawner spawner = (TileEntityMobSpawner)tile;
+		   spawner.getSpawnerBaseLogic().placedLast = true;
+	   }
 	}
 }
