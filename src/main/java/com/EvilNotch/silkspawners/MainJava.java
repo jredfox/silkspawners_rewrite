@@ -30,6 +30,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -316,31 +317,49 @@ public class MainJava
     {
     	readSpawner(e.getState(),e.getWorld(),e.getPos(),e.getPlayer(),e.getHand() );
     }
-	public void readSpawner(IBlockState state, World w,BlockPos p, EntityPlayer player,EnumHand hand) 
+	public void readSpawner(IBlockState state, World w,BlockPos pos, EntityPlayer player,EnumHand hand) 
 	{
-	   if(state == null || player == null || p == null || hand == null || w == null)
+	   if(state == null || player == null || pos == null || hand == null || w == null)
 		   return;
 	   Block b = state.getBlock();
-	   TileEntity tile = w.getTileEntity(p);
 	   ItemStack s = player.getHeldItem(hand);
-	   if(!(tile instanceof TileEntityMobSpawner) || s == null || s.getTagCompound() == null)
+	   TileEntity tile = w.getTileEntity(pos);
+	   if(s == null || s.getTagCompound() == null || !(tile instanceof TileEntityMobSpawner))
 		   return;
 	   NBTTagCompound nbt = s.getTagCompound();
 	   if(nbt.hasKey("BlockEntityTag"))
 		   return;
-	   nbt = nbt.copy();
-	   nbt.removeTag("silkTag");
-	   if(SpawnerUtil.isCustomSpawnerPos(nbt,"offsets"))
-		   SpawnerUtil.reAlignSpawnerPos(nbt, p.getX(), p.getY(), p.getZ() );
-	   nbt.setInteger("x", p.getX());
-	   nbt.setInteger("y", p.getY());
-	   nbt.setInteger("z", p.getZ());
-	   tile.readFromNBT(nbt);
-	   tile.markDirty();
-	   w.notifyBlockUpdate(p, state, w.getBlockState(p), 3);//fixes issues
-	   TileEntityMobSpawner spawner = (TileEntityMobSpawner)tile;
-	   spawner.getSpawnerBaseLogic().setPlaced();
+	   ItemBlock.setTileNBT(w, player, pos, s, nbt, false);//new format fires EvilNotchLib TileStackSync Events for compatibility and overrides
+	   w.notifyBlockUpdate(pos, state, w.getBlockState(pos), 3);//fixes issues
 	}
+	@SubscribeEvent(priority=EventPriority.HIGH)
+    public void syncOffsets(TileStackSyncEvent.Pre e)
+    {
+		if(e.isBlockData || !(e.tile instanceof TileEntityMobSpawner))
+			return;
+		if(SpawnerUtil.isCustomSpawnerPos(e.nbt,"offsets"))
+		   SpawnerUtil.reAlignSpawnerPos(e.nbt, e.pos.getX(), e.pos.getY(), e.pos.getZ() );
+    }
+	/**
+	 * allow regular players permission to place a spawner
+	 */
+	@SubscribeEvent(priority=EventPriority.HIGH)
+    public void syncDefault(TileStackSyncEvent.Permissions e)
+    {
+    	if(!e.isBlockData && e.tile instanceof TileEntityMobSpawner)
+    	{
+    		e.opsOnly = false;
+    	}
+    }
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+    public void syncDeny(TileStackSyncEvent.Permissions e)
+    {
+   	 	if (e.opsOnly && !e.canUseCommand)
+        {
+		   if(!e.player.world.isRemote && e.tile instanceof TileEntityMobSpawner)
+			 NetWorkHandler.INSTANCE.sendTo(new PacketSpawnerReset(e.pos), (EntityPlayerMP)e.player);
+        }
+    }
 	@SubscribeEvent
     public void syncBlockData(TileStackSyncEvent.Post e)
     {
@@ -349,15 +368,5 @@ public class MainJava
 			TileEntityMobSpawner spawner = (TileEntityMobSpawner)e.tile;
 			spawner.getSpawnerBaseLogic().setPlaced();
 		}
-    }
-	@SubscribeEvent(priority=EventPriority.LOWEST)
-    public void syncTest(TileStackSyncEvent.Permissions e)
-    {
-   	 	if (e.opsOnly && !e.canUseCommand)
-        {
-		   if(!e.player.world.isRemote)
-			 NetWorkHandler.INSTANCE.sendTo(new PacketSpawnerReset(e.pos), (EntityPlayerMP)e.player);
-        }
-		System.out.println("permissions:" + e.opsOnly + " canUseCMDS:" + e.canUseCommand);
     }
 }

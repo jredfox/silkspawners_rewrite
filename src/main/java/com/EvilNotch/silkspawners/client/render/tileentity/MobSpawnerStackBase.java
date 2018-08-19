@@ -32,7 +32,6 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     {
     	MobSpawnerBaseLogic logic = ((TileEntityMobSpawner)te).getSpawnerBaseLogic();
     	List<Entity> ents = logic.getCachedEntities();
-        this.setLightmapDisabled(false);
 
         for(int i=0;i<ents.size();i++)
         {
