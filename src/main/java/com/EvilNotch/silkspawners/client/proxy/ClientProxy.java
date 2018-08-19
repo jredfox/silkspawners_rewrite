@@ -37,7 +37,6 @@ public class ClientProxy extends ServerProxy{
 	{
 		if(Config.mobItemRender || Config.creativeTabSpawners)
 		{
-			EntityUtil.slimeSize = Config.slimeSize;
 			EntityUtil.cacheEnts();//gets data of bad entities and what can/can't be used as well as information
 		}
 		ItemSpawner.registerCreativeTabs();

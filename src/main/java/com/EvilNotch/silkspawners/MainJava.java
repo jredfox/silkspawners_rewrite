@@ -7,11 +7,15 @@ import com.EvilNotch.lib.minecraft.MinecraftUtil;
 import com.EvilNotch.lib.minecraft.content.LangEntry;
 import com.EvilNotch.lib.minecraft.content.client.creativetab.BasicCreativeTab;
 import com.EvilNotch.lib.minecraft.events.ClientBlockPlaceEvent;
+import com.EvilNotch.lib.minecraft.events.TileStackSyncEvent;
+import com.EvilNotch.lib.minecraft.network.NetWorkHandler;
 import com.EvilNotch.lib.minecraft.registry.GeneralRegistry;
 import com.EvilNotch.silkspawners.client.proxy.ServerProxy;
 import com.EvilNotch.silkspawners.client.render.item.NEISpawnerRender;
 import com.EvilNotch.silkspawners.commands.CommandMTHand;
 import com.EvilNotch.silkspawners.commands.CommandSpawner;
+import com.EvilNotch.silkspawners.network.PacketSpawnerReset;
+import com.EvilNotch.silkspawners.network.PacketSpawnerResetHandler;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
@@ -22,6 +26,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -48,15 +53,17 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.relauncher.Side;
 import zdoctor.lazymodder.client.render.itemrender.IItemRendererHandler;
 
 @Mod(modid = MainJava.MODID,name = "silkspawners", version = MainJava.VERSION,acceptableRemoteVersions = "*", dependencies = "required-after:evilnotchlib@[1.2.3]")
 public class MainJava
 {
     public static final String MODID = "silkspawners";
-    public static final String VERSION = "1.7.2";
+    public static final String VERSION = "1.8";
 	@SidedProxy(clientSide = "com.EvilNotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.EvilNotch.silkspawners.client.proxy.ServerProxy")
 	public static ServerProxy proxy;
 	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
@@ -87,6 +94,7 @@ public class MainJava
     public void init(FMLInitializationEvent event)
     {
     	proxy.init();
+    	NetWorkHandler.registerMessage(PacketSpawnerResetHandler.class, PacketSpawnerReset.class, Side.CLIENT);
     	MinecraftForge.EVENT_BUS.register(new MainJava());
     }
     @EventHandler
@@ -318,6 +326,8 @@ public class MainJava
 	   if(!(tile instanceof TileEntityMobSpawner) || s == null || s.getTagCompound() == null)
 		   return;
 	   NBTTagCompound nbt = s.getTagCompound();
+	   if(nbt.hasKey("BlockEntityTag"))
+		   return;
 	   nbt = nbt.copy();
 	   nbt.removeTag("silkTag");
 	   if(SpawnerUtil.isCustomSpawnerPos(nbt,"offsets"))
@@ -328,10 +338,26 @@ public class MainJava
 	   tile.readFromNBT(nbt);
 	   tile.markDirty();
 	   w.notifyBlockUpdate(p, state, w.getBlockState(p), 3);//fixes issues
-	   if(w.isRemote)
-	   {
-		   TileEntityMobSpawner spawner = (TileEntityMobSpawner)tile;
-		   spawner.getSpawnerBaseLogic().placedLast = true;
-	   }
+	   TileEntityMobSpawner spawner = (TileEntityMobSpawner)tile;
+	   spawner.getSpawnerBaseLogic().setPlaced();
 	}
+	@SubscribeEvent
+    public void syncBlockData(TileStackSyncEvent.Post e)
+    {
+		if(e.world.isRemote && e.tile instanceof TileEntityMobSpawner)
+		{
+			TileEntityMobSpawner spawner = (TileEntityMobSpawner)e.tile;
+			spawner.getSpawnerBaseLogic().setPlaced();
+		}
+    }
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+    public void syncTest(TileStackSyncEvent.Permissions e)
+    {
+   	 	if (e.opsOnly && !e.canUseCommand)
+        {
+		   if(!e.player.world.isRemote)
+			 NetWorkHandler.INSTANCE.sendTo(new PacketSpawnerReset(e.pos), (EntityPlayerMP)e.player);
+        }
+		System.out.println("permissions:" + e.opsOnly + " canUseCMDS:" + e.canUseCommand);
+    }
 }

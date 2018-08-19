@@ -67,6 +67,15 @@ public abstract class MobSpawnerBaseLogic
         String s = this.spawnData.getNbt().getString("id");
         return StringUtils.isNullOrEmpty(s) ? null : new ResourceLocation(s);
     }
+	/**
+	 * tell the client to ignore overriding the next cachedEntity when readingFromNBT called on placement
+	 */
+    public void setPlaced() 
+	{
+		World w = this.getSpawnerWorld();
+		if(w != null && w.isRemote)
+			this.placedLast = true;
+	}
     
     public void setEntityId(@Nullable ResourceLocation id)
     {
@@ -220,7 +229,8 @@ public abstract class MobSpawnerBaseLogic
 
     public void readFromNBT(NBTTagCompound nbt)
     {
-    	System.out.println("readingFromNBT:" + this.getSpawnerWorld().isRemote);
+    	if(this.getSpawnerWorld() != null)
+    		System.out.println("readingFromNBT:" + this.getSpawnerWorld().isRemote);
         this.spawnDelay = nbt.getShort("Delay");
         this.potentialSpawns.clear();
 
@@ -264,10 +274,16 @@ public abstract class MobSpawnerBaseLogic
         if (!placedLast && this.getSpawnerWorld() != null)
         {
             this.cachedEntity = null;
-            this.cachedEntities.clear();
+            if(this.getSpawnerWorld().isRemote)
+            {
+            	this.cachedEntities.clear();
+            	this.offsets = new double[0];
+            }
         }
         else
-        	System.out.println("skipping ressetting cachedEntity");
+        {
+//        	System.out.println("skipping cached entity:" + this.getSpawnerWorld().isRemote);
+        }
         placedLast = false;
     }
 
@@ -329,7 +345,6 @@ public abstract class MobSpawnerBaseLogic
     {
         if (this.cachedEntity == null)
         {	
-//        	this.cachedEntity = AnvilChunkLoader.readWorldEntity(this.spawnData.getNbt(), this.getSpawnerWorld(), false);
             this.cachedEntity = getEntityJockey(this.spawnData.getNbt(), this.getSpawnerWorld(), 0,0,0, Config.renderUseInitSpawn,false);
             if(this.cachedEntity != null)
             {
