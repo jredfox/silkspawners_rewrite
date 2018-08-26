@@ -11,6 +11,7 @@ import com.EvilNotch.lib.minecraft.EntityUtil;
 import com.EvilNotch.lib.util.JavaUtil;
 import com.EvilNotch.silkspawners.client.ToolTipEvent;
 import com.EvilNotch.silkspawners.client.proxy.ClientProxy;
+import com.elix_x.itemrender.IItemRenderer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -28,7 +29,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import zdoctor.lazymodder.client.render.itemrender.IItemRenderer;
 
 /**
  * this is the nei port from 1.7.10 > 1.12.2 with using resource locations instead of integer values

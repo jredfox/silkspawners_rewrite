@@ -17,6 +17,7 @@ import com.EvilNotch.lib.util.simple.PairObj;
 import com.EvilNotch.silkspawners.Config;
 import com.EvilNotch.silkspawners.client.ToolTipEvent;
 import com.EvilNotch.silkspawners.client.proxy.ClientProxy;
+import com.elix_x.itemrender.IItemRenderer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -38,7 +39,6 @@ import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import zdoctor.lazymodder.client.render.itemrender.IItemRenderer;
 
 /**
  * this is the copied modified class of NEISpawnerRender port

@@ -8,13 +8,13 @@ import com.EvilNotch.silkspawners.client.ToolTipEvent;
 import com.EvilNotch.silkspawners.client.render.item.MobSpawnerItemRender;
 import com.EvilNotch.silkspawners.client.render.tileentity.MobSpawnerRender;
 import com.EvilNotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
+import com.elix_x.itemrender.IItemRendererHandler;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import zdoctor.lazymodder.client.render.itemrender.IItemRendererHandler;
 
 public class ClientProxy extends ServerProxy{
 	
