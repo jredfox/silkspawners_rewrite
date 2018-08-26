@@ -43,10 +43,9 @@ public class ClientProxy extends ServerProxy{
 		super.postinit();
 	}
 	@Override
-	public void serverClose() 
+	public void clientClose() 
 	{
 		ToolTipEvent.rainbows.clear();
-		super.serverClose();
 	}
 	
 	public static void changeTexture(ResourceLocation loc) 

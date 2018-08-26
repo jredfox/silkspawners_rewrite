@@ -30,6 +30,8 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     @Override
     public void render(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
+    	if(te.getWorld() == null)
+    		return;//don't render until the tile entity world is set
     	MobSpawnerBaseLogic logic = ((TileEntityMobSpawner)te).getSpawnerBaseLogic();
     	List<Entity> ents = logic.getCachedEntities();
 
@@ -52,7 +54,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	GL11.glTranslatef((float)x + 0.5F, (float)y, (float)z + 0.5F);
         	float posX = OpenGlHelper.lastBrightnessX;
         	float posY = OpenGlHelper.lastBrightnessY;
-//        	MobSpawnerItemRender.setLightmapDisabled(false);
+        	MobSpawnerItemRender.setLightmapDisabled(false);
         	renderSpawnerEntity(e,logic.offsets[i],logic,x,y,z,partialTicks,destroyStage,alpha);
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, posX, posY);
             GlStateManager.depthMask(true);
@@ -73,7 +75,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
             GL11.glTranslatef(0.0F, -0.4F, 0.0F);
             GL11.glScalef(f1, f1, f1);
             entity.setLocationAndAngles(x, y, z, 0.0F, 0.0F);
-            if(!mobSpawnerLogic.active && mobSpawnerLogic.updated|| entity instanceof EntityBlaze && !Config.animationSpawner || Config.noPartialTickBlock && !Config.animationSpawner)
+            if(!mobSpawnerLogic.active || entity instanceof EntityBlaze && !Config.animationSpawner || Config.noPartialTickBlock && !Config.animationSpawner)
             {
             	partialTicks = 0;
             }

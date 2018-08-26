@@ -31,6 +31,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
 public class ToolTipEvent {
 	
@@ -95,7 +96,12 @@ public class ToolTipEvent {
 	public void devText(RenderGameOverlayEvent.Text e)
 	{
 		if(Config.isDev)
-			e.getLeft().add(ChatFormatting.DARK_PURPLE + "SilkSpawners " + MainJava.versionType[4] + ChatFormatting.WHITE + ":" + ChatFormatting.AQUA + MainJava.VERSION);
+			e.getLeft().add(ChatFormatting.DARK_PURPLE + "SilkSpawners " + MainJava.versionType[0] + ChatFormatting.WHITE + ":" + ChatFormatting.AQUA + MainJava.VERSION);
+	}
+	@SubscribeEvent
+	public void disconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent e)
+	{
+		MainJava.proxy.clientClose();
 	}
 	/**
 	 * let other mods override this if needed

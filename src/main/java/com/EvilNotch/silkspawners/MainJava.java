@@ -14,8 +14,6 @@ import com.EvilNotch.silkspawners.client.proxy.ServerProxy;
 import com.EvilNotch.silkspawners.client.render.item.NEISpawnerRender;
 import com.EvilNotch.silkspawners.commands.CommandMTHand;
 import com.EvilNotch.silkspawners.commands.CommandSpawner;
-import com.EvilNotch.silkspawners.network.PacketSpawnerReset;
-import com.EvilNotch.silkspawners.network.PacketSpawnerResetHandler;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
@@ -95,7 +93,6 @@ public class MainJava
     public void init(FMLInitializationEvent event)
     {
     	proxy.init();
-    	NetWorkHandler.registerMessage(PacketSpawnerResetHandler.class, PacketSpawnerReset.class, Side.CLIENT);
     	MinecraftForge.EVENT_BUS.register(new MainJava());
     }
     @EventHandler
@@ -107,11 +104,6 @@ public class MainJava
     public void postinit(FMLLoadCompleteEvent event)
     {
     	proxy.onLoadComplete();
-    }
-    @EventHandler
-    public void serverClose(FMLServerStoppingEvent event)
-    {
-    	proxy.serverClose();
     }
    
 	@SubscribeEvent
@@ -350,23 +342,5 @@ public class MainJava
     	{
     		e.opsOnly = false;
     	}
-    }
-	@SubscribeEvent(priority=EventPriority.LOWEST)
-    public void syncDeny(TileStackSyncEvent.Permissions e)
-    {
-   	 	if (e.opsOnly && !e.canUseCommand)
-        {
-		   if(!e.player.world.isRemote && e.tile instanceof TileEntityMobSpawner)
-			 NetWorkHandler.INSTANCE.sendTo(new PacketSpawnerReset(e.pos), (EntityPlayerMP)e.player);
-        }
-    }
-	@SubscribeEvent
-    public void syncBlockData(TileStackSyncEvent.Post e)
-    {
-		if(e.world.isRemote && e.tile instanceof TileEntityMobSpawner)
-		{
-			TileEntityMobSpawner spawner = (TileEntityMobSpawner)e.tile;
-			spawner.getSpawnerBaseLogic().setPlaced();
-		}
     }
 }

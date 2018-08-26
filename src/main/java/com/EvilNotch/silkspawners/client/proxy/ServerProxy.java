@@ -8,10 +8,6 @@ public class ServerProxy {
 	public void preinit() {}
 	public void init() {}
 	public void postinit() {}
-	public void onLoadComplete() {
-		// TODO Auto-generated method stub
-		
-	}
-	public void serverClose() {
-	}
+	public void onLoadComplete() {}
+	public void clientClose() {}
 }
