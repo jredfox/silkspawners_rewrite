@@ -59,7 +59,6 @@ public abstract class MobSpawnerBaseLogic
 	public double[] offsets;
     public boolean updated = false;
 	public boolean active = false;
-	public boolean placedLast = false;
 
     @Nullable
     public ResourceLocation getEntityId()
@@ -67,15 +66,6 @@ public abstract class MobSpawnerBaseLogic
         String s = this.spawnData.getNbt().getString("id");
         return StringUtils.isNullOrEmpty(s) ? null : new ResourceLocation(s);
     }
-	/**
-	 * tell the client to ignore overriding the next cachedEntity when readingFromNBT called on placement
-	 */
-    public void setPlaced() 
-	{
-		World w = this.getSpawnerWorld();
-		if(w != null && w.isRemote)
-			this.placedLast = true;
-	}
     
     public void setEntityId(@Nullable ResourceLocation id)
     {
@@ -271,7 +261,7 @@ public abstract class MobSpawnerBaseLogic
             this.spawnRange = nbt.getShort("SpawnRange");
         }
 
-        if (!placedLast && this.getSpawnerWorld() != null)
+        if (this.getSpawnerWorld() != null)
         {
             this.cachedEntity = null;
             if(this.getSpawnerWorld().isRemote)
@@ -280,31 +270,26 @@ public abstract class MobSpawnerBaseLogic
             	this.offsets = new double[0];
             }
         }
-        else
-        {
-//        	System.out.println("skipping cached entity:" + this.getSpawnerWorld().isRemote);
-        }
-        placedLast = false;
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound p_189530_1_)
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
         ResourceLocation resourcelocation = this.getEntityId();
 
         if (resourcelocation == null)
         {
-            return p_189530_1_;
+            return nbt;
         }
         else
         {
-            p_189530_1_.setShort("Delay", (short)this.spawnDelay);
-            p_189530_1_.setShort("MinSpawnDelay", (short)this.minSpawnDelay);
-            p_189530_1_.setShort("MaxSpawnDelay", (short)this.maxSpawnDelay);
-            p_189530_1_.setShort("SpawnCount", (short)this.spawnCount);
-            p_189530_1_.setShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
-            p_189530_1_.setShort("RequiredPlayerRange", (short)this.activatingRangeFromPlayer);
-            p_189530_1_.setShort("SpawnRange", (short)this.spawnRange);
-            p_189530_1_.setTag("SpawnData", this.spawnData.getNbt().copy());
+        	nbt.setShort("Delay", (short)this.spawnDelay);
+        	nbt.setShort("MinSpawnDelay", (short)this.minSpawnDelay);
+        	nbt.setShort("MaxSpawnDelay", (short)this.maxSpawnDelay);
+        	nbt.setShort("SpawnCount", (short)this.spawnCount);
+        	nbt.setShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
+            nbt.setShort("RequiredPlayerRange", (short)this.activatingRangeFromPlayer);
+            nbt.setShort("SpawnRange", (short)this.spawnRange);
+            nbt.setTag("SpawnData", this.spawnData.getNbt().copy());
             NBTTagList nbttaglist = new NBTTagList();
 
             if (this.potentialSpawns.isEmpty())
@@ -319,8 +304,8 @@ public abstract class MobSpawnerBaseLogic
                 }
             }
 
-            p_189530_1_.setTag("SpawnPotentials", nbttaglist);
-            return p_189530_1_;
+            nbt.setTag("SpawnPotentials", nbttaglist);
+            return nbt;
         }
     }
 

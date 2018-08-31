@@ -324,7 +324,7 @@ public class MainJava
 	   w.notifyBlockUpdate(pos, state, w.getBlockState(pos), 3);//fixes issues
 	}
 	@SubscribeEvent(priority=EventPriority.HIGH)
-    public void syncOffsets(TileStackSyncEvent.Pre e)
+    public void syncOffsets(TileStackSyncEvent.Merge e)
     {
 		if(e.isBlockData || !(e.tile instanceof TileEntityMobSpawner))
 			return;

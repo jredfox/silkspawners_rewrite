@@ -17,6 +17,7 @@ import com.EvilNotch.lib.util.simple.PairObj;
 import com.EvilNotch.silkspawners.Config;
 import com.EvilNotch.silkspawners.client.ToolTipEvent;
 import com.EvilNotch.silkspawners.client.proxy.ClientProxy;
+import com.EvilNotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
 import com.elix_x.itemrender.IItemRenderer;
 
 import net.minecraft.client.Minecraft;
@@ -117,9 +118,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         setLightmapDisabled(disableLight);//don't enable light mapping to false if it's rendering in the gui
         
         entity.setWorld(world);
-        float f1 = 0.4375F;
-        if(EntityUtil.getShadowSize(entity) > 1.5)
-            f1 = 0.1F;
+        float f1 = getScale(entity,!Config.dynamicScalingItem);
         GL11.glRotatef((float) (getRenderTime()*10), 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-20F, 1.0F, 0.0F, 0.0F);
         GL11.glTranslatef(0.0F, -0.4F, 0.0F);
@@ -138,7 +137,21 @@ public class MobSpawnerItemRender implements IItemRenderer{
         OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);*/
 	}
 	/**
-	 * call this after rendering some entities
+	 * old config option is equal to nei's scale exactly
+	 */
+	public static float getScale(Entity e,boolean old)
+	{
+		if(old)
+		{
+			float scale = 0.4375F;
+			if(EntityUtil.getShadowSize(e) > 1.5)
+				scale = 0.1F;
+	        return scale;
+		}
+		return MobSpawnerStackBase.getScale(e, old);
+	}
+	/**
+	 * call this after rendering an entity
 	 */
 	public void resetOpenGL(TransformType type) 
 	{

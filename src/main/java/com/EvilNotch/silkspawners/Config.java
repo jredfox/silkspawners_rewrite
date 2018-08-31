@@ -35,6 +35,8 @@ public class Config {
 	public static boolean animationItem = true;
 	public static boolean mobItemRender = true;
 	public static boolean noPartialTickBlock = false;
+	public static boolean dynamicScalingBlock = false;
+	public static boolean dynamicScalingItem = false;
 	
 	public static boolean tooltip_spawncount = true;
 	public static boolean tooltip_maxnearbyents = true;
@@ -84,6 +86,8 @@ public class Config {
 		animationItem = config.get("render", "animationSpawnerItem", animationItem).getBoolean();
 		mobItemRender = config.get("render", "mobItemRender", mobItemRender).getBoolean();
 		noPartialTickBlock = config.getBoolean("noPartialTickBlock", "render", noPartialTickBlock, "If animation block is false and this is enabled all entities will render without parital ticks");
+		dynamicScalingBlock = config.get("render", "dynamicScalingBlock", dynamicScalingBlock).getBoolean();
+		dynamicScalingItem = config.get("render", "dynamicScalingItem", dynamicScalingItem).getBoolean();
 		if(!LineBase.toWhiteSpaced(spawnerBlockName).equals(""))
 			hasCustomName = true;
 		

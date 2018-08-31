@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import com.EvilNotch.lib.minecraft.TileEntityUtil;
 import com.EvilNotch.lib.util.primitive.BooleanObj;
 import com.EvilNotch.silkspawners.Config;
 import com.EvilNotch.silkspawners.MainJava;
@@ -48,7 +49,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	else if(e instanceof EntityPig)
         	{
         		if(Config.isDev)
-        			System.out.println("why you here you pig:");
+        			System.out.println("why you here you pig:" + TileEntityUtil.getTileNBT(te));
         	}
         	GL11.glPushMatrix();
         	GL11.glTranslatef((float)x + 0.5F, (float)y, (float)z + 0.5F);
@@ -68,7 +69,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         if (entity != null)
         {
             entity.setWorld(mobSpawnerLogic.getSpawnerWorld());
-            float f1 = 0.4375F;
+            float f1 = getScale(entity,!Config.dynamicScalingBlock);
             GL11.glTranslatef(0.0F, 0.4F, 0.0F);
             GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
             GL11.glRotatef(-30.0F, 1.0F, 0.0F, 0.0F);
@@ -82,6 +83,23 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
             
             Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, false);
         }
+	}
+	public static float getScale(Entity entity,boolean old) 
+	{
+		float old_scale = 0.4375F;
+		if(old)
+			return old_scale;
+		else
+		{
+	       float new_scale = 0.53125F;
+	       float max = Math.max(entity.width, entity.height);
+
+	       if ((double)max > 1.0D)
+	       {
+	    	   new_scale /= max;
+	       }
+	       return new_scale;
+		}
 	}
 
 }
