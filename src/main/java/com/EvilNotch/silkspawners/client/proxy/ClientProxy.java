@@ -43,6 +43,11 @@ public class ClientProxy extends ServerProxy{
 		super.postinit();
 	}
 	@Override
+	public void onLoadComplete()
+	{
+		super.onLoadComplete();
+	}
+	@Override
 	public void clientClose() 
 	{
 		ToolTipEvent.rainbows.clear();

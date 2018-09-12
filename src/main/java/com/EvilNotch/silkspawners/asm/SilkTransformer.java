@@ -3,8 +3,12 @@ package com.EvilNotch.silkspawners.asm;
 import java.io.IOException;
 import java.util.List;
 
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
+
+import com.EvilNotch.lib.asm.ASMHelper;
 import com.EvilNotch.lib.asm.FMLCorePlugin;
-import com.EvilNotch.lib.asm.TestTransformer;
 import com.EvilNotch.lib.util.JavaUtil;
 
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -31,7 +35,7 @@ public class SilkTransformer implements IClassTransformer{
 			{
 				case 0:
 					if(FMLCorePlugin.isObf)
-						return TestTransformer.replaceClass(inputBase + "MobSpawnerBaseLogic");
+						return ASMHelper.replaceClass(inputBase + "MobSpawnerBaseLogic");
 				break;
 			}
 		}

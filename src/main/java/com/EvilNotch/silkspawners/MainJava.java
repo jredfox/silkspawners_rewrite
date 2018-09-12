@@ -1,12 +1,16 @@
 package com.EvilNotch.silkspawners;
 
+import com.EvilNotch.lib.asm.FMLCorePlugin;
 import com.EvilNotch.lib.minecraft.BlockUtil;
 import com.EvilNotch.lib.minecraft.EntityUtil;
 import com.EvilNotch.lib.minecraft.EnumChatFormatting;
 import com.EvilNotch.lib.minecraft.MinecraftUtil;
 import com.EvilNotch.lib.minecraft.content.LangEntry;
+import com.EvilNotch.lib.minecraft.content.capabilites.primitive.CapBoolean;
+import com.EvilNotch.lib.minecraft.content.capabilites.registry.CapRegHandler;
 import com.EvilNotch.lib.minecraft.content.client.creativetab.BasicCreativeTab;
 import com.EvilNotch.lib.minecraft.events.ClientBlockPlaceEvent;
+import com.EvilNotch.lib.minecraft.events.PickEvent;
 import com.EvilNotch.lib.minecraft.events.TileStackSyncEvent;
 import com.EvilNotch.lib.minecraft.network.NetWorkHandler;
 import com.EvilNotch.lib.minecraft.registry.GeneralRegistry;
@@ -70,6 +74,7 @@ public class MainJava
 	public static BasicCreativeTab tab_nonliving;
 	public static BasicCreativeTab tab_custom;
 	public static ItemSpawner mob_spawner;
+	private ResourceLocation dungeonTweaksLoc;
     
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent e)
@@ -83,6 +88,8 @@ public class MainJava
 	    mob_spawner = new ItemSpawner();
 	 	ForgeRegistries.ITEMS.register(mob_spawner);
 	 	dungeontweaks = Loader.isModLoaded("dungeontweaks");
+	 	if(dungeontweaks)
+	 		dungeonTweaksLoc = new ResourceLocation("dungeontweaks" + ":" + "hasScanned");
 	 	 
 	    tab_living = new BasicCreativeTab(new ResourceLocation("silkspawners:living"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("Living Mob Spawners","en_us"));
 	    tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("NonLiving Mob Spawners","en_us"));
@@ -135,71 +142,7 @@ public class MainJava
     			meta = 0;
     		ItemStack stack = new ItemStack(b,1,meta);
     		NBTTagCompound nbt = new NBTTagCompound();
-    		tile.writeToNBT(nbt);
-    		int delay = nbt.getInteger("Delay");
-    		int max = nbt.getInteger("MaxSpawnDelay");
-    		if(delay <= max && !w.getGameRules().getBoolean("SpawnerSaveDelay"))
-    			nbt.setInteger("Delay", Config.default_Delay);//makes spanwers stack but, if custom delay will grab it note: delay is live and isn't the same you used in the command block
-    		int x = nbt.getInteger("x");
-    		int y = nbt.getInteger("y");
-    		int z = nbt.getInteger("z");
-    		nbt.removeTag("x");
-			nbt.removeTag("y");
-			nbt.removeTag("z");
-    		//Supports custom pos spawners
-    		if(SpawnerUtil.isCustomSpawnerPos(nbt,"Pos") && w.getGameRules().getBoolean("CustomPosSpawner"))
-    			SpawnerUtil.setOffsets(nbt,x,y,z);
-    		nbt.removeTag("id");
-    		//if gamerule force multi index spawners to stack warning will loose initial index
-    		if(SpawnerUtil.multiIndexSpawner(nbt) && !w.getGameRules().getBoolean("MultiSpawnerCurrentIndex"))
-    		{
-    			NBTTagCompound compound = nbt.getTagList("SpawnPotentials", 10).getCompoundTagAt(0).getCompoundTag("Entity");
-    			nbt.setTag("SpawnData", compound);
-    		}
-    		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
-    		String name = data.getString("id");
-    		nbt.setString("silkTag", name);//have the current index of the spawners resource location become the silktag not the jockeyname
-    		
-    		NBTTagCompound display = new NBTTagCompound();
-    		
-    		NBTTagCompound jockey = getJockieNBT(data);
-    		if(jockey != null)
-    		{
-    			name = jockey.getString("id");
-    			ResourceLocation loc = new ResourceLocation(name);
-    			String entName = getUnlocalizedName(loc,jockey);
-    			display.setBoolean("isJockey", true);//used for dynamic translation append jockey to the end of the entity name
-    			display.setString("EntName", entName);
-    			display.setString("EntColor", getColor(loc,jockey));
-    		}
-    		else
-    		{
-    			ResourceLocation loc = new ResourceLocation(name);
-    			String entName = getUnlocalizedName(loc,data);
-    			String color = getColor(loc,data);
-    			if(entName == null)
-    			{
-    				entName = "silkspawners.blankspawner.name";
-    				nbt.setBoolean("isBlank", true);
-    			}
-        		display.setString("EntName", entName);
-        		display.setString("EntColor", color);
-    		}
-    		
-    		nbt.setTag("display", display);
-    		stack.setTagCompound(nbt);
-    		
-        	if(dungeontweaks)
-        	{
-        		NBTTagCompound caps = nbt.getCompoundTag("ForgeCaps");
-        		if(caps == null)
-        		{
-        			caps = new NBTTagCompound();
-        			nbt.setTag("ForgeCaps", caps);
-        		}
-        		caps.setInteger("dungeontweaks:hasscanned", 1);
-        	}
-
+    		writeSpawnerToStack(stack,w,tile,nbt);
     		BlockUtil.DropBlock(w,p,stack);
     		if(!player.isCreative())
     		{
@@ -210,6 +153,95 @@ public class MainJava
     		w.setBlockToAir(p);
     		e.setCanceled(true);
     	}
+    }
+	/**
+	 * custom tile entity mob spawner support for vanilla so spawners stack and special features function
+	 */
+	public void writeSpawnerToStack(ItemStack stack,World w,TileEntity tile, NBTTagCompound nbt) 
+	{
+		tile.writeToNBT(nbt);
+		int delay = nbt.getInteger("Delay");
+		int max = nbt.getInteger("MaxSpawnDelay");
+		if(delay <= max && !w.getGameRules().getBoolean("SpawnerSaveDelay"))
+			nbt.setInteger("Delay", Config.default_Delay);//makes spanwers stack but, if custom delay will grab it note: delay is live and isn't the same you used in the command block
+		int x = nbt.getInteger("x");
+		int y = nbt.getInteger("y");
+		int z = nbt.getInteger("z");
+		nbt.removeTag("x");
+		nbt.removeTag("y");
+		nbt.removeTag("z");
+		//Supports custom pos spawners
+		if(SpawnerUtil.isCustomSpawnerPos(nbt,"Pos") && w.getGameRules().getBoolean("CustomPosSpawner"))
+			SpawnerUtil.setOffsets(nbt,x,y,z);
+		nbt.removeTag("id");
+		//if gamerule force multi index spawners to stack warning will loose initial index
+		if(SpawnerUtil.multiIndexSpawner(nbt) && !w.getGameRules().getBoolean("MultiSpawnerCurrentIndex"))
+		{
+			NBTTagCompound compound = nbt.getTagList("SpawnPotentials", 10).getCompoundTagAt(0).getCompoundTag("Entity");
+			nbt.setTag("SpawnData", compound);
+		}
+		NBTTagCompound data = nbt.getCompoundTag("SpawnData");
+		String name = data.getString("id");
+		nbt.setString("silkTag", name);//have the current index of the spawners resource location become the silktag not the jockeyname
+		
+		NBTTagCompound display = new NBTTagCompound();
+		
+		NBTTagCompound jockey = getJockieNBT(data);
+		if(jockey != null)
+		{
+			name = jockey.getString("id");
+			ResourceLocation loc = new ResourceLocation(name);
+			String entName = getUnlocalizedName(loc,jockey);
+			display.setBoolean("isJockey", true);//used for dynamic translation append jockey to the end of the entity name
+			display.setString("EntName", entName);
+			display.setString("EntColor", getColor(loc,jockey));
+		}
+		else
+		{
+			ResourceLocation loc = new ResourceLocation(name);
+			String entName = getUnlocalizedName(loc,data);
+			String color = getColor(loc,data);
+			if(entName == null)
+			{
+				entName = "silkspawners.blankspawner.name";
+				nbt.setBoolean("isBlank", true);
+			}
+    		display.setString("EntName", entName);
+    		display.setString("EntColor", color);
+		}
+		
+		nbt.setTag("display", display);
+		stack.setTagCompound(nbt);
+		
+    	if(dungeontweaks)
+    	{
+    		//up to date support
+    		CapBoolean scan = (CapBoolean) CapRegHandler.getCapability(tile,dungeonTweaksLoc);
+    		if(scan != null)
+    		{
+    			scan.value = true;
+    		}
+    		else
+    		{
+    			//this is legacy support
+    			NBTTagCompound caps = nbt.getCompoundTag("ForgeCaps");
+    			if(caps == null)
+    			{
+    				caps = new NBTTagCompound();
+    				nbt.setTag("ForgeCaps", caps);
+    			}
+    			caps.setInteger("dungeontweaks:hasscanned", 1);
+    		}
+    	}
+	}
+	@SubscribeEvent
+    public void pick(PickEvent.Block e)
+    {
+		if(!(e.tile instanceof TileEntityMobSpawner) || e.copyTE)
+			return;
+		if(e.current.isEmpty())
+			e.current = new ItemStack(e.state.getBlock(),1,e.state.getBlock().getMetaFromState(e.state));
+		writeSpawnerToStack(e.current, e.world, e.tile, new NBTTagCompound());
     }
 	/**
 	 * supports chicken jockeys as their names are the one below it
