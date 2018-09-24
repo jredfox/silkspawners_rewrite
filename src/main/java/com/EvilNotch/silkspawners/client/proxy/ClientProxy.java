@@ -1,14 +1,13 @@
-package com.EvilNotch.silkspawners.client.proxy;
+package com.evilnotch.silkspawners.client.proxy;
 
-import com.EvilNotch.lib.minecraft.EntityUtil;
-import com.EvilNotch.silkspawners.Config;
-import com.EvilNotch.silkspawners.ItemSpawner;
-import com.EvilNotch.silkspawners.MainJava;
-import com.EvilNotch.silkspawners.client.ToolTipEvent;
-import com.EvilNotch.silkspawners.client.render.item.MobSpawnerItemRender;
-import com.EvilNotch.silkspawners.client.render.tileentity.MobSpawnerRender;
-import com.EvilNotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
+import com.evilnotch.silkspawners.client.ToolTipEvent;
+import com.evilnotch.silkspawners.client.render.item.MobSpawnerItemRender;
+import com.evilnotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
 import com.elix_x.itemrender.IItemRendererHandler;
+import com.evilnotch.lib.minecraft.util.EntityUtil;
+import com.evilnotch.silkspawners.Config;
+import com.evilnotch.silkspawners.ItemSpawner;
+import com.evilnotch.silkspawners.MainJava;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntityMobSpawner;

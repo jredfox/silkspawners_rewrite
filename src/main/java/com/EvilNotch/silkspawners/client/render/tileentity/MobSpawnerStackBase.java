@@ -1,15 +1,12 @@
-package com.EvilNotch.silkspawners.client.render.tileentity;
+package com.evilnotch.silkspawners.client.render.tileentity;
 
-import java.util.HashMap;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import com.EvilNotch.lib.minecraft.TileEntityUtil;
-import com.EvilNotch.lib.util.primitive.BooleanObj;
-import com.EvilNotch.silkspawners.Config;
-import com.EvilNotch.silkspawners.MainJava;
-import com.EvilNotch.silkspawners.client.render.item.MobSpawnerItemRender;
+import com.evilnotch.silkspawners.client.render.item.MobSpawnerItemRender;
+import com.evilnotch.lib.minecraft.util.TileEntityUtil;
+import com.evilnotch.silkspawners.Config;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -21,7 +18,6 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.util.math.BlockPos;
 
 public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 	

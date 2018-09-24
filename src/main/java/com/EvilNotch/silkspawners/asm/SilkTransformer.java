@@ -1,21 +1,16 @@
-package com.EvilNotch.silkspawners.asm;
+package com.evilnotch.silkspawners.asm;
 
-import java.io.IOException;
 import java.util.List;
 
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
-
-import com.EvilNotch.lib.asm.ASMHelper;
-import com.EvilNotch.lib.asm.FMLCorePlugin;
-import com.EvilNotch.lib.util.JavaUtil;
+import com.evilnotch.lib.asm.ASMHelper;
+import com.evilnotch.lib.asm.FMLCorePlugin;
+import com.evilnotch.lib.util.JavaUtil;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 
 public class SilkTransformer implements IClassTransformer{
 	
-	public static final List<String> clazzes = (List<String>)JavaUtil.<String>asArray2(new Object[]
+	public static final List<String> clazzes = (List<String>)JavaUtil.<String>asArray(new Object[]
 	{
 	   	"net.minecraft.tileentity.MobSpawnerBaseLogic"
 	});

@@ -1,4 +1,4 @@
-package com.EvilNotch.silkspawners.asm;
+package com.evilnotch.silkspawners.asm;
 
 import java.util.Map;
 

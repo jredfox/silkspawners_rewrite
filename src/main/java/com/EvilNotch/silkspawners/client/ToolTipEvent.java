@@ -1,4 +1,4 @@
-package com.EvilNotch.silkspawners.client;
+package com.evilnotch.silkspawners.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,13 +8,13 @@ import java.util.Random;
 import org.apache.logging.log4j.util.Strings;
 import org.lwjgl.input.Keyboard;
 
-import com.EvilNotch.lib.minecraft.EnumChatFormatting;
-import com.EvilNotch.lib.minecraft.events.DynamicTranslationEvent;
-import com.EvilNotch.lib.util.simple.PairObj;
-import com.EvilNotch.silkspawners.Config;
-import com.EvilNotch.silkspawners.MainJava;
-import com.EvilNotch.silkspawners.SpawnerUtil;
-import com.EvilNotch.silkspawners.client.render.item.MobSpawnerItemRender;
+import com.evilnotch.lib.minecraft.event.DynamicTranslationEvent;
+import com.evilnotch.lib.minecraft.util.EnumChatFormatting;
+import com.evilnotch.lib.util.simple.PairObj;
+import com.evilnotch.silkspawners.Config;
+import com.evilnotch.silkspawners.MainJava;
+import com.evilnotch.silkspawners.SpawnerUtil;
+import com.evilnotch.silkspawners.client.render.item.MobSpawnerItemRender;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.block.Block;

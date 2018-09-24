@@ -1,4 +1,4 @@
-package com.EvilNotch.silkspawners;
+package com.evilnotch.silkspawners;
 
 import java.math.BigDecimal;
 

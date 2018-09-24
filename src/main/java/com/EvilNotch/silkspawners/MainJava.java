@@ -1,38 +1,29 @@
-package com.EvilNotch.silkspawners;
+package com.evilnotch.silkspawners;
 
-import com.EvilNotch.lib.asm.FMLCorePlugin;
-import com.EvilNotch.lib.minecraft.BlockUtil;
-import com.EvilNotch.lib.minecraft.EntityUtil;
-import com.EvilNotch.lib.minecraft.EnumChatFormatting;
-import com.EvilNotch.lib.minecraft.MinecraftUtil;
-import com.EvilNotch.lib.minecraft.content.LangEntry;
-import com.EvilNotch.lib.minecraft.content.capabilites.primitive.CapBoolean;
-import com.EvilNotch.lib.minecraft.content.capabilites.registry.CapRegHandler;
-import com.EvilNotch.lib.minecraft.content.client.creativetab.BasicCreativeTab;
-import com.EvilNotch.lib.minecraft.events.ClientBlockPlaceEvent;
-import com.EvilNotch.lib.minecraft.events.PickEvent;
-import com.EvilNotch.lib.minecraft.events.TileStackSyncEvent;
-import com.EvilNotch.lib.minecraft.network.NetWorkHandler;
-import com.EvilNotch.lib.minecraft.registry.GeneralRegistry;
-import com.EvilNotch.silkspawners.client.proxy.ServerProxy;
-import com.EvilNotch.silkspawners.client.render.item.NEISpawnerRender;
-import com.EvilNotch.silkspawners.commands.CommandMTHand;
-import com.EvilNotch.silkspawners.commands.CommandSpawner;
+import com.evilnotch.lib.minecraft.content.capability.primitive.CapBoolean;
+import com.evilnotch.lib.minecraft.content.capability.registry.CapRegHandler;
+import com.evilnotch.lib.minecraft.content.client.creativetab.BasicCreativeTab;
+import com.evilnotch.lib.minecraft.content.lang.LangEntry;
+import com.evilnotch.lib.minecraft.event.ClientBlockPlaceEvent;
+import com.evilnotch.lib.minecraft.event.PickEvent;
+import com.evilnotch.lib.minecraft.event.TileStackSyncEvent;
+import com.evilnotch.lib.minecraft.registry.GeneralRegistry;
+import com.evilnotch.lib.minecraft.util.BlockUtil;
+import com.evilnotch.lib.minecraft.util.EntityUtil;
+import com.evilnotch.lib.minecraft.util.EnumChatFormatting;
+import com.evilnotch.lib.minecraft.util.TileEntityUtil;
+import com.evilnotch.silkspawners.client.proxy.ServerProxy;
+import com.evilnotch.silkspawners.commands.CommandMTHand;
+import com.evilnotch.silkspawners.commands.CommandSpawner;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -41,8 +32,6 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.GameRules.ValueType;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
@@ -54,12 +43,9 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = MainJava.MODID,name = "silkspawners", version = MainJava.VERSION,acceptableRemoteVersions = "*", dependencies = "required-after:evilnotchlib@[1.2.3]")
 public class MainJava
@@ -352,7 +338,7 @@ public class MainJava
 	   NBTTagCompound nbt = s.getTagCompound();
 	   if(nbt.hasKey("BlockEntityTag"))
 		   return;
-	   ItemBlock.setTileNBT(w, player, pos, s, nbt, false);//new format fires EvilNotchLib TileStackSync Events for compatibility and overrides
+	   TileEntityUtil.setTileNBT(w, player, pos, s, nbt, false);//new format fires EvilNotchLib TileStackSync Events for compatibility and overrides
 	   w.notifyBlockUpdate(pos, state, w.getBlockState(pos), 3);//fixes issues
 	}
 	@SubscribeEvent(priority=EventPriority.HIGH)

@@ -1,4 +1,4 @@
-package com.EvilNotch.silkspawners.client.render.item;
+package com.evilnotch.silkspawners.client.render.item;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -6,18 +6,17 @@ import java.util.LinkedHashMap;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import com.EvilNotch.lib.Api.ReflectionUtil;
-import com.EvilNotch.lib.minecraft.EntityUtil;
-import com.EvilNotch.lib.util.JavaUtil;
-import com.EvilNotch.silkspawners.client.ToolTipEvent;
-import com.EvilNotch.silkspawners.client.proxy.ClientProxy;
+import com.evilnotch.silkspawners.client.proxy.ClientProxy;
 import com.elix_x.itemrender.IItemRenderer;
+import com.evilnotch.lib.api.ReflectionUtil;
+import com.evilnotch.lib.minecraft.util.EntityUtil;
+import com.evilnotch.lib.util.JavaUtil;
+import com.evilnotch.silkspawners.client.ToolTipEvent;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;

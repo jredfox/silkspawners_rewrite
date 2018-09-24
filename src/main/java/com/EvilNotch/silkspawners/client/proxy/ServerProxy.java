@@ -1,6 +1,6 @@
-package com.EvilNotch.silkspawners.client.proxy;
+package com.evilnotch.silkspawners.client.proxy;
 
-import com.EvilNotch.silkspawners.MainJava;
+import com.evilnotch.silkspawners.MainJava;
 
 import net.minecraftforge.common.MinecraftForge;
 

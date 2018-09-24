@@ -1,4 +1,4 @@
-package com.EvilNotch.silkspawners.client.render.item;
+package com.evilnotch.silkspawners.client.render.item;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -8,17 +8,16 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import com.EvilNotch.lib.Api.FieldAcess;
-import com.EvilNotch.lib.Api.ReflectionUtil;
-import com.EvilNotch.lib.minecraft.EntityUtil;
-import com.EvilNotch.lib.minecraft.NBTUtil;
-import com.EvilNotch.lib.util.JavaUtil;
-import com.EvilNotch.lib.util.simple.PairObj;
-import com.EvilNotch.silkspawners.Config;
-import com.EvilNotch.silkspawners.client.ToolTipEvent;
-import com.EvilNotch.silkspawners.client.proxy.ClientProxy;
-import com.EvilNotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
+import com.evilnotch.silkspawners.client.ToolTipEvent;
+import com.evilnotch.silkspawners.client.proxy.ClientProxy;
+import com.evilnotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
 import com.elix_x.itemrender.IItemRenderer;
+import com.evilnotch.lib.api.FieldAcess;
+import com.evilnotch.lib.api.ReflectionUtil;
+import com.evilnotch.lib.minecraft.util.EntityUtil;
+import com.evilnotch.lib.util.JavaUtil;
+import com.evilnotch.lib.util.simple.PairObj;
+import com.evilnotch.silkspawners.Config;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -32,13 +31,11 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformT
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**

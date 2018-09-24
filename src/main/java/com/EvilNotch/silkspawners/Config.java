@@ -1,19 +1,11 @@
-package com.EvilNotch.silkspawners;
+package com.evilnotch.silkspawners;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 
-import com.EvilNotch.lib.minecraft.EntityUtil;
-import com.EvilNotch.lib.minecraft.EnumChatFormatting;
-import com.EvilNotch.lib.minecraft.content.entity.EntityDefintions.EntityType;
-import com.EvilNotch.lib.util.Line.LineBase;
+import com.evilnotch.lib.minecraft.util.EnumChatFormatting;
+import com.evilnotch.lib.util.JavaUtil;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityBlaze;
-import net.minecraft.entity.monster.EntityGolem;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.passive.EntityBat;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -88,7 +80,7 @@ public class Config {
 		noPartialTickBlock = config.getBoolean("noPartialTickBlock", "render", noPartialTickBlock, "If animation block is false and this is enabled all entities will render without parital ticks");
 		dynamicScalingBlock = config.get("render", "dynamicScalingBlock", dynamicScalingBlock).getBoolean();
 		dynamicScalingItem = config.get("render", "dynamicScalingItem", dynamicScalingItem).getBoolean();
-		if(!LineBase.toWhiteSpaced(spawnerBlockName).equals(""))
+		if(!JavaUtil.toWhiteSpaced(spawnerBlockName).equals(""))
 			hasCustomName = true;
 		
 		tooltip_spawncount = config.get("tooltip", "spawnCount", true).getBoolean();

@@ -1,4 +1,4 @@
-package com.EvilNotch.silkspawners.client.render.tileentity;
+package com.evilnotch.silkspawners.client.render.tileentity;
 
 import org.lwjgl.opengl.GL11;
 

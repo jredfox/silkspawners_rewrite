@@ -1,4 +1,4 @@
-package com.EvilNotch.silkspawners.commands;
+package com.evilnotch.silkspawners.commands;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -6,7 +6,7 @@ import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 
-import com.EvilNotch.lib.minecraft.EntityUtil;
+import com.evilnotch.lib.minecraft.util.EntityUtil;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;

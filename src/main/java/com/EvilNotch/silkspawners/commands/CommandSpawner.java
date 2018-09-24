@@ -1,6 +1,6 @@
-package com.EvilNotch.silkspawners.commands;
+package com.evilnotch.silkspawners.commands;
 
-import com.EvilNotch.silkspawners.MainJava;
+import com.evilnotch.silkspawners.MainJava;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
