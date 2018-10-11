@@ -195,7 +195,7 @@ public class ToolTipEvent {
 		if(Config.tooltip_CustomNames && Strings.isNotEmpty(custom))
     		list.add(ChatFormatting.AQUA + I18n.translateToLocal("silkspawners.CustomName.name") + ": " + ChatFormatting.YELLOW + custom);
 		if(SpawnerUtil.multiIndexSpawner(nbt))
-			list.add(ChatFormatting.LIGHT_PURPLE + I18n.translateToLocal("silkspawners.SpawnPotentials.name") +  ":" + nbt.getTagList("SpawnPotentials", 10).tagCount());
+			list.add(ChatFormatting.LIGHT_PURPLE + I18n.translateToLocal("silkspawners.spawnpotentials.name") +  ":" + nbt.getTagList("SpawnPotentials", 10).tagCount());
 		
 		if(SpawnerUtil.isStackCurrentCustomPos(nbt))
 		{

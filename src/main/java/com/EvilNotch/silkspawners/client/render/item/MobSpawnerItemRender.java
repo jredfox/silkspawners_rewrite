@@ -13,6 +13,7 @@ import com.evilnotch.silkspawners.client.proxy.ClientProxy;
 import com.evilnotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
 import com.elix_x.itemrender.IItemRenderer;
 import com.evilnotch.lib.api.FieldAcess;
+import com.evilnotch.lib.api.MCPSidedString;
 import com.evilnotch.lib.api.ReflectionUtil;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.util.JavaUtil;
@@ -78,12 +79,13 @@ public class MobSpawnerItemRender implements IItemRenderer{
             	return;
         	List<Entity> toRender = pair.getKey();
         	Double[] offsets = pair.getValue();
+            float f1 = getScale(toRender,!Config.dynamicScalingItem);
             for(int i=0;i<toRender.size();i++)
             {
             	Entity e = toRender.get(i);
             	if(e == null)
             		continue;
-            	renderEntity(e,world,offsets[i],type);
+            	renderEntity(e,f1,world,offsets[i],type);
             }
         }
         catch(Exception e)
@@ -105,7 +107,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         }
 	}
 	
-	public void renderEntity(Entity entity, World world,double offset,TransformType type) {
+	public void renderEntity(Entity entity,float scale, World world,double offset,TransformType type) {
 		float lastX = OpenGlHelper.lastBrightnessX;
 		float lastY = OpenGlHelper.lastBrightnessY;
 		
@@ -115,11 +117,10 @@ public class MobSpawnerItemRender implements IItemRenderer{
         setLightmapDisabled(disableLight);//don't enable light mapping to false if it's rendering in the gui
         
         entity.setWorld(world);
-        float f1 = getScale(entity,!Config.dynamicScalingItem);
         GL11.glRotatef((float) (getRenderTime()*10), 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-20F, 1.0F, 0.0F, 0.0F);
         GL11.glTranslatef(0.0F, -0.4F, 0.0F);
-        GL11.glScalef(f1, f1, f1);
+        GL11.glScalef(scale, scale, scale);
         entity.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
         
         float partialTicks = Config.animationItem ? Minecraft.getMinecraft().getRenderPartialTicks() : 0;
@@ -132,6 +133,29 @@ public class MobSpawnerItemRender implements IItemRenderer{
         OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);*/
+	}
+	/**
+	 * get the smallest scale based upon a mob stack for rendering
+	 */
+	public static float getScale(List<Entity> ents, boolean old)
+	{
+		if(ents.isEmpty())
+			return -1;
+		float scale = getScale(ents.get(0),old);
+		for(Entity e : ents)
+		{
+			float compare = getScale(e,old);
+			if(e.getName().equals("Spider"))
+			{
+//				System.out.println("Spider:" + compare);
+			}
+			if(compare < scale)
+			{
+//				System.out.println("scaling lessthen:" + e.getName());
+				scale = compare;
+			}
+		}
+		return scale;
 	}
 	/**
 	 * old config option is equal to nei's scale exactly
@@ -263,7 +287,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	}
 
 	public boolean isDrawing(BufferBuilder buffer) {
-		return (Boolean)ReflectionUtil.getObject(buffer, BufferBuilder.class, "isDrawing");
+		return (Boolean)ReflectionUtil.getObject(buffer, BufferBuilder.class, ClientProxy.isDrawing);
 	}
 	
 	public static boolean entCached = false;

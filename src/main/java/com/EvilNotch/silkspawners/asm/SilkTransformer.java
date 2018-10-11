@@ -30,7 +30,10 @@ public class SilkTransformer implements IClassTransformer{
 			{
 				case 0:
 					if(FMLCorePlugin.isObf)
+					{
+						System.out.println("TransForming :" + clazzes.get(index));
 						return ASMHelper.replaceClass(inputBase + "MobSpawnerBaseLogic");
+					}
 				break;
 			}
 		}

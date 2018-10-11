@@ -11,7 +11,7 @@ public class SilkCorePlugin implements IFMLLoadingPlugin{
 
 	@Override
 	public String[] getASMTransformerClass() {
-		 return new String[] {"com.EvilNotch.silkspawners.asm.SilkTransformer"};
+		 return new String[] {"com.evilnotch.silkspawners.asm.SilkTransformer"};
 	}
 
 	@Override

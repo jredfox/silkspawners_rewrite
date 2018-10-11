@@ -4,6 +4,7 @@ import com.evilnotch.silkspawners.client.ToolTipEvent;
 import com.evilnotch.silkspawners.client.render.item.MobSpawnerItemRender;
 import com.evilnotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
 import com.elix_x.itemrender.IItemRendererHandler;
+import com.evilnotch.lib.api.MCPSidedString;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.ItemSpawner;
@@ -16,11 +17,13 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class ClientProxy extends ServerProxy{
+	public static String isDrawing;
 	
 	@Override
 	public void preinit()
 	{
 		super.preinit();
+		isDrawing = new MCPSidedString("isDrawing","field_179010_r").toString();
 	}
 	@Override
 	public void init()

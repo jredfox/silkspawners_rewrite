@@ -51,8 +51,8 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 public class MainJava
 {
     public static final String MODID = "silkspawners";
-    public static final String VERSION = "1.8";
-	@SidedProxy(clientSide = "com.EvilNotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.EvilNotch.silkspawners.client.proxy.ServerProxy")
+    public static final String VERSION = "1.8.04";
+	@SidedProxy(clientSide = "com.evilnotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.evilnotch.silkspawners.client.proxy.ServerProxy")
 	public static ServerProxy proxy;
 	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
 	public static boolean dungeontweaks = false;
