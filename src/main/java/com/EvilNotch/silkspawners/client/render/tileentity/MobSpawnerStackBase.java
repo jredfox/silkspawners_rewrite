@@ -31,7 +31,8 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     		return;//don't render until the tile entity world is set
     	MobSpawnerBaseLogic logic = ((TileEntityMobSpawner)te).getSpawnerBaseLogic();
     	List<Entity> ents = logic.getCachedEntities();
-
+    	float scale = getScale(ents, !Config.dynamicScalingBlock);
+    	
         for(int i=0;i<ents.size();i++)
         {
         	Entity e = ents.get(i);
@@ -52,25 +53,26 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	float posX = OpenGlHelper.lastBrightnessX;
         	float posY = OpenGlHelper.lastBrightnessY;
         	MobSpawnerItemRender.setLightmapDisabled(false);
-        	renderSpawnerEntity(e,logic.offsets[i],logic,x,y,z,partialTicks,destroyStage,alpha);
+        	renderSpawnerEntity(e,scale,logic.offsets[i],logic,x,y,z,partialTicks,destroyStage,alpha);
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, posX, posY);
             GlStateManager.depthMask(true);
         	GlStateManager.enableRescaleNormal();
         	GL11.glPopMatrix();
         }
     }
+    
 
-	public void renderSpawnerEntity(Entity entity,double offset,MobSpawnerBaseLogic mobSpawnerLogic, double x, double y, double z, float partialTicks, int destroyStage,float alpha) 
+	public void renderSpawnerEntity(Entity entity, float scale, double offset, MobSpawnerBaseLogic mobSpawnerLogic, double x, double y, double z, float partialTicks, int destroyStage,float alpha) 
 	{
         if (entity != null)
         {
             entity.setWorld(mobSpawnerLogic.getSpawnerWorld());
-            float f1 = getScale(entity,!Config.dynamicScalingBlock);
+     
             GL11.glTranslatef(0.0F, 0.4F, 0.0F);
             GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
             GL11.glRotatef(-30.0F, 1.0F, 0.0F, 0.0F);
             GL11.glTranslatef(0.0F, -0.4F, 0.0F);
-            GL11.glScalef(f1, f1, f1);
+            GL11.glScalef(scale, scale, scale);
             entity.setLocationAndAngles(x, y, z, 0.0F, 0.0F);
             if(!mobSpawnerLogic.active || entity instanceof EntityBlaze && !Config.animationSpawner || Config.noPartialTickBlock && !Config.animationSpawner)
             {
@@ -80,6 +82,24 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
             Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, false);
         }
 	}
+	
+	/**
+	 * get the smallest scale based upon a mob stack for rendering
+	 */
+	public static float getScale(List<Entity> ents, boolean old)
+	{
+		if(ents.isEmpty())
+			return -1;
+		float scale = getScale(ents.get(0),old);
+		for(Entity e : ents)
+		{
+			float compare = getScale(e,old);
+			if(compare < scale)
+				scale = compare;
+		}
+		return scale;
+	}
+	
 	public static float getScale(Entity entity,boolean old) 
 	{
 		float old_scale = 0.4375F;

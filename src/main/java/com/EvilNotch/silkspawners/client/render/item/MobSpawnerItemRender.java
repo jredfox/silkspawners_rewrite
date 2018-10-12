@@ -99,6 +99,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         {
         	Minecraft.getMinecraft().entityRenderer.disableLightmap();
         	GlStateManager.disableLighting();
+//        	System.out.println("y u here?");
         }
         else
         {
