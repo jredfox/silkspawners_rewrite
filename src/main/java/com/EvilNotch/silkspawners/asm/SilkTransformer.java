@@ -25,16 +25,12 @@ public class SilkTransformer implements IClassTransformer{
 	{
 		try
 		{
-			String inputBase = "assets/silkspawners/asm/";
+			String inputBase = "assets/silkspawners/asm/" + (obfuscated ? "srg/" : "deob/");
 			switch(index)
 			{
 				case 0:
-					if(FMLCorePlugin.isObf)
-					{
 						System.out.println("TransForming :" + clazzes.get(index));
 						return ASMHelper.replaceClass(inputBase + "MobSpawnerBaseLogic");
-					}
-				break;
 			}
 		}
 		catch(Exception e)

@@ -66,6 +66,9 @@ public class ItemSpawner extends ItemBlock{
 				nbt.removeTag("z");
 				nbt.removeTag("id");
 				
+				//mod support
+				MainJava.removeDungeonTweaksTag(nbt);
+				
 	        	nbt.setString("silkTag", loc.toString());
 	        	nbt.setTag("SpawnData", new NBTTagCompound());
 	        	NBTTagCompound data = (NBTTagCompound) nbt.getTag("SpawnData");
@@ -81,17 +84,6 @@ public class ItemSpawner extends ItemBlock{
 	        	entry.setInteger("Weight", 1);
 	        	list.appendTag(entry);
 	        	nbt.setTag("SpawnPotentials", list);
-	        	
-	        	if(MainJava.dungeontweaks)
-	        	{
-	        		NBTTagCompound caps = nbt.getCompoundTag("ForgeCaps");
-	        		if(caps == null)
-	        		{
-	        			caps = new NBTTagCompound();
-	        			nbt.setTag("ForgeCaps", caps);
-	        		}
-	        		caps.setInteger("dungeontweaks:hasscanned", 1);
-	        	}
 	        	
 	        	//display name
 	        	nbt.setTag("display", new NBTTagCompound());

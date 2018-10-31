@@ -1,5 +1,6 @@
 package com.evilnotch.silkspawners;
 
+import com.evilnotch.lib.api.ReflectionUtil;
 import com.evilnotch.lib.minecraft.content.capability.primitive.CapBoolean;
 import com.evilnotch.lib.minecraft.content.capability.registry.CapRegHandler;
 import com.evilnotch.lib.minecraft.content.client.creativetab.BasicCreativeTab;
@@ -51,7 +52,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 public class MainJava
 {
     public static final String MODID = "silkspawners";
-    public static final String VERSION = "1.8.04";
+    public static final String VERSION = "1.8.05";
 	@SidedProxy(clientSide = "com.evilnotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.evilnotch.silkspawners.client.proxy.ServerProxy")
 	public static ServerProxy proxy;
 	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
@@ -60,22 +61,28 @@ public class MainJava
 	public static BasicCreativeTab tab_nonliving;
 	public static BasicCreativeTab tab_custom;
 	public static ItemSpawner mob_spawner;
-	private ResourceLocation dungeonTweaksLoc;
+	
+	public static ResourceLocation dungeonTweaksLoc;
+	public static boolean dungeonTweaksLegacy = false;
     
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent e)
 	{
 		Config.loadConfig(e);
-	    GeneralRegistry.registerGameRule("CustomPosSpawner", true);
-	    GeneralRegistry.registerGameRule("MultiSpawnerCurrentIndex", false);
-	    GeneralRegistry.registerGameRule("SpawnerSaveDelay", false);
+	    GeneralRegistry.registerGameRule("CustomPosSpawner", Config.grPosSpawner);
+	    GeneralRegistry.registerGameRule("MultiSpawnerCurrentIndex", Config.grCurrentIndex);
+	    GeneralRegistry.registerGameRule("SpawnerSaveDelay", Config.grDelay);
 	    GeneralRegistry.registerCommand(new CommandMTHand());
 	    GeneralRegistry.registerCommand(new CommandSpawner());
 	    mob_spawner = new ItemSpawner();
 	 	ForgeRegistries.ITEMS.register(mob_spawner);
+	 	
 	 	dungeontweaks = Loader.isModLoaded("dungeontweaks");
 	 	if(dungeontweaks)
+	 	{
 	 		dungeonTweaksLoc = new ResourceLocation("dungeontweaks" + ":" + "hasScanned");
+	 		dungeonTweaksLegacy = ReflectionUtil.classForName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post") != null;
+	 	}
 	 	 
 	    tab_living = new BasicCreativeTab(new ResourceLocation("silkspawners:living"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("Living Mob Spawners","en_us"));
 	    tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("NonLiving Mob Spawners","en_us"));
@@ -153,13 +160,20 @@ public class MainJava
 		int x = nbt.getInteger("x");
 		int y = nbt.getInteger("y");
 		int z = nbt.getInteger("z");
+		
+		//vanilla tag removal but, do this after getting the pos
 		nbt.removeTag("x");
 		nbt.removeTag("y");
 		nbt.removeTag("z");
+		nbt.removeTag("id");
+		
+		//mod tag removal
+		removeDungeonTweaksTag(nbt);
+		
 		//Supports custom pos spawners
 		if(SpawnerUtil.isCustomSpawnerPos(nbt,"Pos") && w.getGameRules().getBoolean("CustomPosSpawner"))
 			SpawnerUtil.setOffsets(nbt,x,y,z);
-		nbt.removeTag("id");
+		
 		//if gamerule force multi index spawners to stack warning will loose initial index
 		if(SpawnerUtil.multiIndexSpawner(nbt) && !w.getGameRules().getBoolean("MultiSpawnerCurrentIndex"))
 		{
@@ -198,27 +212,6 @@ public class MainJava
 		
 		nbt.setTag("display", display);
 		stack.setTagCompound(nbt);
-		
-    	if(dungeontweaks)
-    	{
-    		//up to date support
-    		CapBoolean scan = (CapBoolean) CapRegHandler.getCapability(tile,dungeonTweaksLoc);
-    		if(scan != null)
-    		{
-    			scan.value = true;
-    		}
-    		else
-    		{
-    			//this is legacy support
-    			NBTTagCompound caps = nbt.getCompoundTag("ForgeCaps");
-    			if(caps == null)
-    			{
-    				caps = new NBTTagCompound();
-    				nbt.setTag("ForgeCaps", caps);
-    			}
-    			caps.setInteger("dungeontweaks:hasscanned", 1);
-    		}
-    	}
 	}
 	@SubscribeEvent
     public void pick(PickEvent.Block e)
@@ -326,6 +319,7 @@ public class MainJava
     {
     	readSpawner(e.getState(),e.getWorld(),e.getPos(),e.getPlayer(),e.getHand() );
     }
+	
 	public void readSpawner(IBlockState state, World w,BlockPos pos, EntityPlayer player,EnumHand hand) 
 	{
 	   if(state == null || player == null || pos == null || hand == null || w == null)
@@ -341,14 +335,41 @@ public class MainJava
 	   TileEntityUtil.setTileNBT(w, player, pos, s, nbt, false);//new format fires EvilNotchLib TileStackSync Events for compatibility and overrides
 	   w.notifyBlockUpdate(pos, state, w.getBlockState(pos), 3);//fixes issues
 	}
+	
 	@SubscribeEvent(priority=EventPriority.HIGH)
     public void syncOffsets(TileStackSyncEvent.Merge e)
     {
 		if(e.isBlockData || !(e.tile instanceof TileEntityMobSpawner))
 			return;
+		
 		if(SpawnerUtil.isCustomSpawnerPos(e.nbt,"offsets"))
 		   SpawnerUtil.reAlignSpawnerPos(e.nbt, e.pos.getX(), e.pos.getY(), e.pos.getZ() );
+		
+		dungeonTweaksCompat(e.nbt);
     }
+	
+    public static void dungeonTweaksCompat(NBTTagCompound nbt)
+    {
+		if(dungeontweaks)
+		{
+			if(dungeonTweaksLegacy)
+			{
+    			//this is legacy support
+    			NBTTagCompound caps = nbt.getCompoundTag("ForgeCaps");
+    			if(caps.hasNoTags())
+    			{
+    				caps = new NBTTagCompound();
+    				nbt.setTag("ForgeCaps", caps);
+    			}
+    			caps.setBoolean(dungeonTweaksLoc.toString(), true);
+			}
+			else
+			{
+				nbt.setBoolean(dungeonTweaksLoc.toString(), true);
+			}
+		}
+    }
+	
 	/**
 	 * allow regular players permission to place a spawner
 	 */
@@ -360,4 +381,18 @@ public class MainJava
     		e.opsOnly = false;
     	}
     }
+	
+	public static void removeDungeonTweaksTag(NBTTagCompound nbt) 
+	{
+		if(!MainJava.dungeontweaks)
+			return;
+		if(MainJava.dungeonTweaksLegacy)
+		{
+			nbt.getCompoundTag("ForgeCaps").removeTag(MainJava.dungeonTweaksLoc.toString());
+		}
+		else
+		{
+			nbt.removeTag(MainJava.dungeonTweaksLoc.toString());
+		}
+	}
 }

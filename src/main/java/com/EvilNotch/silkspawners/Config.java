@@ -23,6 +23,11 @@ public class Config {
 	public static int slimeSize = 2;
 	public static int spawnerCacheItem = 100;
 	public static boolean nonLivingTab = false;
+	
+	public static boolean grPosSpawner = false;
+	public static boolean grCurrentIndex = true;
+	public static boolean grDelay = false;
+	
 	public static boolean animationSpawner = true;
 	public static boolean animationItem = true;
 	public static boolean mobItemRender = true;
@@ -67,13 +72,18 @@ public class Config {
 		maxSpawnerName = config.get("general", "maxCharSpawnerName", maxSpawnerName).getInt();
 		default_Delay = config.get("general", "defaultDelay", default_Delay).getInt();
 		spawnerBlockName =  config.get("general", "spawnerBlockName", spawnerBlockName).getString();
+		nonLivingTab = config.get("general", "nonLivingEntsInTab", nonLivingTab).getBoolean();
+		
+		config.addCustomCategoryComment("gamerules", "this is the default gamerule values for when a world is created it's not set in stone here");
+		grPosSpawner =  config.get("gamerules", "CustomPosSpawner", grPosSpawner).getBoolean();
+		grCurrentIndex =  config.get("gamerules", "MultiIndexCurrent", grCurrentIndex).getBoolean();
+		grDelay =  config.get("gamerules", "SpawnerSaveDelay", grDelay).getBoolean();
 		
 		coloredSpawners = config.get("render", "coloredSpawnerNames", coloredSpawners).getBoolean();
 		creativeTabSpawners = config.get("render", "creativeTabSpawners", creativeTabSpawners).getBoolean();
 		renderUseInitSpawn = config.get("render", "renderUseInitSpawn", renderUseInitSpawn).getBoolean();
 		spawnerCacheItem = config.get("render", "spawnerCacheItemTime", spawnerCacheItem).getInt();
 		slimeSize = config.get("render", "slimeSize", 2).getInt();
-		nonLivingTab = config.get("render", "nonLivingEntsInTab", nonLivingTab).getBoolean();
 		animationSpawner = config.get("render", "animationSpawnerBlock", animationSpawner).getBoolean();
 		animationItem = config.get("render", "animationSpawnerItem", animationItem).getBoolean();
 		mobItemRender = config.get("render", "mobItemRender", mobItemRender).getBoolean();
