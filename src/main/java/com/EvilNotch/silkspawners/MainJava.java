@@ -69,6 +69,7 @@ public class MainJava
 	public void preinit(FMLPreInitializationEvent e)
 	{
 		Config.loadConfig(e);
+		proxy.preinit();
 	    GeneralRegistry.registerGameRule("CustomPosSpawner", Config.grPosSpawner);
 	    GeneralRegistry.registerGameRule("MultiSpawnerCurrentIndex", Config.grCurrentIndex);
 	    GeneralRegistry.registerGameRule("SpawnerSaveDelay", Config.grDelay);

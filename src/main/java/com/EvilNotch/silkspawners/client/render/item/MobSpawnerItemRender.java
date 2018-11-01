@@ -3,8 +3,10 @@ package com.evilnotch.silkspawners.client.render.item;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
 
@@ -47,6 +49,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	
 	public static float lastBrightnessX = 0.0F;
 	public static float lastBrightnessY = 0.0F;
+	public static final Set<ResourceLocation> blist = new HashSet<ResourceLocation>(1);
 
 	@Override
 	public boolean renderPre(RenderItem renderItem, ItemStack stack, IBakedModel model, TransformType type) 
@@ -70,13 +73,14 @@ public class MobSpawnerItemRender implements IItemRenderer{
             NBTTagCompound nbt = itemstack.getTagCompound();
             if(nbt == null || !nbt.hasKey("SpawnData") && !nbt.hasKey("BlockEntityTag") || nbt.getBoolean("isBlank"))
             	return;
-            cacheEnts();
+
             NBTTagCompound data = nbt.hasKey("SpawnData") ? nbt.getCompoundTag("SpawnData") : nbt.getCompoundTag("BlockEntityTag").getCompoundTag("SpawnData");
             String id = data.getString("id");
             loc = new ResourceLocation(id);
             PairObj<List<Entity>,Double[]> pair = getCachedList(loc,data);
             if(pair == null)
             	return;
+//        	Integer.parseInt("a");
         	List<Entity> toRender = pair.getKey();
         	Double[] offsets = pair.getValue();
             float f1 = getScale(toRender,!Config.dynamicScalingItem);
@@ -92,9 +96,13 @@ public class MobSpawnerItemRender implements IItemRenderer{
         {
             if(isDrawing(Tessellator.getInstance().getBuffer()))
                 Tessellator.getInstance().draw();
-            System.out.println("exception drawing:" + loc + " removing from hashmap for render");
+            
+            blist.add(loc);
             ents.remove(loc);
+            
+            System.out.println("exception drawing:" + loc + " removing from hashmap for render");   
         }
+        
         if(type == TransformType.GUI)
         {
         	Minecraft.getMinecraft().entityRenderer.disableLightmap();
@@ -255,7 +263,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 			return ents;
 		}
 			
-		Entity e = ents.get(loc);
+		Entity e = getCachedEntity(loc);
 		if(e == null)
 			return null;
 		
@@ -265,10 +273,37 @@ public class MobSpawnerItemRender implements IItemRenderer{
 			li.set(0,e);
 		return defaultPair;
 	}
+	
+	/**
+	 * instead of cacheing all entities cache them one at a time for memory heap space optimization
+	 * it takes a little more cpu initially but, I think it's worth it
+	 */
+	public Entity getCachedEntity(ResourceLocation loc) 
+	{
+		Entity e = ents.get(loc);
+		if(e == null)
+		{
+			//don't re-instantiate an entity if it's render blacklisted for main entity with no nbt
+			if(blist.contains(loc))
+				return null;
+			else if(EntityUtil.living.containsKey(loc))
+				cacheEnt(loc, EntityUtil.living);
+			else if(EntityUtil.livingbase.containsKey(loc))
+				cacheEnt(loc, EntityUtil.livingbase);
+			else if(EntityUtil.nonliving.containsKey(loc))
+				cacheEnt(loc, EntityUtil.nonliving);
+			else
+				return null;//if it doesn't contain the location it's assumed to be blacklisted
+			e = ents.get(loc);
+		}
+		return e;
+	}
+
 	/**
 	 * returns a pair of List<Entity>(passengers and entity base) as well as offsets array
 	 */
-	public PairObj<List<Entity>,Double[]> getEnts(Entity entity) {
+	public PairObj<List<Entity>,Double[]> getEnts(Entity entity) 
+	{
 		List<Entity> toRender = JavaUtil.toArray(entity.getRecursivePassengers());
 		toRender.add(0,entity);
         
@@ -288,63 +323,50 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	}
 
 	public boolean isDrawing(BufferBuilder buffer) {
+//		System.out.println(ClientProxy.isDrawing);
 		return (Boolean)ReflectionUtil.getObject(buffer, BufferBuilder.class, ClientProxy.isDrawing);
 	}
 	
 	public static boolean entCached = false;
 	public static HashMap<ResourceLocation,Entity> ents = new LinkedHashMap();
 	public static HashMap<NBTTagCompound,PairObj<List<Entity>,Double[]>> entsNBT = new HashMap();
-	public void cacheEnts() 
-	{
-		if(entCached)
-			return;
-		long time = System.currentTimeMillis();
-		System.out.println("Starting to cache Ents!");
-		cacheEnts(EntityUtil.living);
-		cacheEnts(EntityUtil.livingbase);
-		JavaUtil.printTime(time, "Done Cacheing Ents:");
-		entCached = true;
-	}
 
-	protected void cacheEnts(HashMap<ResourceLocation, String[]> map) 
+	protected void cacheEnt(ResourceLocation entity, HashMap<ResourceLocation, String[]> map) 
 	{
-		for(ResourceLocation loc : map.keySet())
+		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setString("id", entity.toString());
+		Entity e = MobSpawnerBaseLogic.getEntityJockey(nbt, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn, false);
+		if(e instanceof EntityLiving)
 		{
-			NBTTagCompound nbt = new NBTTagCompound();
-			nbt.setString("id", loc.toString());
-			Entity e = MobSpawnerBaseLogic.getEntityJockey(nbt, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn, false);
-			if(e instanceof EntityLiving)
+			EntityLiving living = (EntityLiving)e;
+			try
 			{
-				EntityLiving living = (EntityLiving)e;
-				try
+				living.isChild();
+			}
+			catch(Throwable t)
+			{
+				System.out.println("error cacheing entity to find out if it's a child:" + entity);
+				return;
+			}
+			if(e instanceof EntitySlime)
+			{
+				try 
 				{
-					living.isChild();
-				}
-				catch(Throwable t)
+					FieldAcess.method_setSlimeSize.setAccessible(true);
+					FieldAcess.method_setSlimeSize.invoke(e,Config.slimeSize+1,true);
+				} 
+				catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) 
 				{
-					System.out.println("error cacheing entity to find out if it's a child:" + loc);
-					continue;
-				}
-				if(e instanceof EntitySlime)
-				{
-					try 
-					{
-						FieldAcess.method_setSlimeSize.setAccessible(true);
-						FieldAcess.method_setSlimeSize.invoke(e,Config.slimeSize+1,true);
-					} 
-					catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) 
-					{
-						e1.printStackTrace();
-					}
+					e1.printStackTrace();
 				}
 			}
-			if(e == null)
-			{
-				System.out.println("error caching entity to silkspawners render:" + loc);
-				continue;
-			}
-			ents.put(loc,e);
 		}
+		if(e == null)
+		{
+			System.out.println("error caching entity to silkspawners render:" + entity);
+			return;
+		}
+		ents.put(entity,e);
 	}
 
 	public double getRenderTime() {

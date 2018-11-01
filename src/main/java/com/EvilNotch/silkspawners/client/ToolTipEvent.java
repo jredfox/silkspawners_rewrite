@@ -41,11 +41,11 @@ public class ToolTipEvent {
 	{
 		if(e.phase != Phase.END)
 			return;
-		
 		if(time >=(20*Config.spawnerCacheItem))
 		{
-			System.out.println("client data size:" + MobSpawnerItemRender.entsNBT.size());
+			System.out.print("spawner render clearing data:" + MobSpawnerItemRender.entsNBT.size() + "regular:" + MobSpawnerItemRender.ents.size() + "\n");
 			MobSpawnerItemRender.entsNBT.clear();
+			MobSpawnerItemRender.ents.clear();
 			time = 0;
 		}
 		time++;
