@@ -39,6 +39,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -47,8 +48,8 @@ import net.minecraft.world.World;
  */
 public class MobSpawnerItemRender implements IItemRenderer{
 	
-	public static float lastBrightnessX = 0.0F;
-	public static float lastBrightnessY = 0.0F;
+	public static float lastX = 0.0F;
+	public static float lastY = 0.0F;
 	public static final Set<ResourceLocation> blist = new HashSet<ResourceLocation>(1);
 
 	@Override
@@ -116,9 +117,10 @@ public class MobSpawnerItemRender implements IItemRenderer{
         }
 	}
 	
-	public void renderEntity(Entity entity,float scale, World world,double offset,TransformType type) {
-		float lastX = OpenGlHelper.lastBrightnessX;
-		float lastY = OpenGlHelper.lastBrightnessY;
+	public void renderEntity(Entity entity,float scale, World world,double offset,TransformType type) 
+	{
+		lastX = OpenGlHelper.lastBrightnessX;
+		lastY = OpenGlHelper.lastBrightnessY;
 		
         GL11.glPushMatrix();
         
@@ -133,6 +135,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
         entity.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
         
         float partialTicks = Config.animationItem ? Minecraft.getMinecraft().getRenderPartialTicks() : 0;
+        BlockPos pos = Minecraft.getMinecraft().player.getPosition();
+        MobSpawnerStackBase.setLightMap(entity,pos.getX(), pos.getZ());
         Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks,false);
         
         GL11.glPopMatrix();
@@ -154,10 +158,6 @@ public class MobSpawnerItemRender implements IItemRenderer{
 		for(Entity e : ents)
 		{
 			float compare = getScale(e,old);
-			if(e.getName().equals("Spider"))
-			{
-//				System.out.println("Spider:" + compare);
-			}
 			if(compare < scale)
 			{
 //				System.out.println("scaling lessthen:" + e.getName());
@@ -195,7 +195,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.blendFunc(org.lwjgl.opengl.GL11.GL_SRC_ALPHA, org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableRescaleNormal();
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastBrightnessX, lastBrightnessY);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
         
         ClientProxy.changeTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         Minecraft.getMinecraft().getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
@@ -217,8 +217,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
         
         if(type != TransformType.GUI)
         {
-        	lastBrightnessX = OpenGlHelper.lastBrightnessX;
-        	lastBrightnessY = OpenGlHelper.lastBrightnessY;
+        	lastX = OpenGlHelper.lastBrightnessX;
+        	lastY = OpenGlHelper.lastBrightnessY;
         }
         GlStateManager.enableAlpha();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

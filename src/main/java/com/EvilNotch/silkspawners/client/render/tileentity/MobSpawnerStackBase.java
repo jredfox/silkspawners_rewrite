@@ -18,6 +18,7 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.util.math.BlockPos;
 
 public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 	
@@ -32,6 +33,9 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     	MobSpawnerBaseLogic logic = ((TileEntityMobSpawner)te).getSpawnerBaseLogic();
     	List<Entity> ents = logic.getCachedEntities();
     	float scale = getScale(ents, !Config.dynamicScalingBlock);
+    	
+    	float posX = OpenGlHelper.lastBrightnessX;
+    	float posY = OpenGlHelper.lastBrightnessY;
     	
         for(int i=0;i<ents.size();i++)
         {
@@ -50,17 +54,36 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	}
         	GL11.glPushMatrix();
         	GL11.glTranslatef((float)x + 0.5F, (float)y, (float)z + 0.5F);
-        	float posX = OpenGlHelper.lastBrightnessX;
-        	float posY = OpenGlHelper.lastBrightnessY;
+
         	MobSpawnerItemRender.setLightmapDisabled(false);
+        	BlockPos pos = te.getPos();
+            setLightMap(e, pos.getX(), pos.getZ());//set the lighting to the entitie's lighting for glowing textures like blazes
         	renderSpawnerEntity(e,scale,logic.offsets[i],logic,x,y,z,partialTicks,destroyStage,alpha);
-            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, posX, posY);
             GlStateManager.depthMask(true);
         	GlStateManager.enableRescaleNormal();
         	GL11.glPopMatrix();
         }
+        //reset the light map back to the intial coords
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, posX, posY);
     }
     
+
+	public static void setLightMap(Entity e,int x, int z) 
+	{
+		e.posX = x;
+		e.posZ = z;
+	    int i = e.getBrightnessForRender();
+
+        if (e.isBurning())
+        {
+            i = 15728880;
+        }
+
+        int j = i % 65536;
+        int k = i / 65536;
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+	}
+
 
 	public void renderSpawnerEntity(Entity entity, float scale, double offset, MobSpawnerBaseLogic mobSpawnerLogic, double x, double y, double z, float partialTicks, int destroyStage,float alpha) 
 	{
