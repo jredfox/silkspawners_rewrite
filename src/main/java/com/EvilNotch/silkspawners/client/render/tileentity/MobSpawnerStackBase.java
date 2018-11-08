@@ -19,6 +19,7 @@ import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 	
@@ -57,7 +58,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 
         	MobSpawnerItemRender.setLightmapDisabled(false);
         	BlockPos pos = te.getPos();
-            setLightMap(e, pos.getX(), pos.getZ());//set the lighting to the entitie's lighting for glowing textures like blazes
+            setLightMap(e, pos);//set the lighting to the entitie's lighting for glowing textures like blazes
         	renderSpawnerEntity(e,scale,logic.offsets[i],logic,x,y,z,partialTicks,destroyStage,alpha);
             GlStateManager.depthMask(true);
         	GlStateManager.enableRescaleNormal();
@@ -66,12 +67,17 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         //reset the light map back to the intial coords
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, posX, posY);
     }
-    
 
-	public static void setLightMap(Entity e,int x, int z) 
+	public static void setLightMap(Entity e, BlockPos pos) 
 	{
-		e.posX = x;
-		e.posZ = z;
+		e.posX = pos.getX();
+		e.posY = pos.getY();
+		e.posZ = pos.getZ();
+		setLightMap(e);
+	}
+
+	public static void setLightMap(Entity e) 
+	{
 	    int i = e.getBrightnessForRender();
 
         if (e.isBurning())
@@ -83,7 +89,6 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         int k = i / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
 	}
-
 
 	public void renderSpawnerEntity(Entity entity, float scale, double offset, MobSpawnerBaseLogic mobSpawnerLogic, double x, double y, double z, float partialTicks, int destroyStage,float alpha) 
 	{

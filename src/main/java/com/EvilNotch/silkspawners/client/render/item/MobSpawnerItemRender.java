@@ -35,6 +35,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
@@ -135,8 +136,11 @@ public class MobSpawnerItemRender implements IItemRenderer{
         entity.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
         
         float partialTicks = Config.animationItem ? Minecraft.getMinecraft().getRenderPartialTicks() : 0;
-        BlockPos pos = Minecraft.getMinecraft().player.getPosition();
-        MobSpawnerStackBase.setLightMap(entity,pos.getX(), pos.getZ());
+        EntityPlayer p = Minecraft.getMinecraft().player;
+        entity.posX = p.posX;
+        entity.posY = p.posY;
+        entity.posZ = p.posZ;
+        MobSpawnerStackBase.setLightMap(entity);
         Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks,false);
         
         GL11.glPopMatrix();
