@@ -1,10 +1,8 @@
 package com.evilnotch.silkspawners;
 
 import com.evilnotch.lib.api.ReflectionUtil;
-import com.evilnotch.lib.minecraft.content.capability.primitive.CapBoolean;
-import com.evilnotch.lib.minecraft.content.capability.registry.CapRegHandler;
+import com.evilnotch.lib.minecraft.content.auto.lang.LangEntry;
 import com.evilnotch.lib.minecraft.content.client.creativetab.BasicCreativeTab;
-import com.evilnotch.lib.minecraft.content.lang.LangEntry;
 import com.evilnotch.lib.minecraft.event.ClientBlockPlaceEvent;
 import com.evilnotch.lib.minecraft.event.PickEvent;
 import com.evilnotch.lib.minecraft.event.TileStackSyncEvent;
@@ -52,7 +50,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 public class MainJava
 {
     public static final String MODID = "silkspawners";
-    public static final String VERSION = "1.8.05";
+    public static final String VERSION = "1.8.07";
 	@SidedProxy(clientSide = "com.evilnotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.evilnotch.silkspawners.client.proxy.ServerProxy")
 	public static ServerProxy proxy;
 	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
@@ -333,7 +331,7 @@ public class MainJava
 	   NBTTagCompound nbt = s.getTagCompound();
 	   if(nbt.hasKey("BlockEntityTag"))
 		   return;
-	   TileEntityUtil.setTileNBT(w, player, pos, s, nbt, false);//new format fires EvilNotchLib TileStackSync Events for compatibility and overrides
+	   TileEntityUtil.setTileNBT(w, player, pos, nbt, false);//new format fires EvilNotchLib TileStackSync Events for compatibility and overrides
 	   w.notifyBlockUpdate(pos, state, w.getBlockState(pos), 3);//fixes issues
 	}
 	

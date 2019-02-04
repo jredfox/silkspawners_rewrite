@@ -2,8 +2,8 @@ package com.evilnotch.silkspawners.asm;
 
 import java.util.List;
 
-import com.evilnotch.lib.asm.ASMHelper;
 import com.evilnotch.lib.asm.FMLCorePlugin;
+import com.evilnotch.lib.asm.util.ASMHelper;
 import com.evilnotch.lib.util.JavaUtil;
 
 import net.minecraft.launchwrapper.IClassTransformer;

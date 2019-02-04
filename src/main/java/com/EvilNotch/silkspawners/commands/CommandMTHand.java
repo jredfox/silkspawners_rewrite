@@ -1,12 +1,7 @@
 package com.evilnotch.silkspawners.commands;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-
 import com.evilnotch.lib.minecraft.util.EntityUtil;
+import com.evilnotch.lib.minecraft.util.PlayerUtil;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -36,9 +31,9 @@ public class CommandMTHand extends CommandBase implements IClientCommand{
 		EntityPlayer player = (EntityPlayer) sender;
 		ItemStack stack = player.getHeldItem(EnumHand.MAIN_HAND);
 		NBTTagCompound nbt = stack.getTagCompound();
-		EntityUtil.sendClipBoard("", "",player, "",stack.getItem().getRegistryName().toString(),false);
+		PlayerUtil.sendClipBoard("", "",player, "",stack.getItem().getRegistryName().toString(),false);
 		if(nbt != null)
-			EntityUtil.sendToClientClipBoard(player, stack.getTagCompound().toString());
+			PlayerUtil.sendClipBoard(player, stack.getTagCompound().toString());
 	}
 
 	@Override

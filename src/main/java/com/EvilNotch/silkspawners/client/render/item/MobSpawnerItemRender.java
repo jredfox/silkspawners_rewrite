@@ -10,17 +10,16 @@ import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
 
-import com.evilnotch.silkspawners.client.ToolTipEvent;
-import com.evilnotch.silkspawners.client.proxy.ClientProxy;
-import com.evilnotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
-import com.elix_x.itemrender.IItemRenderer;
-import com.evilnotch.lib.api.FieldAcess;
-import com.evilnotch.lib.api.MCPSidedString;
+import com.evilnotch.iitemrender.handlers.IItemRenderer;
 import com.evilnotch.lib.api.ReflectionUtil;
+import com.evilnotch.lib.main.loader.LoaderFields;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.util.JavaUtil;
 import com.evilnotch.lib.util.simple.PairObj;
 import com.evilnotch.silkspawners.Config;
+import com.evilnotch.silkspawners.client.ToolTipEvent;
+import com.evilnotch.silkspawners.client.proxy.ClientProxy;
+import com.evilnotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -40,7 +39,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -356,8 +354,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
 			{
 				try 
 				{
-					FieldAcess.method_setSlimeSize.setAccessible(true);
-					FieldAcess.method_setSlimeSize.invoke(e,Config.slimeSize+1,true);
+					LoaderFields.method_setSlimeSize.setAccessible(true);
+					LoaderFields.method_setSlimeSize.invoke(e,Config.slimeSize+1,true);
 				} 
 				catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) 
 				{
