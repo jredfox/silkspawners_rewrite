@@ -5,7 +5,7 @@ import com.evilnotch.lib.minecraft.content.auto.lang.LangEntry;
 import com.evilnotch.lib.minecraft.content.client.creativetab.BasicCreativeTab;
 import com.evilnotch.lib.minecraft.event.ClientBlockPlaceEvent;
 import com.evilnotch.lib.minecraft.event.PickEvent;
-import com.evilnotch.lib.minecraft.event.TileStackSyncEvent;
+import com.evilnotch.lib.minecraft.event.tileentity.BlockDataEvent;
 import com.evilnotch.lib.minecraft.registry.GeneralRegistry;
 import com.evilnotch.lib.minecraft.util.BlockUtil;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
@@ -331,51 +331,27 @@ public class MainJava
 	   NBTTagCompound nbt = s.getTagCompound();
 	   if(nbt.hasKey("BlockEntityTag"))
 		   return;
-	   TileEntityUtil.setTileNBT(w, player, pos, nbt, false);//new format fires EvilNotchLib TileStackSync Events for compatibility and overrides
+	   TileEntityUtil.placeTileNBT(w, pos, player, nbt);
 	   w.notifyBlockUpdate(pos, state, w.getBlockState(pos), 3);//fixes issues
 	}
 	
 	@SubscribeEvent(priority=EventPriority.HIGH)
-    public void syncOffsets(TileStackSyncEvent.Merge e)
+    public void syncOffsets(BlockDataEvent.Merge e)
     {
-		if(e.isBlockData || !(e.tile instanceof TileEntityMobSpawner))
+		if(e.isVanilla || !(e.tile instanceof TileEntityMobSpawner))
 			return;
 		
 		if(SpawnerUtil.isCustomSpawnerPos(e.nbt,"offsets"))
 		   SpawnerUtil.reAlignSpawnerPos(e.nbt, e.pos.getX(), e.pos.getY(), e.pos.getZ() );
-		
-		dungeonTweaksCompat(e.nbt);
-    }
-	
-    public static void dungeonTweaksCompat(NBTTagCompound nbt)
-    {
-		if(dungeontweaks)
-		{
-			if(dungeonTweaksLegacy)
-			{
-    			//this is legacy support
-    			NBTTagCompound caps = nbt.getCompoundTag("ForgeCaps");
-    			if(caps.hasNoTags())
-    			{
-    				caps = new NBTTagCompound();
-    				nbt.setTag("ForgeCaps", caps);
-    			}
-    			caps.setBoolean(dungeonTweaksLoc.toString(), true);
-			}
-			else
-			{
-				nbt.setBoolean(dungeonTweaksLoc.toString(), true);
-			}
-		}
     }
 	
 	/**
 	 * allow regular players permission to place a spawner
 	 */
 	@SubscribeEvent(priority=EventPriority.HIGH)
-    public void syncDefault(TileStackSyncEvent.Permissions e)
+    public void syncDefault(BlockDataEvent.Permissions e)
     {
-    	if(!e.isBlockData && e.tile instanceof TileEntityMobSpawner)
+    	if(!e.isVanilla && e.tile instanceof TileEntityMobSpawner)
     	{
     		e.opsOnly = false;
     	}
@@ -394,4 +370,5 @@ public class MainJava
 			nbt.removeTag(MainJava.dungeonTweaksLoc.toString());
 		}
 	}
+	
 }
