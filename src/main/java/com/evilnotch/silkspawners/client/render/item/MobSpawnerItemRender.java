@@ -138,7 +138,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
         entity.posX = p.posX;
         entity.posY = p.posY;
         entity.posZ = p.posZ;
-        MobSpawnerStackBase.setLightMap(entity);
+        if(Config.dynamicLightingItem)
+        	MobSpawnerStackBase.setLightMap(entity);
         Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks,false);
         
         GL11.glPopMatrix();

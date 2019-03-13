@@ -58,7 +58,8 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 
         	MobSpawnerItemRender.setLightmapDisabled(false);
         	BlockPos pos = te.getPos();
-            setLightMap(e, pos);//set the lighting to the entitie's lighting for glowing textures like blazes
+        	if(Config.dynamicLightingBlock)
+        		setLightMap(e, pos);//set the lighting to the entitie's lighting for glowing textures like blazes
         	renderSpawnerEntity(e,scale,logic.offsets[i],logic,x,y,z,partialTicks,destroyStage,alpha);
             GlStateManager.depthMask(true);
         	GlStateManager.enableRescaleNormal();

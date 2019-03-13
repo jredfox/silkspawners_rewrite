@@ -34,6 +34,8 @@ public class Config {
 	public static boolean noPartialTickBlock = false;
 	public static boolean dynamicScalingBlock = false;
 	public static boolean dynamicScalingItem = false;
+	public static boolean dynamicLightingItem = true;
+	public static boolean dynamicLightingBlock = true;
 	
 	public static boolean tooltip_spawncount = true;
 	public static boolean tooltip_maxnearbyents = true;
@@ -42,8 +44,8 @@ public class Config {
 	public static boolean tooltip_MinSpawnDelay = false;
 	public static boolean tooltip_MaxSpawnDelay = false;
 	public static boolean tooltip_RequiredPlayerRange = false;
-	public static boolean tooltip_CustomNames;
-	public static boolean tooltip_CustomPos;
+	public static boolean tooltip_CustomNames = false;
+	public static boolean tooltip_CustomPos = false;
 	
 	/**
 	 * gets the array list of types then returns them in an order which makes since
@@ -90,6 +92,8 @@ public class Config {
 		noPartialTickBlock = config.getBoolean("noPartialTickBlock", "render", noPartialTickBlock, "If animation block is false and this is enabled all entities will render without parital ticks");
 		dynamicScalingBlock = config.get("render", "dynamicScalingBlock", dynamicScalingBlock).getBoolean();
 		dynamicScalingItem = config.get("render", "dynamicScalingItem", dynamicScalingItem).getBoolean();
+		dynamicLightingItem = config.get("render", "dynamicLightingItem", dynamicLightingItem).getBoolean();
+		dynamicLightingBlock = config.get("render", "dynamicLightingBlock", dynamicLightingBlock).getBoolean();
 		if(!JavaUtil.toWhiteSpaced(spawnerBlockName).equals(""))
 			hasCustomName = true;
 		

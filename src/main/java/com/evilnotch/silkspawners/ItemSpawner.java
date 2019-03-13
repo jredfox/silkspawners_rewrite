@@ -42,16 +42,24 @@ public class ItemSpawner extends ItemBlock{
     {
     	if(!Config.creativeTabSpawners)
     		return;
-        if(tab == MainJava.tab_living || tab == CreativeTabs.SEARCH)
+        if(tab == MainJava.tab_living)
         	populateTab(tab,EntityUtil.living, items);
         else if(tab == MainJava.tab_nonliving)
         {
         	populateTab(MainJava.tab_nonliving, EntityUtil.livingbase,items);
-        	if(Config.nonLivingTab || tab == CreativeTabs.SEARCH)
+        	if(Config.nonLivingTab)
         		populateTab(tab,EntityUtil.nonliving, items);
         }
-        else if(tab == MainJava.tab_custom || tab == CreativeTabs.SEARCH)
+        else if(tab == MainJava.tab_custom)
         	populateCustomSpawnerEntries(items);
+        else if(tab == CreativeTabs.SEARCH)
+        {
+        	populateTab(tab,EntityUtil.living, items);
+        	populateTab(tab,EntityUtil.livingbase, items);
+        	if(Config.nonLivingTab)
+        		populateTab(tab,EntityUtil.nonliving, items);
+        	populateCustomSpawnerEntries(items);
+        }
     }
     
 	protected static void populateTab(CreativeTabs redstone, HashMap<ResourceLocation, String[]> living, List<ItemStack> items) 
@@ -102,7 +110,9 @@ public class ItemSpawner extends ItemBlock{
 	        	items.add(spawner);
 	        }
 	}
-	public static void populateCustomSpawnerEntries(List<ItemStack> stacks) {
+	public static void populateCustomSpawnerEntries(List<ItemStack> tabList) {
+		List<ItemStack> stacks = new ArrayList(17);
+		
     	ItemStack skele = new ItemStack(Blocks.MOB_SPAWNER,1);
     	skele.setTagCompound(NBTUtil.getNBTFromString("{MaxNearbyEntities:6s,RequiredPlayerRange:16s,SpawnCount:4s,display:{isJockey:1b,EntName:\"entity.Skeleton.name\",EntColor:\"type_ranged\"},silkTag:\"minecraft:spider\",SpawnData:{Passengers:[{id:\"skeleton\"}],id:\"minecraft:spider\"},MaxSpawnDelay:800s,SpawnRange:4s,Delay:20,MinSpawnDelay:200s,SpawnPotentials:[{Entity:{Passengers:[{id:\"skeleton\"}],id:\"minecraft:spider\"},Weight:1}]}"));
     	
@@ -158,6 +168,7 @@ public class ItemSpawner extends ItemBlock{
     	for(ItemStack stack : stacks)
     	{
     		stack.getTagCompound().setInteger("Delay", Config.default_Delay);
+    		tabList.add(stack);
     	}
 	}
 }
