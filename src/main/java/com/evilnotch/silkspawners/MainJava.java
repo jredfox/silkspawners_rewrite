@@ -50,7 +50,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 public class MainJava
 {
     public static final String MODID = "silkspawners";
-    public static final String VERSION = "1.8.1.02";
+    public static final String VERSION = "1.8.1.04";
 	@SidedProxy(clientSide = "com.evilnotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.evilnotch.silkspawners.client.proxy.ServerProxy")
 	public static ServerProxy proxy;
 	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
@@ -83,9 +83,9 @@ public class MainJava
 	 		dungeonTweaksLegacy = ReflectionUtil.classForName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post") != null;
 	 	}
 	 	 
-	    tab_living = new BasicCreativeTab(new ResourceLocation("silkspawners:living"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("Living Mob Spawners","en_us"));
-	    tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("NonLiving Mob Spawners","en_us"));
-	    tab_custom = new BasicCreativeTab(new ResourceLocation("silkspawners:custom"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("Jockeys & Custom Entries","en_us"));
+	    tab_living = new BasicCreativeTab(new ResourceLocation("silkspawners:living"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("en_us","Living Mob Spawners"));
+	    tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("en_us","NonLiving Mob Spawners"));
+	    tab_custom = new BasicCreativeTab(new ResourceLocation("silkspawners:custom"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("en_us","Jockeys & Custom Entries"));
 	}
     @EventHandler
     public void init(FMLInitializationEvent event)
@@ -96,6 +96,7 @@ public class MainJava
     @EventHandler
     public void postinit(FMLPostInitializationEvent event)
     {
+    	EntityUtil.cacheEnts();
     	proxy.postinit();
     }
     @EventHandler
@@ -111,7 +112,7 @@ public class MainJava
     	World w = e.getWorld();
     	BlockPos p = e.getPos();
     	EntityPlayer player = e.getPlayer();
-    	if(b == null || w == null || p == null || w.isRemote || player == null)
+    	if(b == null || w == null || p == null || w.isRemote || player == null || !w.getGameRules().getBoolean("doTileDrops"))
     		return;
     	EnumHand hand = player.getActiveHand();
     	if(hand == null)
@@ -308,32 +309,15 @@ public class MainJava
 		return new ResourceLocation(tag.getString(key));
 	}
 	
+	/**
+	 * you could technically redirect the nbt to a custom sub compound tag here and set canFire to true but, silkspawners wants the root tag for easier /give command
+	 */
 	@SubscribeEvent
-    public void read(ClientBlockPlaceEvent e)
+    public void read(BlockDataEvent.HasTileData e)
     {
-    	readSpawner(e.getState(),e.getWorld(),e.getPos(),e.getPlayer(),e.getHand());
+		if(e.tile instanceof TileEntityMobSpawner && !e.nbt.hasNoTags())
+			e.canFire = true;
     }
-	@SubscribeEvent
-    public void read(BlockEvent.PlaceEvent e)
-    {
-    	readSpawner(e.getState(),e.getWorld(),e.getPos(),e.getPlayer(),e.getHand() );
-    }
-	
-	public void readSpawner(IBlockState state, World w,BlockPos pos, EntityPlayer player,EnumHand hand) 
-	{
-	   if(state == null || player == null || pos == null || hand == null || w == null)
-		   return;
-	   Block b = state.getBlock();
-	   ItemStack s = player.getHeldItem(hand);
-	   TileEntity tile = w.getTileEntity(pos);
-	   if(s == null || s.getTagCompound() == null || !(tile instanceof TileEntityMobSpawner))
-		   return;
-	   NBTTagCompound nbt = s.getTagCompound();
-	   if(nbt.hasKey("BlockEntityTag"))
-		   return;
-	   TileEntityUtil.placeTileNBT(tile, nbt, player, s);
-	   w.notifyBlockUpdate(pos, state, w.getBlockState(pos), 3);//fixes issues
-	}
 	
 	@SubscribeEvent(priority=EventPriority.HIGH)
     public void syncOffsets(BlockDataEvent.Merge e)

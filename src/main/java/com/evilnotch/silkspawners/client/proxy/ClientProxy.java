@@ -34,21 +34,13 @@ public class ClientProxy extends ServerProxy{
 		MinecraftForge.EVENT_BUS.register(new ToolTipEvent());
 		super.init();
 	}
-	@Override
-	public void postinit()
-	{
-		if(Config.mobItemRender || Config.creativeTabSpawners)
-		{
-			EntityUtil.cacheEnts();//gets data of bad entities and what can/can't be used as well as information
-		}
-		ItemSpawner.registerCreativeTabs();
-		super.postinit();
-	}
+	
 	@Override
 	public void onLoadComplete()
 	{
 		super.onLoadComplete();
 	}
+	
 	@Override
 	public void clientClose() 
 	{

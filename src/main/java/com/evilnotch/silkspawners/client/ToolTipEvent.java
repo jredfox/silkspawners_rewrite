@@ -9,6 +9,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.lwjgl.input.Keyboard;
 
 import com.evilnotch.lib.minecraft.event.DynamicTranslationEvent;
+import com.evilnotch.lib.minecraft.event.client.ClientDisconnectEvent;
 import com.evilnotch.lib.minecraft.util.EnumChatFormatting;
 import com.evilnotch.lib.util.simple.PairObj;
 import com.evilnotch.silkspawners.Config;
@@ -46,6 +47,7 @@ public class ToolTipEvent {
 			System.out.print("spawner render clearing data:" + MobSpawnerItemRender.entsNBT.size() + "regular:" + MobSpawnerItemRender.ents.size() + "\n");
 			MobSpawnerItemRender.entsNBT.clear();
 			MobSpawnerItemRender.ents.clear();
+			rainbows.clear();
 			time = 0;
 		}
 		time++;
@@ -99,7 +101,7 @@ public class ToolTipEvent {
 			e.getLeft().add(ChatFormatting.DARK_PURPLE + "SilkSpawners " + MainJava.versionType[0] + ChatFormatting.WHITE + ":" + ChatFormatting.AQUA + MainJava.VERSION);
 	}
 	@SubscribeEvent
-	public void disconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent e)
+	public void disconnect(ClientDisconnectEvent e)
 	{
 		MainJava.proxy.clientClose();
 	}

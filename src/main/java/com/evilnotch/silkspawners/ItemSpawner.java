@@ -38,19 +38,28 @@ public class ItemSpawner extends ItemBlock{
      * returns a list of items mob spawners with living,livingbase,and non living supported
      * it uses a cache so it doesn't lag each time
      */
-	public static HashMap<CreativeTabs,List<ItemStack>> map = new LinkedHashMap();
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
     {
-        List<ItemStack> stacks = map.get(tab);
-        if(stacks != null)
+    	if(!Config.creativeTabSpawners)
+    		return;
+        if(tab == MainJava.tab_living || tab == CreativeTabs.SEARCH)
+        	populateTab(tab,EntityUtil.living, items);
+        else if(tab == MainJava.tab_nonliving)
         {
-        	for(ItemStack stack : stacks)
-        		items.add(stack);
+        	populateTab(MainJava.tab_nonliving, EntityUtil.livingbase,items);
+        	if(Config.nonLivingTab || tab == CreativeTabs.SEARCH)
+        		populateTab(tab,EntityUtil.nonliving, items);
         }
+        else if(tab == MainJava.tab_custom || tab == CreativeTabs.SEARCH)
+        	populateCustomSpawnerEntries(items);
     }
-	protected static void populateTab(CreativeTabs redstone, HashMap<ResourceLocation, String[]> living,List<ItemStack> items) 
+    
+	protected static void populateTab(CreativeTabs redstone, HashMap<ResourceLocation, String[]> living, List<ItemStack> items) 
 	{
 	       Iterator<Map.Entry<ResourceLocation,String[]>> it = living.entrySet().iterator();
+       		NBTTagCompound tags = new NBTTagCompound();
+       		new TileEntityMobSpawner().writeToNBT(tags);
+       		
 	        while(it.hasNext())
 	        {
 	        	Map.Entry<ResourceLocation, String[]> map = it.next();
@@ -58,9 +67,7 @@ public class ItemSpawner extends ItemBlock{
 	        	String[] value = map.getValue();
 	        	
 	        	ItemStack spawner = new ItemStack(Blocks.MOB_SPAWNER,1);
-	        	NBTTagCompound nbt = new NBTTagCompound();
-	        	
-	        	new TileEntityMobSpawner().writeToNBT(nbt);
+	        	NBTTagCompound nbt = tags.copy();
 	    		nbt.removeTag("x");
 				nbt.removeTag("y");
 				nbt.removeTag("z");
@@ -94,37 +101,6 @@ public class ItemSpawner extends ItemBlock{
 	        	spawner.setTagCompound(nbt);
 	        	items.add(spawner);
 	        }
-	}
-	public static void registerCreativeTabs() 
-	{
-        if (!Config.creativeTabSpawners)
-        {
-        	return;
-        }
-		List<ItemStack> living = new ArrayList();
- 		populateTab(MainJava.tab_living,EntityUtil.living,living);
- 		
-		List<ItemStack> nonliving = new ArrayList();
-		populateTab(MainJava.tab_nonliving,EntityUtil.livingbase,nonliving);
-		if(Config.nonLivingTab)
-			populateTab(MainJava.tab_nonliving,EntityUtil.nonliving,nonliving);
-		
-		List<ItemStack> stacks = new ArrayList();
-		populateCustomSpawnerEntries(stacks);
- 		
- 		map.put(MainJava.tab_living, living);
- 		map.put(MainJava.tab_custom, stacks);
- 		map.put(MainJava.tab_nonliving,nonliving);
-		
-		List<ItemStack> all = new ArrayList();
-		for(List<ItemStack> li : map.values())
-		{
-			for(ItemStack stack : li)
-			{
-				all.add(stack);
-			}
-		}
-		map.put(CreativeTabs.SEARCH,all);
 	}
 	public static void populateCustomSpawnerEntries(List<ItemStack> stacks) {
     	ItemStack skele = new ItemStack(Blocks.MOB_SPAWNER,1);
