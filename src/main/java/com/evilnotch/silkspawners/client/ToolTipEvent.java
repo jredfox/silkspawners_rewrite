@@ -196,13 +196,13 @@ public class ToolTipEvent {
 		String custom = data.getString("CustomName");
 		if(Config.tooltip_CustomNames && Strings.isNotEmpty(custom))
     		list.add(ChatFormatting.AQUA + I18n.translateToLocal("silkspawners.CustomName.name") + ": " + ChatFormatting.YELLOW + custom);
+		
 		if(SpawnerUtil.multiIndexSpawner(nbt))
 			list.add(ChatFormatting.LIGHT_PURPLE + I18n.translateToLocal("silkspawners.spawnpotentials.name") +  ":" + nbt.getTagList("SpawnPotentials", 10).tagCount());
 		
-		if(SpawnerUtil.isStackCurrentCustomPos(nbt))
+		if(Config.tooltip_CustomPos && SpawnerUtil.isStackCurrentCustomPos(nbt))
 		{
-			if(Config.tooltip_CustomPos)
-				list.add(ChatFormatting.AQUA + "Custom Pos Spawner:true");
+			 list.add(ChatFormatting.AQUA + I18n.translateToLocal("silkspanwers.custompos.name") + ":true");
 			 String offset = I18n.translateToLocal("silkspawners.offset.name");
 			 advanced.add(ChatFormatting.YELLOW +  offset + "X:" + getOffset(nbt,0) );
 			 advanced.add(ChatFormatting.YELLOW +  offset + "Y:" + getOffset(nbt,1) );

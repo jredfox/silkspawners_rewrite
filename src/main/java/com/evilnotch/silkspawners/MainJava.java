@@ -171,8 +171,8 @@ public class MainJava
 		removeDungeonTweaksTag(nbt);
 		
 		//Supports custom pos spawners
-		if(SpawnerUtil.isCustomSpawnerPos(nbt,"Pos") && w.getGameRules().getBoolean("CustomPosSpawner"))
-			SpawnerUtil.setOffsets(nbt,x,y,z);
+		if(SpawnerUtil.isCustomSpawnerPos(nbt, "Pos") && w.getGameRules().getBoolean("CustomPosSpawner"))
+			SpawnerUtil.setOffsets(nbt, x, y, z);
 		
 		//if gamerule force multi index spawners to stack warning will loose initial index
 		if(SpawnerUtil.multiIndexSpawner(nbt) && !w.getGameRules().getBoolean("MultiSpawnerCurrentIndex"))

@@ -24,8 +24,8 @@ public class Config {
 	public static int spawnerCacheItem = 100;
 	public static boolean nonLivingTab = false;
 	
-	public static boolean grPosSpawner = false;
-	public static boolean grCurrentIndex = true;
+	public static boolean grPosSpawner = true;
+	public static boolean grCurrentIndex = false;
 	public static boolean grDelay = false;
 	
 	public static boolean animationSpawner = true;
