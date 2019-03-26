@@ -2,6 +2,7 @@ package com.evilnotch.silkspawners.client.render.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,6 +46,12 @@ public class MobSpawnerCache {
 		
 		if(!e.getPassengers().isEmpty())
 		{
+			//never render jockey spawner for default spider
+			if(loc.equals("minecraft:spider"))
+			{
+				fixJocks(e);
+				e.removePassengers();
+			}
 			return getCachedData(data);
 		}
 		
@@ -132,8 +139,7 @@ public class MobSpawnerCache {
 	 */
 	public static PairObj<List<Entity>,Double[]> getMounts(Entity entity) 
 	{
-		List<Entity> toRender = JavaUtil.toArray(entity.getRecursivePassengers());
-		toRender.add(0, entity);
+		List<Entity> toRender = getEntList(entity);
         
         Double[] offsets = new Double[toRender.size()];
     	for(int i=0;i<toRender.size();i++)
@@ -146,12 +152,31 @@ public class MobSpawnerCache {
     		}
     		offsets[i] = e.posY;
     	}
+    	
+    	fixJocks(toRender);
+    	
+		return new PairObj<List<Entity>,Double[]>(toRender,offsets);
+	}
+
+	public static void fixJocks(Entity base) 
+	{
+		List<Entity> toRender = getEntList(base);
+		fixJocks(toRender);
+	}
+
+	public static List<Entity> getEntList(Entity base)
+	{
+		List<Entity> toRender = JavaUtil.toArray(base.getRecursivePassengers());
+		toRender.add(0, base);
+		return toRender;
+	}
+
+	public static void fixJocks(List<Entity> toRender)
+	{
     	for(Entity e : toRender)
     	{
     		e.world.removeEntityDangerously(e);
     	}
-    	
-		return new PairObj<List<Entity>,Double[]>(toRender,offsets);
 	}
 
 }

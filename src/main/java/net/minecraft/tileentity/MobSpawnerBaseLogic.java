@@ -9,6 +9,7 @@ import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.minecraft.util.NBTUtil;
 import com.evilnotch.lib.util.JavaUtil;
 import com.evilnotch.silkspawners.Config;
+import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
@@ -147,8 +148,9 @@ public abstract class MobSpawnerBaseLogic
                     double d0 = j >= 1 ? nbttaglist.getDoubleAt(0) : (double)blockpos.getX() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double)this.spawnRange + 0.5D;
                     double d1 = j >= 2 ? nbttaglist.getDoubleAt(1) : (double)(blockpos.getY() + world.rand.nextInt(3) - 1);
                     double d2 = j >= 3 ? nbttaglist.getDoubleAt(2) : (double)blockpos.getZ() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double)this.spawnRange + 0.5D;
-                    Entity entity = EntityUtil.getEntityJockey(nbttagcompound, world, d0, d1, d2, true,false);
-
+                    
+                    Entity entity = EntityUtil.getEntityJockey(nbttagcompound, world, d0, d1, d2, true, false);
+                    
                     if (entity == null)
                     {
                     	this.resetTimer();
@@ -166,7 +168,7 @@ public abstract class MobSpawnerBaseLogic
                     EntityLiving entityliving = entity instanceof EntityLiving ? (EntityLiving)entity : null;
                     entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, world.rand.nextFloat() * 360.0F, 0.0F);
 
-                    if (entityliving == null || net.minecraftforge.event.ForgeEventFactory.canEntitySpawnSpawner(entityliving, getSpawnerWorld(), (float)entity.posX, (float)entity.posY, (float)entity.posZ, this))
+                    if (net.minecraftforge.event.ForgeEventFactory.canEntitySpawnSpawner(entityliving, getSpawnerWorld(), (float)entity.posX, (float)entity.posY, (float)entity.posZ, this))
                     {
                         if (this.spawnData.getNbt().getSize() == 1 && this.spawnData.getNbt().hasKey("id", 8) && entity instanceof EntityLiving)
                         {
@@ -177,12 +179,13 @@ public abstract class MobSpawnerBaseLogic
                         AnvilChunkLoader.spawnEntity(entity, world);
                         world.playEvent(2004, blockpos, 0);
 
-                        if (entityliving != null)
-                        {
-                            entityliving.spawnExplosionParticle();
-                        }
+                        entityliving.spawnExplosionParticle();
 
                         flag = true;
+                    }
+                    else if(entity != null)
+                    {
+                        MobSpawnerCache.fixJocks(entity);
                     }
                 }
 
@@ -340,6 +343,8 @@ public abstract class MobSpawnerBaseLogic
             				e.getRidingEntity().updatePassenger(e);
             		}
             	}
+            	MobSpawnerCache.fixJocks(ents);
+            	
             	offsets = new double[ents.size()];
             	for(int i=0;i<ents.size();i++)
             		offsets[i] = ents.get(i).posY;
@@ -366,7 +371,7 @@ public abstract class MobSpawnerBaseLogic
 			if(compound.hasKey("SkeletonTrap"))
 			{
 				Entity e2 = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation("skeleton"), NBTUtil.getNBTFromString("{ArmorItems:[{},{},{},{id:iron_helmet,Count:1,tag:{ench:[{lvl:1s,id:33s}]} }],HandItems:[{id:bow,Count:1,tag:{ench:[{lvl:1s,id:33s}]} },{}] }"), worldIn);
-				e2.startRiding(entity,true);
+				e2.startRiding(entity, true);
 				return entity;
 			}
 		}
@@ -397,7 +402,8 @@ public abstract class MobSpawnerBaseLogic
 	/**
 	 * first index is to determine if your on the first part of the opening of the nbt if so treat nbt like normal
 	 */
-	public static Entity getEntity(NBTTagCompound nbt,World world,BlockPos pos,boolean useInterface) {
+	public static Entity getEntity(NBTTagCompound nbt,World world,BlockPos pos,boolean useInterface) 
+	{
 		Entity e = null;
 		if(getEntityProps(nbt).getSize() > 0)
 		{
