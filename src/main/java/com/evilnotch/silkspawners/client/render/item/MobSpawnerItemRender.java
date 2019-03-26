@@ -122,12 +122,11 @@ public class MobSpawnerItemRender implements IItemRenderer{
         RenderUtil.setLightmapDisabled(disableLight);//don't enable light mapping to false if it's rendering in the gui
         
         entity.setWorld(world);
-        GL11.glRotatef((float) (ToolTipEvent.getRenderTime()*10), 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef((float) (RenderUtil.getRenderTime()*10), 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-20F, 1.0F, 0.0F, 0.0F);
         GL11.glTranslatef(0.0F, -0.4F, 0.0F);
         GL11.glScalef(scale, scale, scale);
    
-        
         partialTicks = Config.animationItem ? partialTicks : 0;
         EntityPlayer p = Minecraft.getMinecraft().player;
         
@@ -164,11 +163,11 @@ public class MobSpawnerItemRender implements IItemRenderer{
         
         if(type == type.GUI)
         {
-        	GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        	GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         }
         else
         {
-            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        	GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         }
         GlStateManager.cullFace(GlStateManager.CullFace.BACK);
         GlStateManager.depthMask(true);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.evilnotch.lib.api.ReflectionUtil;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
+import com.evilnotch.silkspawners.client.ToolTipEvent;
 import com.evilnotch.silkspawners.client.proxy.ClientProxy;
 
 import net.minecraft.client.Minecraft;
@@ -131,6 +132,10 @@ public class RenderUtil {
     public static boolean isDrawing(BufferBuilder buffer) 
 	{
 		return (Boolean)ReflectionUtil.getObject(buffer, BufferBuilder.class, ClientProxy.isDrawing);
+	}
+
+	public static double getRenderTime() {
+		return ToolTipEvent.getRenderTime();
 	}
 	
 

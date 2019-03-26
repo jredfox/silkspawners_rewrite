@@ -408,7 +408,7 @@ public abstract class MobSpawnerBaseLogic
 			e = EntityUtil.createEntityByNameQuietly(new ResourceLocation(nbt.getString("id")),world);
 			if(e == null)
 				return null;
-			e.setLocationAndAngles(0, 0, 0,0.0F, 0.0F);
+			e.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
 			NBTTagCompound tag = EntityUtil.getEntityNBT(e);
 			
 			e.readFromNBT(tag);

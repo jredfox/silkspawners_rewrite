@@ -146,6 +146,10 @@ public class MobSpawnerCache {
     		}
     		offsets[i] = e.posY;
     	}
+    	for(Entity e : toRender)
+    	{
+    		e.world.removeEntityDangerously(e);
+    	}
     	
 		return new PairObj<List<Entity>,Double[]>(toRender,offsets);
 	}
