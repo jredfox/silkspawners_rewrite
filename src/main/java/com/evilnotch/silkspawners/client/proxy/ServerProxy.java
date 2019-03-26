@@ -11,5 +11,5 @@ public class ServerProxy {
 	public void init() {}
 	public void postinit() {}
 	public void onLoadComplete() {}
-	public void clientClose() {}
+	public void clear() {}
 }

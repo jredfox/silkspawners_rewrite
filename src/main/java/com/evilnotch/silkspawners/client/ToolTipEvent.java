@@ -16,10 +16,12 @@ import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.MainJava;
 import com.evilnotch.silkspawners.SpawnerUtil;
 import com.evilnotch.silkspawners.client.render.item.MobSpawnerItemRender;
+import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.nbt.NBTTagCompound;
@@ -40,27 +42,24 @@ public class ToolTipEvent {
 	@SubscribeEvent
 	public void sptick(ClientTickEvent e)
 	{
-		if(e.phase != Phase.END)
+		if(e.phase != Phase.END || Minecraft.getMinecraft().world == null)
 			return;
 		if(time >=(20*Config.spawnerCacheItem))
 		{
-			System.out.print("spawner render clearing data:" + MobSpawnerItemRender.entsNBT.size() + "regular:" + MobSpawnerItemRender.ents.size() + "\n");
-			MobSpawnerItemRender.entsNBT.clear();
-			MobSpawnerItemRender.ents.clear();
-			rainbows.clear();
+			MainJava.proxy.clear();
 			time = 0;
 		}
 		time++;
 		
 		if(Config.animationItem)
 		{
-			for(Entity ent : MobSpawnerItemRender.ents.values())
+			for(Entity ent : MobSpawnerCache.ents.values())
 			{
     			if(ent instanceof EntityShulker)
     				continue;
 				ent.ticksExisted++;
 			}
-			for(PairObj<List<Entity>,Double[]> pair : MobSpawnerItemRender.entsNBT.values())
+			for(PairObj<List<Entity>,Double[]> pair : MobSpawnerCache.entsNBT.values())
 			{
 				for(Entity ent : pair.obj1)
 				{
@@ -71,6 +70,7 @@ public class ToolTipEvent {
 			}
 		}
 	}
+	
     public static int renderTime;
     public static float renderFrame;
 
@@ -100,11 +100,13 @@ public class ToolTipEvent {
 		if(Config.isDev)
 			e.getLeft().add(ChatFormatting.DARK_PURPLE + "SilkSpawners " + MainJava.versionType[0] + ChatFormatting.WHITE + ":" + ChatFormatting.AQUA + MainJava.VERSION);
 	}
+	
 	@SubscribeEvent
 	public void disconnect(ClientDisconnectEvent e)
 	{
-		MainJava.proxy.clientClose();
+		MainJava.proxy.clear();
 	}
+	
 	/**
 	 * let other mods override this if needed
 	 */

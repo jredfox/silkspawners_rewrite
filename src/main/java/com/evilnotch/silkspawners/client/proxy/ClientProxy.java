@@ -2,13 +2,12 @@ package com.evilnotch.silkspawners.client.proxy;
 
 import com.evilnotch.iitemrender.handlers.IItemRendererHandler;
 import com.evilnotch.lib.api.mcp.MCPSidedString;
-import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.silkspawners.Config;
-import com.evilnotch.silkspawners.ItemSpawner;
 import com.evilnotch.silkspawners.MainJava;
 import com.evilnotch.silkspawners.client.ToolTipEvent;
 import com.evilnotch.silkspawners.client.render.item.MobSpawnerItemRender;
 import com.evilnotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
+import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntityMobSpawner;
@@ -42,9 +41,12 @@ public class ClientProxy extends ServerProxy{
 	}
 	
 	@Override
-	public void clientClose() 
+	public void clear() 
 	{
 		ToolTipEvent.rainbows.clear();
+		System.out.print("spawner render clearing data:" + MobSpawnerCache.entsNBT.size() + " regular:" + MobSpawnerCache.ents.size() + "\n");
+		MobSpawnerCache.ents.clear();
+		MobSpawnerCache.entsNBT.clear();
 	}
 	
 	public static void changeTexture(ResourceLocation loc) 

@@ -31,7 +31,6 @@ public class Config {
 	public static boolean animationSpawner = true;
 	public static boolean animationItem = true;
 	public static boolean mobItemRender = true;
-	public static boolean noPartialTickBlock = false;
 	public static boolean dynamicScalingBlock = false;
 	public static boolean dynamicScalingItem = false;
 	public static boolean dynamicLightingItem = true;
@@ -89,7 +88,6 @@ public class Config {
 		animationSpawner = config.get("render", "animationSpawnerBlock", animationSpawner).getBoolean();
 		animationItem = config.get("render", "animationSpawnerItem", animationItem).getBoolean();
 		mobItemRender = config.get("render", "mobItemRender", mobItemRender).getBoolean();
-		noPartialTickBlock = config.getBoolean("noPartialTickBlock", "render", noPartialTickBlock, "If animation block is false and this is enabled all entities will render without parital ticks");
 		dynamicScalingBlock = config.get("render", "dynamicScalingBlock", dynamicScalingBlock).getBoolean();
 		dynamicScalingItem = config.get("render", "dynamicScalingItem", dynamicScalingItem).getBoolean();
 		dynamicLightingItem = config.get("render", "dynamicLightingItem", dynamicLightingItem).getBoolean();
