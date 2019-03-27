@@ -60,7 +60,7 @@ public class MobSpawnerCache {
 		PairObj<List<Entity>,Double[]> ents = entsNBT.get(data);
 		if(ents == null)
 		{
-			Entity e = MobSpawnerBaseLogic.getEntityJockey(data, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn,false);
+			Entity e = RenderUtil.getEntityStackFixed(data, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn,false);
 			if(e == null)
 				return null;
 			ents = getMounts(e);
@@ -95,7 +95,7 @@ public class MobSpawnerCache {
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setString("id", entity.toString());
-		Entity e = MobSpawnerBaseLogic.getEntityJockey(nbt, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn, false);
+		Entity e = RenderUtil.getEntityStackFixed(nbt, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn, false);
 		if(e instanceof EntityLiving)
 		{
 			EntityLiving living = (EntityLiving)e;
@@ -126,7 +126,6 @@ public class MobSpawnerCache {
 			System.out.println("error caching entity to silkspawners render:" + entity);
 			return;
 		}
-		fixJocks(e);//prevent stupidness from occuring
 		ents.put(entity, e);
 	}
 	
@@ -135,7 +134,7 @@ public class MobSpawnerCache {
 	 */
 	public static PairObj<List<Entity>,Double[]> getMounts(Entity entity) 
 	{
-		List<Entity> toRender = getEntList(entity);
+		List<Entity> toRender = EntityUtil.getEntList(entity);
         
         Double[] offsets = new Double[toRender.size()];
     	for(int i=0;i<toRender.size();i++)
@@ -149,30 +148,6 @@ public class MobSpawnerCache {
     		offsets[i] = e.posY;
     	}
     	
-    	fixJocks(toRender);
-    	
 		return new PairObj<List<Entity>,Double[]>(toRender,offsets);
 	}
-
-	public static void fixJocks(Entity base) 
-	{
-		List<Entity> toRender = getEntList(base);
-		fixJocks(toRender);
-	}
-
-	public static List<Entity> getEntList(Entity base)
-	{
-		List<Entity> toRender = JavaUtil.toArray(base.getRecursivePassengers());
-		toRender.add(0, base);
-		return toRender;
-	}
-
-	public static void fixJocks(List<Entity> toRender)
-	{
-    	for(Entity e : toRender)
-    	{
-    		e.world.removeEntityDangerously(e);
-    	}
-	}
-
 }

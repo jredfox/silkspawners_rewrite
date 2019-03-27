@@ -10,6 +10,7 @@ import com.evilnotch.lib.minecraft.util.NBTUtil;
 import com.evilnotch.lib.util.JavaUtil;
 import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
+import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
@@ -51,12 +52,12 @@ public abstract class MobSpawnerBaseLogic
     public int activatingRangeFromPlayer = 16;
     /** The range coefficient for spawning entities around. */
     public int spawnRange = 4;
-    @SideOnly(Side.CLIENT)
-	public List<Entity> cachedEntities = new ArrayList();
-    @SideOnly(Side.CLIENT)
-	public double[] offsets;
+    
     public boolean updated = false;
 	public boolean active = false;
+	//client only
+	public List<Entity> cachedEntities = new ArrayList();
+	public double[] offsets;
 
     @Nullable
     public ResourceLocation getEntityId()
@@ -97,16 +98,7 @@ public abstract class MobSpawnerBaseLogic
 
             if (this.getSpawnerWorld().isRemote)
             {
-            	//jeb_ sheep animate
-            	if(this.cachedEntity != null && Config.animationSpawner)
-            	{
-            		for(Entity e : this.cachedEntities)
-            		{
-            			if(e instanceof EntityShulker)
-            				continue;
-            			e.ticksExisted++;
-            		}
-            	}
+            	this.animateEntities();
             	
                 double d3 = (double)((float)blockpos.getX() + this.getSpawnerWorld().rand.nextFloat());
                 double d4 = (double)((float)blockpos.getY() + this.getSpawnerWorld().rand.nextFloat());
@@ -170,22 +162,15 @@ public abstract class MobSpawnerBaseLogic
 
                     if (net.minecraftforge.event.ForgeEventFactory.canEntitySpawnSpawner(entityliving, getSpawnerWorld(), (float)entity.posX, (float)entity.posY, (float)entity.posZ, this))
                     {
-                        if (this.spawnData.getNbt().getSize() == 1 && this.spawnData.getNbt().hasKey("id", 8) && entity instanceof EntityLiving)
-                        {
-                            if (!net.minecraftforge.event.ForgeEventFactory.doSpecialSpawn(entityliving, this.getSpawnerWorld(), (float)entity.posX, (float)entity.posY, (float)entity.posZ, this))
-                            ((EntityLiving)entity).onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), (IEntityLivingData)null);
-                        }
-
                         AnvilChunkLoader.spawnEntity(entity, world);
                         world.playEvent(2004, blockpos, 0);
-
                         entityliving.spawnExplosionParticle();
 
                         flag = true;
                     }
                     else if(entity != null)
                     {
-                        MobSpawnerCache.fixJocks(entity);
+                        EntityUtil.fixJocksRender(entity);
                     }
                 }
 
@@ -196,8 +181,21 @@ public abstract class MobSpawnerBaseLogic
             }
         }
     }
+    
+    public void animateEntities() 
+    {
+    	if(this.cachedEntity != null && Config.animationSpawner)
+    	{
+    		for(Entity e : this.cachedEntities)
+    		{
+    			if(e instanceof EntityShulker)
+    				continue;
+    			e.ticksExisted++;
+    		}
+    	}
+	}
 
-    public void resetTimer()
+	public void resetTimer()
     {
         if (this.maxSpawnDelay <= this.minSpawnDelay)
         {
@@ -219,8 +217,6 @@ public abstract class MobSpawnerBaseLogic
 
     public void readFromNBT(NBTTagCompound nbt)
     {
-//    	if(this.getSpawnerWorld() != null)
-//    		System.out.println("readingFromNBT:" + this.getSpawnerWorld().isRemote);
         this.spawnDelay = nbt.getShort("Delay");
         this.potentialSpawns.clear();
 
@@ -330,7 +326,7 @@ public abstract class MobSpawnerBaseLogic
     {
         if (this.cachedEntity == null)
         {	
-            this.cachedEntity = getEntityJockey(this.spawnData.getNbt(), this.getSpawnerWorld(), 0,0,0, Config.renderUseInitSpawn,false);
+            this.cachedEntity = RenderUtil.getEntityStackFixed(this.spawnData.getNbt(), this.getSpawnerWorld(), 0,0,0, Config.renderUseInitSpawn,false);
             if(this.cachedEntity != null)
             {
             	List<Entity> ents = JavaUtil.toArray(this.cachedEntity.getRecursivePassengers());
@@ -343,7 +339,6 @@ public abstract class MobSpawnerBaseLogic
             				e.getRidingEntity().updatePassenger(e);
             		}
             	}
-            	MobSpawnerCache.fixJocks(ents);
             	
             	offsets = new double[ents.size()];
             	for(int i=0;i<ents.size();i++)
@@ -354,103 +349,6 @@ public abstract class MobSpawnerBaseLogic
 
         return this.cachedEntity;
     }
-    
-	/**
-	 * Doesn't force nbt on anything unlike vanilla's methods.
-	 * Supports silkspawners rendering for skeleton traps
-	 */
-	public static Entity getEntityJockey(NBTTagCompound compound,World worldIn, double x, double y, double z,boolean useInterface,boolean attemptSpawn) 
-	{	
-        Entity entity = getEntity(compound,worldIn,new BlockPos(x,y,z),useInterface);
-        if(entity == null)
-        	return null;
-		
-        Entity toMount = entity;
-		if(new ResourceLocation(compound.getString("id")).toString().equals("minecraft:skeleton_horse"))
-		{
-			if(compound.hasKey("SkeletonTrap"))
-			{
-				Entity e2 = EntityUtil.createEntityFromNBTQuietly(new ResourceLocation("skeleton"), NBTUtil.getNBTFromString("{ArmorItems:[{},{},{},{id:iron_helmet,Count:1,tag:{ench:[{lvl:1s,id:33s}]} }],HandItems:[{id:bow,Count:1,tag:{ench:[{lvl:1s,id:33s}]} },{}] }"), worldIn);
-				e2.startRiding(entity, true);
-				return entity;
-			}
-		}
-        
-        if(attemptSpawn)
-        {
-            entity.forceSpawn = true;
-        	if(!worldIn.spawnEntity(entity))
-        		return null;
-        }
-        
-        if (compound.hasKey("Passengers", 9))
-        {
-             NBTTagList nbttaglist = compound.getTagList("Passengers", 10);
-             for (int i = 0; i < nbttaglist.tagCount(); ++i)
-             {
-                 Entity entity1 = getEntityJockey(nbttaglist.getCompoundTagAt(i), worldIn, x, y, z,useInterface,attemptSpawn);
-                  if (entity1 != null)
-                  {
-                      entity1.startRiding(toMount, true);
-                  }
-             }
-        }
-
-       return entity;
-	}
-
-	/**
-	 * first index is to determine if your on the first part of the opening of the nbt if so treat nbt like normal
-	 */
-	public static Entity getEntity(NBTTagCompound nbt,World world,BlockPos pos,boolean useInterface) 
-	{
-		Entity e = null;
-		if(getEntityProps(nbt).getSize() > 0)
-		{
-			e = createEntityFromNBTRender(nbt,pos,world);
-		}
-		else
-		{
-			e = EntityUtil.createEntityByNameQuietly(new ResourceLocation(nbt.getString("id")),world);
-			if(e == null)
-				return null;
-			e.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
-			NBTTagCompound tag = EntityUtil.getEntityNBT(e);
-			
-			e.readFromNBT(tag);
-			
-			if(e instanceof EntityLiving && useInterface || e instanceof EntityShulker)
-			{
-				((EntityLiving) e).onInitialSpawn(world.getDifficultyForLocation(pos), (IEntityLivingData)null);
-			}
-		}
-		return e;
-	}
-	/**
-	 * create an entity from nbt with full rendering capabilities
-	 */
-	public static Entity createEntityFromNBTRender(NBTTagCompound nbt,BlockPos pos, World world) {
-		Entity e = EntityUtil.createEntityByNameQuietly(new ResourceLocation(nbt.getString("id")),world);
-		if(e == null)
-			return null;
-		e.setLocationAndAngles(0,0,0,0.0F,0.0F);
-		e.readFromNBT(nbt);
-		//hard coded dynamic fix for a shitty thing now it doesn't change it's type only it's render stuffs
-		if(e instanceof EntityShulker)
-		{
-			((EntityLiving) e).onInitialSpawn(world.getDifficultyForLocation(pos), (IEntityLivingData)null);
-		}
-		return e;
-	}
-
-	private static NBTTagCompound getEntityProps(NBTTagCompound nbt) {
-		if(nbt == null)
-			return null;
-		nbt = nbt.copy();
-		nbt.removeTag("Passengers");
-		nbt.removeTag("id");
-		return nbt;
-	}
     
     @SideOnly(Side.CLIENT)
     public List<Entity> getCachedEntities()

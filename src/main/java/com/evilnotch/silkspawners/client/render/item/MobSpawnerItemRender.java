@@ -133,15 +133,14 @@ public class MobSpawnerItemRender implements IItemRenderer{
         
         if(Config.dynamicPositioning)
         {
-        	entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
+        	entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, 0.0F, 0.0F);
         }
         else
         {
-        	entity.setLocationAndAngles(0, 0, 0, entity.rotationYaw, entity.rotationPitch);
+        	entity.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
         }
-        
+        entity.setRotationYawHead(0.0F);//fixes head bugs
         Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, false);
-        
         GL11.glPopMatrix();
         
         resetOpenGL(type);
