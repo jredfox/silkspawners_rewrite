@@ -29,6 +29,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -43,6 +44,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 /**
  * this is the copied modified class of NEISpawnerRender port
@@ -59,6 +61,9 @@ public class MobSpawnerItemRender implements IItemRenderer{
 		IItemRendererHandler.renderItemStack(stack, model);
 		IItemRendererHandler.restoreLastBlurMipmap();
         
+		//make the entities render inside of the center of the block to start out with
+		GlStateManager.translate(0.5F, 0.5F, 0.5F);
+
 		ResourceLocation loc = null;
         try
         {
@@ -99,16 +104,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
             System.out.println("exception drawing:" + loc + " removing from hashmap for render");   
         }
         
-        if(type == TransformType.GUI)
-        {
-        	Minecraft.getMinecraft().entityRenderer.disableLightmap();
-        	GlStateManager.disableLighting();
-        }
-        else
-        {
-        	 Minecraft.getMinecraft().entityRenderer.enableLightmap();
-        	 GlStateManager.enableLighting();
-        }
+       RenderUtil.setLightmapDisabled(type == type.GUI);
 	}
 	
 	public void renderEntity(Entity entity, float scale, World world, double offset, TransformType type, float partialTicks) 
@@ -118,8 +114,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
 		
         GL11.glPushMatrix();
         
-    	boolean disableLight = type == TransformType.GUI;
-        RenderUtil.setLightmapDisabled(disableLight);//don't enable light mapping to false if it's rendering in the gui
+    	GlStateManager.enableLighting();
+        RenderUtil.setLightmapDisabled(type == type.GUI);//always keep lighting enabled for rendering entities
         
         entity.setWorld(world);
         GL11.glRotatef((float) (RenderUtil.getRenderTime()*10), 0.0F, 1.0F, 0.0F);
@@ -128,17 +124,17 @@ public class MobSpawnerItemRender implements IItemRenderer{
         GL11.glScalef(scale, scale, scale);
    
         partialTicks = Config.animationItem ? partialTicks : 0;
-        EntityPlayer p = Minecraft.getMinecraft().player;
         
-        entity.posX = p.posX;
-        entity.posY = p.posY;
-        entity.posZ = p.posZ;
-        
-        if(Config.dynamicLightingItem)
+        if(type != type.GUI && Config.dynamicLightingItem)
+        {
+            EntityPlayer p = Minecraft.getMinecraft().player;
+            entity.posX = p.posX;
+            entity.posY = p.posY;
+            entity.posZ = p.posZ;
         	RenderUtil.setLightMap(entity);
+        }
         
         entity.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
-        
         Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, false);
         
         GL11.glPopMatrix();

@@ -22,7 +22,11 @@ public class RenderUtil {
 		e.posZ = pos.getZ();
 		setLightMap(e);
 	}
-
+	
+	/**
+	 * the default brightness to render
+	 */
+	public static int defaultLighting = 15728880;
 	public static void setLightMap(Entity e) 
 	{
 	    int i = e.getBrightnessForRender();
@@ -32,6 +36,11 @@ public class RenderUtil {
             i = 15728880;
         }
 
+       setLightMap(i);
+	}
+	
+	public static void setLightMap(int i) 
+	{
         int j = i % 65536;
         int k = i / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);

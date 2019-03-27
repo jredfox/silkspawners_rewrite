@@ -12,17 +12,14 @@ import com.evilnotch.lib.api.ReflectionUtil;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.util.JavaUtil;
 import com.evilnotch.silkspawners.client.ToolTipEvent;
-import com.evilnotch.silkspawners.client.proxy.ClientProxy;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.ItemStack;
@@ -87,6 +84,7 @@ public class NEISpawnerRender implements IItemRenderer{
 	public void render(ItemStack stack, IBakedModel model, TransformType type, float partialTicks) 
 	{
 		IItemRendererHandler.renderItemStack(stack, model);
+		GlStateManager.translate(0.5F, 0.5F, 0.5F);
 		
 		ResourceLocation loc = null;
         try

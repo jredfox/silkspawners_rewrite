@@ -1,3 +1,4 @@
 
 src/main/java/com/EvilNotch/silkspawners/commands/CMDDebug.java
 src/main/java/net/minecraft/network/play/server/SPacketUpdateTileEntity.java
+src/main/resources/META-INF/MANIFEST.MF
