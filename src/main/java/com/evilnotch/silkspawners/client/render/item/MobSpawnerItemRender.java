@@ -64,7 +64,6 @@ public class MobSpawnerItemRender implements IItemRenderer{
 		//make the entities render inside of the center of the block to start out with
 		GlStateManager.translate(0.5F, 0.5F, 0.5F);
 
-		ResourceLocation loc = null;
         try
         {
             World world = Minecraft.getMinecraft().world;
@@ -74,7 +73,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
             	return;
 
             NBTTagCompound data = nbt.hasKey("SpawnData") ? nbt.getCompoundTag("SpawnData") : nbt.getCompoundTag("BlockEntityTag").getCompoundTag("SpawnData");
-            loc = new ResourceLocation(data.getString("id"));
+            ResourceLocation loc = new ResourceLocation(data.getString("id"));
             
             PairObj<List<Entity>,Double[]> pair = MobSpawnerCache.getCachedList(loc, data);
             if(pair == null)
@@ -99,9 +98,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
             if(RenderUtil.isDrawing(Tessellator.getInstance().getBuffer()))
                 Tessellator.getInstance().draw();
             
-            MobSpawnerCache.ents.remove(loc);
-            
-            System.out.println("exception drawing:" + loc + " removing from hashmap for render");   
+            System.out.println("exception drawing:" + stack.getItem().getRegistryName() + " with NBT:" + stack.getTagCompound());   
         }
         
        RenderUtil.setLightmapDisabled(type == type.GUI);
@@ -124,16 +121,25 @@ public class MobSpawnerItemRender implements IItemRenderer{
    
         partialTicks = Config.animationItem ? partialTicks : 0;
         
+        EntityPlayer p = Minecraft.getMinecraft().player;
+        
         if(type != type.GUI && Config.dynamicLightingItem)
         {
-            EntityPlayer p = Minecraft.getMinecraft().player;
             entity.posX = p.posX;
             entity.posY = p.posY;
             entity.posZ = p.posZ;
         	RenderUtil.setLightMap(entity);
         }
         
-        entity.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
+        if(Config.dynamicPositioning)
+        {
+        	entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
+        }
+        else
+        {
+        	entity.setLocationAndAngles(0, 0, 0, entity.rotationYaw, entity.rotationPitch);
+        }
+        
         Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, false);
         
         GL11.glPopMatrix();
@@ -168,6 +174,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         GlStateManager.depthMask(true);
         GlStateManager.enableBlend();
         GlStateManager.enableAlpha();
+        GlStateManager.enableLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
         IItemRendererHandler.restoreLastBlurMipmap();
 	}

@@ -17,9 +17,9 @@ public class RenderUtil {
 	
 	public static void setLightMap(Entity e, BlockPos pos) 
 	{
-		e.posX = pos.getX();
+		e.posX = pos.getX() + 0.5D;
 		e.posY = pos.getY();
-		e.posZ = pos.getZ();
+		e.posZ = pos.getZ() + 0.5D;
 		setLightMap(e);
 	}
 	

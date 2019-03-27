@@ -23,6 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 	
@@ -30,7 +31,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 	 * this has the capability of rendering an entire stack of mobs via the tile entity with 1.9+ passenger support
 	 */
     @Override
-    public void render(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
+    public void render(TileEntity te, double offsetX, double offsetY, double offsetZ, float partialTicks, int destroyStage, float alpha)
     {
     	if(te.getWorld() == null)
     	{
@@ -61,11 +62,11 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         		System.out.println("why you here you pig:" + TileEntityUtil.getTileNBT(te));
         	}
         	
-        	renderSpawnerEntity(e, scale, logic.offsets[i], logic, x, y, z, partialTicks, lastX, lastY);
+        	renderSpawnerEntity(e, scale, logic.offsets[i], logic, offsetX, offsetY, offsetZ, partialTicks, lastX, lastY);
         }
     }
 
-	public void renderSpawnerEntity(Entity entity, float scale, double offset, MobSpawnerBaseLogic mobSpawnerLogic, double x, double y, double z, float partialTicks, float lastX, float lastY) 
+	public void renderSpawnerEntity(Entity entity, float scale, double offset, MobSpawnerBaseLogic mobSpawnerLogic, double offsetX, double offsetY, double offsetZ, float partialTicks, float lastX, float lastY) 
 	{
 		GL11.glPushMatrix();
 		
@@ -76,9 +77,8 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     	}
     	
         entity.setWorld(mobSpawnerLogic.getSpawnerWorld());
-        entity.setLocationAndAngles(x, y, z, 0.0F, 0.0F);
         
-    	GL11.glTranslatef((float)x + 0.5F, (float)y, (float)z + 0.5F);
+    	GL11.glTranslatef((float)offsetX + 0.5F, (float)offsetY, (float)offsetZ + 0.5F);
         GL11.glTranslatef(0.0F, 0.4F, 0.0F);
         GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-30.0F, 1.0F, 0.0F, 0.0F);
@@ -90,6 +90,19 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
           	partialTicks = 0;
         }
             
+        BlockPos pos = mobSpawnerLogic.getSpawnerPosition();
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+        if(Config.dynamicPositioning)
+        {
+        	entity.moveToBlockPosAndAngles(pos, entity.rotationYaw, entity.rotationPitch);
+        	entity.setLocationAndAngles(x + 0.5D, y, z + 0.5D, entity.rotationYaw, entity.rotationPitch);
+        }
+        else
+        {
+        	entity.setLocationAndAngles(0, 0, 0, entity.rotationYaw, entity.rotationPitch);
+        }
         Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, false);
         resetOpenGl(lastX, lastY);
         
