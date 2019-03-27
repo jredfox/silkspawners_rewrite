@@ -114,7 +114,6 @@ public class MobSpawnerItemRender implements IItemRenderer{
 		
         GL11.glPushMatrix();
         
-    	GlStateManager.enableLighting();
         RenderUtil.setLightmapDisabled(type == type.GUI);//always keep lighting enabled for rendering entities
         
         entity.setWorld(world);

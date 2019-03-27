@@ -17,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.ResourceLocation;
@@ -46,12 +47,6 @@ public class MobSpawnerCache {
 		
 		if(!e.getPassengers().isEmpty())
 		{
-			//never render jockey spawner for default spider
-			if(loc.equals("minecraft:spider"))
-			{
-				fixJocks(e);
-				e.removePassengers();
-			}
 			return getCachedData(data);
 		}
 		
@@ -131,6 +126,7 @@ public class MobSpawnerCache {
 			System.out.println("error caching entity to silkspawners render:" + entity);
 			return;
 		}
+		fixJocks(e);//prevent stupidness from occuring
 		ents.put(entity, e);
 	}
 	
