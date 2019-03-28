@@ -126,24 +126,21 @@ public class MobSpawnerItemRender implements IItemRenderer{
    
         partialTicks = Config.animationItem ? partialTicks : 0;
         
-        EntityPlayer p = Minecraft.getMinecraft().player;
+        if(Config.dynamicSetPositioning || Config.dynamicLightingItem)
+        {
+        	entity.setLocationAndAngles(IItemRendererHandler.lastX, IItemRendererHandler.lastY, IItemRendererHandler.lastZ, 0.0F, 0.0F);
+        }
         
         if(type != type.GUI && Config.dynamicLightingItem)
         {
-            entity.posX = p.posX;
-            entity.posY = p.posY;
-            entity.posZ = p.posZ;
         	RenderUtil.setLightMap(entity);
         }
-
-        if(Config.dynamicSetPositioning)
-        {
-        	entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, 0.0F, 0.0F);
-        }
-        else
+        
+        if(!Config.dynamicSetPositioning)
         {
         	entity.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
         }
+        
         entity.setRotationYawHead(0.0F);//fixes head bugs
         RenderUtil.renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, Config.renderShadows);
         GL11.glPopMatrix();

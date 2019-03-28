@@ -72,10 +72,6 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 		GL11.glPushMatrix();
 		
         RenderUtil.setLightmapDisabled(false);
-    	if(Config.dynamicLightingBlock)
-    	{
-    		RenderUtil.setLightMap(entity, mobSpawnerLogic.getSpawnerPosition());//set the lighting to the entitie's lighting for glowing textures like blazes
-    	}
     	
         entity.setWorld(mobSpawnerLogic.getSpawnerWorld());
         
@@ -95,15 +91,22 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
-        if(Config.dynamicSetPositioning)
+        
+        if(Config.dynamicSetPositioning || Config.dynamicLightingBlock)
         {
         	entity.moveToBlockPosAndAngles(pos, entity.rotationYaw, entity.rotationPitch);
-        	entity.setLocationAndAngles(x + 0.5D, y, z + 0.5D, entity.rotationYaw, entity.rotationPitch);
         }
-        else
+        
+    	if(Config.dynamicLightingBlock)
+    	{
+    		RenderUtil.setLightMap(entity);//set the lighting to the entitie's lighting for glowing textures like blazes
+    	}
+    	
+        if(!Config.dynamicSetPositioning)
         {
-        	entity.setLocationAndAngles(0, 0, 0, entity.rotationYaw, entity.rotationPitch);
+        	entity.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
         }
+        
         entity.setRotationYawHead(0.0F);//fix head bugs
         RenderUtil.renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, Config.renderShadows);
         resetOpenGl(lastX, lastY);

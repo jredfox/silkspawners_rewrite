@@ -28,14 +28,6 @@ import net.minecraft.world.World;
 
 public class RenderUtil {
 	
-	public static void setLightMap(Entity e, BlockPos pos) 
-	{
-		e.posX = pos.getX() + 0.5D;
-		e.posY = pos.getY();
-		e.posZ = pos.getZ() + 0.5D;
-		setLightMap(e);
-	}
-	
 	/**
 	 * the default brightness to render
 	 */
@@ -303,7 +295,6 @@ public class RenderUtil {
     {
     	RenderManager rf = Minecraft.getMinecraft().getRenderManager();
     	boolean shadowCached = rf.options.entityShadows;
-    	//even if shadows are allowed sync with actual mc settings rather then overriding it 
     	if(!allowShadow)
     	{
     		rf.options.entityShadows = false;
