@@ -1,6 +1,7 @@
 package com.evilnotch.silkspawners;
 
 import com.evilnotch.lib.api.ReflectionUtil;
+import com.evilnotch.lib.minecraft.basicmc.auto.creativetab.ICreativeTabHook;
 import com.evilnotch.lib.minecraft.basicmc.auto.lang.LangEntry;
 import com.evilnotch.lib.minecraft.basicmc.client.creativetab.BasicCreativeTab;
 import com.evilnotch.lib.minecraft.event.PickEvent;
@@ -58,7 +59,7 @@ public class MainJava
 	public static BasicCreativeTab tab_living;
 	public static BasicCreativeTab tab_nonliving;
 	public static BasicCreativeTab tab_custom;
-	public static ItemSpawner mob_spawner;
+	public static ICreativeTabHook spawnerHook;
 	
 	public static ResourceLocation dungeonTweaksLoc;
 	public static boolean dungeonTweaksLegacy = false;
@@ -73,8 +74,7 @@ public class MainJava
 	    GeneralRegistry.registerGameRule("SpawnerSaveDelay", Config.grDelay);
 	    GeneralRegistry.registerCommand(new CommandMTHand());
 	    GeneralRegistry.registerCommand(new CommandSpawner());
-	    mob_spawner = new ItemSpawner();
-	 	ForgeRegistries.ITEMS.register(mob_spawner);
+	    spawnerHook = new ItemSpawner();
 	 	
 	 	dungeontweaks = Loader.isModLoaded("dungeontweaks");
 	 	if(dungeontweaks)
@@ -87,6 +87,7 @@ public class MainJava
 	    tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("en_us","NonLiving Mob Spawners"));
 	    tab_custom = new BasicCreativeTab(new ResourceLocation("silkspawners:custom"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("en_us","Jockeys & Custom Entries"));
 	}
+	
     @EventHandler
     public void init(FMLInitializationEvent event)
     {

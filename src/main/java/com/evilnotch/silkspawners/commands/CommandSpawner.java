@@ -6,6 +6,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,7 +32,7 @@ public class CommandSpawner extends CommandBase{
 		if(!(sender instanceof EntityPlayer) || args.length == 0)
 			return;
 		EntityPlayer p = (EntityPlayer)sender;
-		ItemStack stack = new ItemStack(MainJava.mob_spawner,1);
+		ItemStack stack = new ItemStack(Blocks.MOB_SPAWNER, 1);
 		
         NBTTagCompound nbt = new NBTTagCompound();
         NBTTagCompound data = new NBTTagCompound();

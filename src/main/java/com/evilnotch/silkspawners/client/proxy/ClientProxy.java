@@ -10,6 +10,8 @@ import com.evilnotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
 import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,7 +31,7 @@ public class ClientProxy extends ServerProxy{
 	{
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMobSpawner.class, new MobSpawnerStackBase());
 		if(Config.mobItemRender)
-			IItemRendererHandler.registerIItemRenderer(MainJava.mob_spawner, new MobSpawnerItemRender());
+			IItemRendererHandler.registerIItemRenderer(Item.getItemFromBlock(Blocks.MOB_SPAWNER), new MobSpawnerItemRender());
 		MinecraftForge.EVENT_BUS.register(new ToolTipEvent());
 		super.init();
 	}

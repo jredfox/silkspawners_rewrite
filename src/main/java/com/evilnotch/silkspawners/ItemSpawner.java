@@ -3,16 +3,16 @@ package com.evilnotch.silkspawners;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.evilnotch.lib.minecraft.basicmc.auto.creativetab.ICreativeTabHook;
+import com.evilnotch.lib.minecraft.basicmc.auto.creativetab.ItemCreativeTabs;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.minecraft.util.NBTUtil;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -20,18 +20,11 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
-public class ItemSpawner extends ItemBlock{
+public class ItemSpawner implements ICreativeTabHook{
 	
-	public CreativeTabs tab = null;
-
-	public ItemSpawner() 
+	public ItemSpawner()
 	{
-		super(Blocks.MOB_SPAWNER);
-		this.setRegistryName(Blocks.MOB_SPAWNER.getRegistryName());
-		this.setUnlocalizedName(Blocks.MOB_SPAWNER.getUnlocalizedName());
-		this.setCreativeTab(CreativeTabs.REDSTONE);
-		this.setHasSubtypes(true);
-		this.setMaxDamage(0);
+		ItemCreativeTabs.register(this);
 	}
 	
     /**
