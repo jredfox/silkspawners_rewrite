@@ -35,8 +35,9 @@ public class Config {
 	public static boolean dynamicScalingItem = false;
 	public static boolean dynamicLightingItem = true;
 	public static boolean dynamicLightingBlock = true;
-	public static boolean dynamicPositioning = true;
+	public static boolean dynamicSetPositioning = true;
 	public static boolean renderShadows = false;
+	public static boolean mergeOldNewScaling = true;
 	
 	public static boolean tooltip_spawncount = true;
 	public static boolean tooltip_maxnearbyents = true;
@@ -92,9 +93,10 @@ public class Config {
 		mobItemRender = config.get("render", "mobItemRender", mobItemRender).getBoolean();
 		dynamicScalingBlock = config.get("render", "dynamicScalingBlock", dynamicScalingBlock).getBoolean();
 		dynamicScalingItem = config.get("render", "dynamicScalingItem", dynamicScalingItem).getBoolean();
+		mergeOldNewScaling = config.get("render", "mergeOldNewScaling", mergeOldNewScaling, "if enabled default new scaling is applied for enitties less then a block width and height").getBoolean();
 		dynamicLightingItem = config.get("render", "dynamicLightingItem", dynamicLightingItem).getBoolean();
 		dynamicLightingBlock = config.get("render", "dynamicLightingBlock", dynamicLightingBlock).getBoolean();
-		dynamicPositioning = config.get("render", "dynamicPositioning", dynamicPositioning).getBoolean();
+		dynamicSetPositioning = config.get("render", "dynamicSetPositioning", dynamicSetPositioning, "allows light emitting entities and other sturborn entities to work properly if this causes ghost enities simply disable it").getBoolean();
 		renderShadows = config.get("render", "renderShadows", renderShadows).getBoolean();
 		if(!JavaUtil.toWhiteSpaced(spawnerBlockName).equals(""))
 			hasCustomName = true;

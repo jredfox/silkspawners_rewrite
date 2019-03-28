@@ -59,7 +59,8 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	}
         	else if(e instanceof EntityPig)
         	{
-        		System.out.println("why you here you pig:" + TileEntityUtil.getTileNBT(te));
+        		if(com.evilnotch.lib.main.Config.debug)
+        			System.out.println("why you here you pig:" + TileEntityUtil.getTileNBT(te));
         	}
         	
         	renderSpawnerEntity(e, scale, logic.offsets[i], logic, offsetX, offsetY, offsetZ, partialTicks, lastX, lastY);
@@ -94,7 +95,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
-        if(Config.dynamicPositioning)
+        if(Config.dynamicSetPositioning)
         {
         	entity.moveToBlockPosAndAngles(pos, entity.rotationYaw, entity.rotationPitch);
         	entity.setLocationAndAngles(x + 0.5D, y, z + 0.5D, entity.rotationYaw, entity.rotationPitch);

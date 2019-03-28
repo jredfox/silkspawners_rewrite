@@ -6,6 +6,7 @@ import com.evilnotch.lib.api.ReflectionUtil;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.minecraft.util.MinecraftUtil;
 import com.evilnotch.lib.minecraft.util.NBTUtil;
+import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.client.ToolTipEvent;
 import com.evilnotch.silkspawners.client.proxy.ClientProxy;
 
@@ -70,50 +71,66 @@ public class RenderUtil {
         }
     }
     
+    /**
+     * mc versions < 1.10.2 spawner scaling for rendering
+     */
+    public static final float oldScale = 0.4375F;
+    /**
+     * mc versions 1.10.2+ spawner intial scaling it is dynamic though
+     */
+    public static final float newScale = 0.53125F;
+    
 	/**
 	 * get the smallest scale based upon a mob stack for rendering so they are all at the same scaling
 	 */
-    public static final float oldScale = 0.4375F;;
 	public static float getBlockScale(List<Entity> ents, boolean old)
 	{
-		if(old)
-		{
-			return oldScale;
-		}
-		else if(ents.isEmpty())
+		if(ents.isEmpty())
 		{
 			return -1;
 		}
-		float scale = getBlockScale(ents.get(0),old);
+		else if(old && !Config.mergeOldNewScaling)
+		{
+			return oldScale;
+		}
+		float scale = getBlockScale(ents.get(0), old);
 		for(Entity e : ents)
 		{
-			float compare = getBlockScale(e,old);
+			float compare = getBlockScale(e, old);
 			if(compare < scale)
 				scale = compare;
 		}
 		return scale;
+	}
+
+	public static float getDynamicScale(Entity entity) 
+	{
+	    float scale = newScale;
+	    float max = Math.max(entity.width, entity.height);
+
+	    if ((double)max > 1.0D)
+	    {
+	    	scale /= max;
+	    }
+	    return scale;
 	}
 	
 	public static float getBlockScale(Entity entity,boolean old) 
 	{
 		if(old)
 		{
+			if(Config.mergeOldNewScaling)
+			{
+				 float max = Math.max(entity.width, entity.height);
+				 if((double)max <= 1.0D)
+				 {
+					 return newScale;
+				 }
+			}
 			return oldScale;
 		}
 		
 		return getDynamicScale(entity);
-	}
-
-	public static float getDynamicScale(Entity entity) 
-	{
-	    float new_scale = 0.53125F;
-	    float max = Math.max(entity.width, entity.height);
-
-	    if ((double)max > 1.0D)
-	    {
-	       new_scale /= max;
-	    }
-	    return new_scale;
 	}
 	
 	/**
@@ -122,7 +139,10 @@ public class RenderUtil {
 	public static float getItemScale(List<Entity> ents, boolean old)
 	{
 		if(ents.isEmpty())
+		{
 			return -1;
+		}
+		
 		float scale = getItemScale(ents.get(0),old);
 		for(Entity e : ents)
 		{
@@ -144,7 +164,17 @@ public class RenderUtil {
 		{
 			float scale = 0.4375F;
 			if(EntityUtil.getShadowSize(e) > 1.5)
+			{
 				scale = 0.1F;
+			}
+			else if(Config.mergeOldNewScaling)
+			{
+				 float max = Math.max(e.width, e.height);
+				 if((double)max <= 1.0D)
+				 {
+					 scale = newScale;
+				 }
+			}
 	        return scale;
 		}
 		return getDynamicScale(e);
@@ -155,7 +185,8 @@ public class RenderUtil {
 		return (Boolean)ReflectionUtil.getObject(buffer, BufferBuilder.class, ClientProxy.isDrawing);
 	}
 
-	public static double getRenderTime() {
+	public static double getRenderTime() 
+	{
 		return ToolTipEvent.getRenderTime();
 	}
 	

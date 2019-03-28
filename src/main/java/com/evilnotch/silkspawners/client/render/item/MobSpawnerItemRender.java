@@ -136,7 +136,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         	RenderUtil.setLightMap(entity);
         }
 
-        if(Config.dynamicPositioning)
+        if(Config.dynamicSetPositioning)
         {
         	entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, 0.0F, 0.0F);
         }
