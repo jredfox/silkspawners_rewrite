@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.evilnotch.lib.api.ReflectionUtil;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
+import com.evilnotch.lib.minecraft.util.MinecraftUtil;
 import com.evilnotch.lib.minecraft.util.NBTUtil;
 import com.evilnotch.silkspawners.client.ToolTipEvent;
 import com.evilnotch.silkspawners.client.proxy.ClientProxy;
@@ -11,10 +12,12 @@ import com.evilnotch.silkspawners.client.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.monster.EntityShulker;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
@@ -163,7 +166,7 @@ public class RenderUtil {
 		EntityUtil.fixJocksRender(e);
 		return e;
 	}
-	
+
 	/**
 	 * Doesn't force nbt on anything unlike vanilla's methods.
 	 * Supports silkspawners rendering for skeleton traps
@@ -261,6 +264,21 @@ public class RenderUtil {
 		nbt.removeTag("id");
 		return nbt;
 	}
-	
+
+	/**
+	 * render enitites with control whether or not shadows are allowed to render
+	 */
+    public static void renderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean allowShadow)
+    {
+    	RenderManager rf = Minecraft.getMinecraft().getRenderManager();
+    	boolean shadowCached = rf.options.entityShadows;
+    	//even if shadows are allowed sync with actual mc settings rather then overriding it 
+    	if(!allowShadow)
+    	{
+    		rf.options.entityShadows = false;
+    	}
+    	rf.renderEntity(entityIn, x, y, z, yaw, partialTicks, false);
+    	rf.options.entityShadows = shadowCached;
+    }
 
 }

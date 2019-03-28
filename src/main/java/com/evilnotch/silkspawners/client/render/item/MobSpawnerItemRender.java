@@ -34,7 +34,11 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntitySlime;
@@ -42,6 +46,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
+import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -130,7 +135,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
             entity.posZ = p.posZ;
         	RenderUtil.setLightMap(entity);
         }
-        
+
         if(Config.dynamicPositioning)
         {
         	entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, 0.0F, 0.0F);
@@ -140,7 +145,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         	entity.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
         }
         entity.setRotationYawHead(0.0F);//fixes head bugs
-        Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, false);
+        RenderUtil.renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, Config.renderShadows);
         GL11.glPopMatrix();
         
         resetOpenGL(type);

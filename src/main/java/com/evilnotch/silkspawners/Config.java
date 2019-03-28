@@ -36,6 +36,7 @@ public class Config {
 	public static boolean dynamicLightingItem = true;
 	public static boolean dynamicLightingBlock = true;
 	public static boolean dynamicPositioning = true;
+	public static boolean renderShadows = false;
 	
 	public static boolean tooltip_spawncount = true;
 	public static boolean tooltip_maxnearbyents = true;
@@ -94,6 +95,7 @@ public class Config {
 		dynamicLightingItem = config.get("render", "dynamicLightingItem", dynamicLightingItem).getBoolean();
 		dynamicLightingBlock = config.get("render", "dynamicLightingBlock", dynamicLightingBlock).getBoolean();
 		dynamicPositioning = config.get("render", "dynamicPositioning", dynamicPositioning).getBoolean();
+		renderShadows = config.get("render", "renderShadows", renderShadows).getBoolean();
 		if(!JavaUtil.toWhiteSpaced(spawnerBlockName).equals(""))
 			hasCustomName = true;
 		
