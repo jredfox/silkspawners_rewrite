@@ -66,11 +66,11 @@ public class RenderUtil {
     /**
      * mc versions < 1.10.2 spawner scaling for rendering
      */
-    public static final float oldScale = 0.4375F;
+    public static float oldScale = 0.4375F;
     /**
      * mc versions 1.10.2+ spawner intial scaling it is dynamic though
      */
-    public static final float newScale = 0.53125F;
+    public static float newScale = 0.53125F;
     
 	/**
 	 * get the smallest scale based upon a mob stack for rendering so they are all at the same scaling
@@ -183,10 +183,10 @@ public class RenderUtil {
 	}
 	
     
-	public static Entity getEntityStackFixed(NBTTagCompound compound,World worldIn, double x, double y, double z,boolean useInterface,boolean attemptSpawn) 
+	public static Entity getEntityJockey(NBTTagCompound compound,World worldIn, double x, double y, double z,boolean useInterface) 
 	{
-		Entity e = getEntityJockey(compound, worldIn, x, y, z, useInterface, attemptSpawn);
-		EntityUtil.fixJocksRender(e);
+		Entity e = getEntityStack(compound, worldIn, x, y, z, useInterface);
+		EntityUtil.fixJockeyAndUpdate(e);
 		return e;
 	}
 
@@ -194,7 +194,7 @@ public class RenderUtil {
 	 * Doesn't force nbt on anything unlike vanilla's methods.
 	 * Supports silkspawners rendering for skeleton traps
 	 */
-	private static Entity getEntityJockey(NBTTagCompound compound,World worldIn, double x, double y, double z,boolean useInterface,boolean attemptSpawn) 
+	public static Entity getEntityStack(NBTTagCompound compound,World worldIn, double x, double y, double z,boolean useInterface) 
 	{	
         Entity entity = getEntity(compound,worldIn,new BlockPos(x,y,z),useInterface);
         if(entity == null)
@@ -211,19 +211,12 @@ public class RenderUtil {
 			}
 		}
         
-        if(attemptSpawn)
-        {
-            entity.forceSpawn = true;
-        	if(!worldIn.spawnEntity(entity))
-        		return null;
-        }
-        
         if (compound.hasKey("Passengers", 9))
         {
              NBTTagList nbttaglist = compound.getTagList("Passengers", 10);
              for (int i = 0; i < nbttaglist.tagCount(); ++i)
              {
-                 Entity entity1 = getEntityJockey(nbttaglist.getCompoundTagAt(i), worldIn, x, y, z,useInterface,attemptSpawn);
+                 Entity entity1 = getEntityStack(nbttaglist.getCompoundTagAt(i), worldIn, x, y, z,useInterface);
                   if (entity1 != null)
                   {
                       entity1.startRiding(toMount, true);

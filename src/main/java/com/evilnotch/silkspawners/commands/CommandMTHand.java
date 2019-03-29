@@ -1,5 +1,6 @@
 package com.evilnotch.silkspawners.commands;
 
+import com.evilnotch.lib.main.loader.LoaderMain;
 import com.evilnotch.lib.minecraft.util.PlayerUtil;
 
 import net.minecraft.command.CommandBase;
@@ -15,12 +16,14 @@ import net.minecraftforge.client.IClientCommand;
 public class CommandMTHand extends CommandBase implements IClientCommand{
 
 	@Override
-	public String getName() {
-		return "mtHand";
+	public String getName() 
+	{
+		return LoaderMain.isDeObfuscated ? "mtHand" : "handData";
 	}
 
 	@Override
-	public String getUsage(ICommandSender sender) {
+	public String getUsage(ICommandSender sender) 
+	{
 		return "/" + getName();
 	}
 

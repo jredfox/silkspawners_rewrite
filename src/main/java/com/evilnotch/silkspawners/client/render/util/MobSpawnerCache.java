@@ -60,7 +60,7 @@ public class MobSpawnerCache {
 		PairObj<List<Entity>,Double[]> ents = entsNBT.get(data);
 		if(ents == null)
 		{
-			Entity e = RenderUtil.getEntityStackFixed(data, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn,false);
+			Entity e = RenderUtil.getEntityJockey(data, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn);
 			if(e == null)
 				return null;
 			ents = getMounts(e);
@@ -95,7 +95,7 @@ public class MobSpawnerCache {
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setString("id", entity.toString());
-		Entity e = RenderUtil.getEntityStackFixed(nbt, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn, false);
+		Entity e = RenderUtil.getEntityJockey(nbt, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn);
 		if(e instanceof EntityLiving)
 		{
 			EntityLiving living = (EntityLiving)e;
@@ -140,14 +140,9 @@ public class MobSpawnerCache {
     	for(int i=0;i<toRender.size();i++)
     	{
     		Entity e = toRender.get(i);
-    		if(e.isRiding())
-    		{
-    			if(e.getRidingEntity() != null)
-    				e.getRidingEntity().updatePassenger(e);
-    		}
     		offsets[i] = e.posY;
     	}
     	
-		return new PairObj<List<Entity>,Double[]>(toRender,offsets);
+		return new PairObj<List<Entity>,Double[]>(toRender, offsets);
 	}
 }
