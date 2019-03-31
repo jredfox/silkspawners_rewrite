@@ -180,5 +180,4 @@ public class MobSpawnerItemRender implements IItemRenderer{
         IItemRendererHandler.restoreLastBlurMipmap();
 	}
 
-
 }
