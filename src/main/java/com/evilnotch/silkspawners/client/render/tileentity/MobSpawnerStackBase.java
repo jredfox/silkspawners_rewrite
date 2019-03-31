@@ -121,13 +121,12 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 	{   
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableRescaleNormal();
+        GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(516, 0.1F);
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.cullFace(GlStateManager.CullFace.BACK);
         GlStateManager.depthMask(true);
-        GlStateManager.enableBlend();
-        GlStateManager.enableAlpha();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
         IItemRendererHandler.restoreLastBlurMipmap();
 	}
