@@ -209,14 +209,14 @@ public class EntitySpider extends EntityMob
     {
         livingdata = super.onInitialSpawn(difficulty, livingdata);
 
-        if (true)
-        {
-            EntitySkeleton entityskeleton = new EntitySkeleton(this.world);
-            entityskeleton.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);
-            entityskeleton.onInitialSpawn(difficulty, (IEntityLivingData)null);
-            this.world.spawnEntity(entityskeleton);
-            entityskeleton.startRiding(this);
-        }
+//        if (true)
+//        {
+//            EntitySkeleton entityskeleton = new EntitySkeleton(this.world);
+//            entityskeleton.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);
+//            entityskeleton.onInitialSpawn(difficulty, (IEntityLivingData)null);
+//            this.world.spawnEntity(entityskeleton);
+//            entityskeleton.startRiding(this);
+//        }
 
         if (livingdata == null)
         {

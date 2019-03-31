@@ -71,6 +71,9 @@ public class MobSpawnerItemRender implements IItemRenderer{
 
         try
         {
+    		lastX = OpenGlHelper.lastBrightnessX;
+    		lastY = OpenGlHelper.lastBrightnessY;
+    		
             World world = Minecraft.getMinecraft().world;
 
             NBTTagCompound nbt = stack.getTagCompound();
@@ -110,10 +113,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	}
 	
 	public void renderEntity(Entity entity, float scale, World world, double offset, TransformType type, float partialTicks) 
-	{
-		lastX = OpenGlHelper.lastBrightnessX;
-		lastY = OpenGlHelper.lastBrightnessY;
-		
+	{	
         GL11.glPushMatrix();
         
         RenderUtil.setLightmapDisabled(type == type.GUI);//always keep lighting enabled for rendering entities
@@ -155,14 +155,15 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	{
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableRescaleNormal();
+        GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(516, 0.1F);
-        GlStateManager.enableBlend();
         
         if(type == TransformType.THIRD_PERSON_LEFT_HAND || type == TransformType.THIRD_PERSON_RIGHT_HAND)
         {
         	GlStateManager.disableCull();
         }
         
+        GlStateManager.enableBlend();
         if(type == type.GUI)
         {
         	GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -171,10 +172,9 @@ public class MobSpawnerItemRender implements IItemRenderer{
         {
         	GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         }
+        
         GlStateManager.cullFace(GlStateManager.CullFace.BACK);
         GlStateManager.depthMask(true);
-        GlStateManager.enableBlend();
-        GlStateManager.enableAlpha();
         GlStateManager.enableLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
         IItemRendererHandler.restoreLastBlurMipmap();

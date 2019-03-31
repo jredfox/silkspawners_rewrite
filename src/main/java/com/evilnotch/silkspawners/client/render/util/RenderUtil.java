@@ -229,12 +229,12 @@ public class RenderUtil {
 	/**
 	 * first index is to determine if your on the first part of the opening of the nbt if so treat nbt like normal
 	 */
-	public static Entity getEntity(NBTTagCompound nbt,World world,BlockPos pos,boolean useInterface) 
+	public static Entity getEntity(NBTTagCompound nbt, World world, BlockPos pos, boolean useInterface) 
 	{
 		Entity e = null;
-		if(getEntityProps(nbt).getSize() > 0)
+		if(getEntityProps(nbt) > 0)
 		{
-			e = createEntityFromNBTRender(nbt,pos,world);
+			e = createEntityFromNBTRender(nbt, pos, world);
 		}
 		else
 		{
@@ -271,13 +271,16 @@ public class RenderUtil {
 		return e;
 	}
 
-	private static NBTTagCompound getEntityProps(NBTTagCompound nbt) {
+	private static int getEntityProps(NBTTagCompound nbt) 
+	{
 		if(nbt == null)
-			return null;
-		nbt = nbt.copy();
-		nbt.removeTag("Passengers");
-		nbt.removeTag("id");
-		return nbt;
+			return 0;
+		int size = nbt.getSize();
+		if(nbt.hasKey("Passengers"))
+			size--;
+		if(nbt.hasKey("id"))
+			size--;
+		return size;
 	}
 
 	/**
