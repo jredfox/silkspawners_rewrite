@@ -143,12 +143,14 @@ public abstract class MobSpawnerBaseLogic
                     double d2 = j >= 3 ? nbttaglist.getDoubleAt(2) : (double)blockpos.getZ() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double)this.spawnRange + 0.5D;
                     
                     Entity entity = EntityUtil.getEntityJockey(nbttagcompound, world, d0, d1, d2, true, false, this);
-       
+
                     if (entity == null)
                     {
                     	this.resetTimer();
                         return;
                     }
+                    
+                    entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, world.rand.nextFloat() * 360.0F, 0.0F);
 
                     int k = world.getEntitiesWithinAABB(entity.getClass(), (new AxisAlignedBB((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ(), (double)(blockpos.getX() + 1), (double)(blockpos.getY() + 1), (double)(blockpos.getZ() + 1))).grow((double)this.spawnRange)).size();
 
@@ -159,10 +161,10 @@ public abstract class MobSpawnerBaseLogic
                     }
 
                     EntityLiving living = entity instanceof EntityLiving ? (EntityLiving)entity : null;
-                    entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, world.rand.nextFloat() * 360.0F, 0.0F);
 
                     if (living == null || ForgeEventFactory.canEntitySpawnSpawner(living, getSpawnerWorld(), (float)entity.posX, (float)entity.posY, (float)entity.posZ, this))
                     {
+                    	EntityUtil.updateJockey(entity);
                         AnvilChunkLoader.spawnEntity(entity, world);
                         world.playEvent(2004, blockpos, 0);
                         if(living != null)
@@ -170,6 +172,10 @@ public abstract class MobSpawnerBaseLogic
                         	living.spawnExplosionParticle();
                         }
                         flag = true;
+                    }
+                    else if(entity != null)
+                    {
+                    	EntityUtil.removeJockey(entity);
                     }
                 }
 
@@ -328,20 +334,13 @@ public abstract class MobSpawnerBaseLogic
             this.cachedEntity = RenderUtil.getEntityJockey(this.spawnData.getNbt(), this.getSpawnerWorld(), 0,0,0, Config.renderUseInitSpawn);
             if(this.cachedEntity != null)
             {
-            	List<Entity> ents = JavaUtil.toArray(this.cachedEntity.getRecursivePassengers());
-            	ents.add(0,this.cachedEntity);
-            	for(Entity e : ents)
-            	{
-            		if(e.isRiding())
-            		{
-            			if(e.getRidingEntity() != null)
-            				e.getRidingEntity().updatePassenger(e);
-            		}
-            	}
+            	List<Entity> ents = EntityUtil.getEntList(this.cachedEntity);
             	
             	offsets = new double[ents.size()];
             	for(int i=0;i<ents.size();i++)
+            	{
             		offsets[i] = ents.get(i).posY;
+            	}
             	this.cachedEntities = ents;
             }
         }

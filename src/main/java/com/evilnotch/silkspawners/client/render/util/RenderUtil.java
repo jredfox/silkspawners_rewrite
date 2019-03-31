@@ -182,11 +182,10 @@ public class RenderUtil {
 		return ToolTipEvent.getRenderTime();
 	}
 	
-    
 	public static Entity getEntityJockey(NBTTagCompound compound,World worldIn, double x, double y, double z,boolean useInterface) 
 	{
 		Entity e = getEntityStack(compound, worldIn, x, y, z, useInterface);
-		EntityUtil.fixJockeyAndUpdate(e);
+		EntityUtil.removeJockeyAndUpdate(e);
 		return e;
 	}
 
