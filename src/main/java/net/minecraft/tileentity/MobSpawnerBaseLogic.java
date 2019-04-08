@@ -149,6 +149,12 @@ public abstract class MobSpawnerBaseLogic
                     	this.resetTimer();
                         return;
                     }
+            		
+                    List<Entity> list = EntityUtil.getEntList(entity);
+            		for(Entity entry : list)
+            		{
+            			entry.world.removeEntityDangerously(entry);
+            		}
                     
                     entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, world.rand.nextFloat() * 360.0F, 0.0F);
 

@@ -186,6 +186,11 @@ public class RenderUtil {
 	{
 		Entity e = getEntityStack(compound, worldIn, x, y, z, useInterface);
 		EntityUtil.removeJockeyAndUpdate(e);
+		List<Entity> list = EntityUtil.getEntList(e);
+		for(Entity entry : list)
+		{
+			entry.world.removeEntityDangerously(entry);
+		}
 		return e;
 	}
 

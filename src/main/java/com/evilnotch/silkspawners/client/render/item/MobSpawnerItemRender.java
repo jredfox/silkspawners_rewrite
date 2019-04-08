@@ -64,7 +64,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	public void render(ItemStack stack, IBakedModel model, TransformType type, float partialTicks) 
 	{
 		IItemRendererHandler.renderItemStack(stack, model);
-		IItemRendererHandler.restoreLastBlurMipmap();
+//		IItemRendererHandler.();
         
 		//make the entities render inside of the center of the block to start out with
 		GlStateManager.translate(0.5F, 0.5F, 0.5F);
@@ -177,7 +177,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         GlStateManager.depthMask(true);
         GlStateManager.enableLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
-        IItemRendererHandler.restoreLastBlurMipmap();
+//        IItemRendererHandler.restoreLastBlurMipmap();
 	}
 
 }

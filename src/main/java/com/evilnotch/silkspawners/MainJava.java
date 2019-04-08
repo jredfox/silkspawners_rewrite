@@ -80,6 +80,7 @@ public class MainJava
 	    tab_living = new BasicCreativeTab(new ResourceLocation("silkspawners:living"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("en_us","Living Mob Spawners"));
 	    tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("en_us","NonLiving Mob Spawners"));
 	    tab_custom = new BasicCreativeTab(new ResourceLocation("silkspawners:custom"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("en_us","Jockeys & Custom Entries"));
+	    MinecraftForge.EVENT_BUS.register(new EventSilkHandler());
 	}
 	
     @EventHandler
