@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.evilnotch.lib.main.eventhandler.LibEvents;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
@@ -183,13 +184,29 @@ public abstract class MobSpawnerBaseLogic
     {
     	if(this.cachedEntity != null && Config.animationSpawner)
     	{
+    		int exist = this.cachedEntity.ticksExisted;
     		for(Entity e : this.cachedEntities)
     		{
     			if(e instanceof EntityShulker)
     				continue;
+    			int time = e.ticksExisted;
+    			if(Config.initialSpawnRandom && time % Config.initialSpawnRandomTime == 0 && time != 0 && e instanceof EntityLiving)
+    			{
+    				LibEvents.setSpawn(e.world, false);
+    				((EntityLiving)e).onInitialSpawn(e.world.getDifficultyForLocation(e.getPosition()), null);
+    				LibEvents.setSpawn(e.world, true);
+    			}
     			e.ticksExisted++;
     		}
     	}
+	}
+	
+	public void clearMobs()
+	{
+		this.cachedEntity = null;
+		this.cachedEntities.clear();
+		this.offsets = new double[0];
+		this.getCachedEntity();
 	}
 
 	public void resetTimer()

@@ -8,6 +8,7 @@ import java.util.Random;
 import org.apache.logging.log4j.util.Strings;
 import org.lwjgl.input.Keyboard;
 
+import com.evilnotch.lib.main.eventhandler.LibEvents;
 import com.evilnotch.lib.minecraft.event.DynamicTranslationEvent;
 import com.evilnotch.lib.minecraft.event.client.ClientDisconnectEvent;
 import com.evilnotch.lib.minecraft.util.EnumChatFormatting;
@@ -23,6 +24,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -57,6 +59,12 @@ public class ToolTipEvent {
 			{
     			if(ent instanceof EntityShulker)
     				continue;
+    			if(Config.initialSpawnRandom && ent.ticksExisted % Config.initialSpawnRandomTime == 0 && ent.ticksExisted != 0 && ent instanceof EntityLiving)
+    			{
+    				LibEvents.setSpawn(ent.world, false);
+    				((EntityLiving)ent).onInitialSpawn(ent.world.getDifficultyForLocation(ent.getPosition()), null);
+    				LibEvents.setSpawn(ent.world, true);
+    			}
 				ent.ticksExisted++;
 			}
 			for(PairObj<List<Entity>,Double[]> pair : MobSpawnerCache.entsNBT.values())
@@ -65,6 +73,12 @@ public class ToolTipEvent {
 				{
         			if(ent instanceof EntityShulker)
         				continue;
+        			if(Config.initialSpawnRandom && ent.ticksExisted % Config.initialSpawnRandomTime == 0 && ent.ticksExisted != 0 && ent instanceof EntityLiving)
+        			{
+        				LibEvents.setSpawn(ent.world, false);
+        				((EntityLiving)ent).onInitialSpawn(ent.world.getDifficultyForLocation(ent.getPosition()), null);
+        				LibEvents.setSpawn(ent.world, true);
+        			}
 					ent.ticksExisted++;
 				}
 			}

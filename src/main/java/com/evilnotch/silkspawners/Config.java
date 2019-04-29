@@ -38,6 +38,8 @@ public class Config {
 	public static boolean dynamicSetPositioning = true;
 	public static boolean renderShadows = false;
 	public static boolean mergeOldNewScaling = true;
+	public static boolean initialSpawnRandom = true;
+	public static int initialSpawnRandomTime = 20;
 	
 	public static boolean tooltip_spawncount = true;
 	public static boolean tooltip_maxnearbyents = true;
@@ -98,6 +100,11 @@ public class Config {
 		dynamicLightingBlock = config.get("render", "dynamicLightingBlock", dynamicLightingBlock).getBoolean();
 		dynamicSetPositioning = config.get("render", "dynamicSetPositioning", dynamicSetPositioning, "allows light emitting entities and other sturborn entities to work properly if this causes ghost enities simply disable it").getBoolean();
 		renderShadows = config.get("render", "renderShadows", renderShadows).getBoolean();
+		initialSpawnRandom = config.get("render", "initialSpawnRandom", initialSpawnRandom).getBoolean();
+		initialSpawnRandomTime =  config.get("render", "initialSpawnRandomTime", initialSpawnRandomTime).getInt();
+		if(initialSpawnRandomTime < 10)
+			initialSpawnRandomTime = 10;//limit the frames to 0.5 frames per second to prevent epilisy attacks
+		
 		if(!JavaUtil.toWhiteSpaced(spawnerBlockName).equals(""))
 			hasCustomName = true;
 		
