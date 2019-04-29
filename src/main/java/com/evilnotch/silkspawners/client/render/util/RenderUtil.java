@@ -180,10 +180,10 @@ public class RenderUtil {
 		return ToolTipEvent.getRenderTime();
 	}
 	
-	public static Entity getEntityJockey(NBTTagCompound compound,World worldIn, double x, double y, double z,boolean useInterface) 
+	public static Entity getEntityJockey(NBTTagCompound compound,World worldIn,boolean useInterface) 
 	{
 		LibEvents.setSpawn(worldIn, false);
-		Entity e = getEntityStack(compound, worldIn, x, y, z, useInterface);
+		Entity e = getEntityStack(compound, worldIn, useInterface);
 		LibEvents.setSpawn(worldIn, true);
 		EntityUtil.updateJockey(e);
 		return e;
@@ -193,9 +193,9 @@ public class RenderUtil {
 	 * Doesn't force nbt on anything unlike vanilla's methods.
 	 * Supports silkspawners rendering for skeleton traps
 	 */
-	public static Entity getEntityStack(NBTTagCompound compound,World worldIn, double x, double y, double z,boolean useInterface) 
+	public static Entity getEntityStack(NBTTagCompound compound,World worldIn, boolean useInterface) 
 	{	
-        Entity entity = getEntity(compound,worldIn,new BlockPos(x,y,z),useInterface);
+        Entity entity = getEntity(compound,worldIn,BlockPos.ORIGIN,useInterface);
         if(entity == null)
         	return null;
 		
@@ -215,7 +215,7 @@ public class RenderUtil {
              NBTTagList nbttaglist = compound.getTagList("Passengers", 10);
              for (int i = 0; i < nbttaglist.tagCount(); ++i)
              {
-                 Entity entity1 = getEntityStack(nbttaglist.getCompoundTagAt(i), worldIn, x, y, z,useInterface);
+                 Entity entity1 = getEntityStack(nbttaglist.getCompoundTagAt(i), worldIn,useInterface);
                   if (entity1 != null)
                   {
                       entity1.startRiding(toMount, true);

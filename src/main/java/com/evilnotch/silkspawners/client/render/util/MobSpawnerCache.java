@@ -60,7 +60,7 @@ public class MobSpawnerCache {
 		PairObj<List<Entity>,Double[]> ents = entsNBT.get(data);
 		if(ents == null)
 		{
-			Entity e = RenderUtil.getEntityJockey(data, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn);
+			Entity e = RenderUtil.getEntityJockey(data, Minecraft.getMinecraft().world, Config.renderUseInitSpawn);
 			if(e == null)
 				return null;
 			ents = getMounts(e);
@@ -106,7 +106,7 @@ public class MobSpawnerCache {
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setString("id", entity.toString());
-		Entity e = RenderUtil.getEntityJockey(nbt, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn);
+		Entity e = RenderUtil.getEntityJockey(nbt, Minecraft.getMinecraft().world, Config.renderUseInitSpawn);
 		if(e instanceof EntityLiving)
 		{
 			EntityLiving living = (EntityLiving)e;

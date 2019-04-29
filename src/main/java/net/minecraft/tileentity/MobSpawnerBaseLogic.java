@@ -350,7 +350,7 @@ public abstract class MobSpawnerBaseLogic
     {
         if (this.cachedEntity == null)
         {	
-            this.cachedEntity = RenderUtil.getEntityJockey(this.spawnData.getNbt(), this.getSpawnerWorld(), 0,0,0, Config.renderUseInitSpawn);
+            this.cachedEntity = RenderUtil.getEntityJockey(this.spawnData.getNbt(), this.getSpawnerWorld(), Config.renderUseInitSpawn);
             if(this.cachedEntity != null)
             {
             	List<Entity> ents = EntityUtil.getEntList(this.cachedEntity);
