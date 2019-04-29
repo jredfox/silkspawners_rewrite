@@ -37,11 +37,14 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     	{
     		return;
     	}
-    	
+    	GlStateManager.pushMatrix();
+        GlStateManager.translate((float)offsetX + 0.5F, (float)offsetY, (float)offsetZ + 0.5F);//preset make sure it's lined up rendering inside of the center of the block
+        
     	MobSpawnerBaseLogic logic = ((TileEntityMobSpawner)te).getSpawnerBaseLogic();
     	List<Entity> ents = logic.getCachedEntities();
     	
-    	float scale = RenderUtil.getBlockScale(ents, !Config.dynamicScalingBlock);
+    	boolean old = !Config.dynamicScalingBlock;
+    	float scale = RenderUtil.getBlockScale(ents, old);
     	float lastX = OpenGlHelper.lastBrightnessX;
     	float lastY = OpenGlHelper.lastBrightnessY;
     	
@@ -55,7 +58,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	else if(e instanceof EntityPig && !logic.updated)
         	{
         		System.out.println("returning from render isPig with no update:");
-        		return;
+        		break;
         	}
         	else if(e instanceof EntityPig)
         	{
@@ -63,28 +66,34 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         			System.out.println("why you here you pig:" + TileEntityUtil.getTileNBT(te));
         	}
         	
-        	renderSpawnerEntity(e, scale, logic.offsets[i], logic, offsetX, offsetY, offsetZ, partialTicks, lastX, lastY);
+        	renderSpawnerEntity(e, scale, logic.offsets[i], logic, partialTicks, lastX, lastY, old);
         }
+        GlStateManager.popMatrix();
     }
 
-	public void renderSpawnerEntity(Entity entity, float scale, double offset, MobSpawnerBaseLogic mobSpawnerLogic, double offsetX, double offsetY, double offsetZ, float partialTicks, float lastX, float lastY) 
+	public void renderSpawnerEntity(Entity entity, float scale, double offset, MobSpawnerBaseLogic mobSpawnerLogic, float partialTicks, float lastX, float lastY, boolean old) 
 	{
 		GlStateManager.pushMatrix();
 		
         RenderUtil.setLightmapDisabled(false);
-    	
         entity.setWorld(mobSpawnerLogic.getSpawnerWorld());
         
-        GlStateManager.translate((float)offsetX + 0.5F, (float)offsetY, (float)offsetZ + 0.5F);
-        GlStateManager.translate(0.0F, 0.4F, 0.0F);
-        GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
-        if(Config.dynamicScalingBlock)
+        if(old)
         {
-        	GlStateManager.translate(0.0F, -0.2F, 0.0F);//keep 1.10.2+ extra translate here found on TileEntityMobSpawnerRenderer#L41
+        	GlStateManager.translate(0.0F, 0.4F, 0.0F);
+        	GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
+        	GlStateManager.rotate(-30.0F, 1.0F, 0.0F, 0.0F);
+        	GlStateManager.translate(0.0F, -0.4F, 0.0F);
+        	GlStateManager.scale(scale, scale, scale);
         }
-        GlStateManager.rotate(-30.0F, 1.0F, 0.0F, 0.0F);
-        GlStateManager.translate(0.0F, -0.4F, 0.0F);
-        GlStateManager.scale(scale, scale, scale);
+        else
+        {
+            GlStateManager.translate(0.0F, 0.4F, 0.0F);
+            GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.translate(0.0F, -0.2F, 0.0F);
+            GlStateManager.rotate(-30.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.scale(scale, scale, scale);
+        }
         
         if(!mobSpawnerLogic.active || !Config.animationSpawner)
         {
@@ -92,9 +101,6 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         }
             
         BlockPos pos = mobSpawnerLogic.getSpawnerPosition();
-        int x = pos.getX();
-        int y = pos.getY();
-        int z = pos.getZ();
         
         if(Config.dynamicSetPositioning || Config.dynamicLightingBlock)
         {
