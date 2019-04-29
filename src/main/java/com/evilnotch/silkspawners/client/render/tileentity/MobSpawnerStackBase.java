@@ -37,6 +37,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     	{
     		return;
     	}
+    	
     	GlStateManager.pushMatrix();
         GlStateManager.translate((float)offsetX + 0.5F, (float)offsetY, (float)offsetZ + 0.5F);//preset make sure it's lined up rendering inside of the center of the block
         
