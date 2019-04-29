@@ -135,7 +135,7 @@ public class ToolTipEvent {
 				name = Config.configToColor.get(color) + name + EnumChatFormatting.RESET;
 			else if(color.equals("rainbow"))
 			{
-				name = toRainbow(name,pattern);
+				name = toRainbow(name,pattern) + EnumChatFormatting.RESET;
 			}
 			else
 				name = color + name + EnumChatFormatting.RESET;
@@ -171,7 +171,7 @@ public class ToolTipEvent {
 	      patternPos++;
 	    }
 	  }
-	  String resault = colorBuilder.toString() + EnumChatFormatting.RESET;
+	  String resault = colorBuilder.toString();
 	  rainbows.put(input, resault);
 	  return resault;
 	}

@@ -6,16 +6,12 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.evilnotch.lib.minecraft.util.EntityUtil;
-import com.evilnotch.lib.minecraft.util.NBTUtil;
-import com.evilnotch.lib.util.JavaUtil;
 import com.evilnotch.silkspawners.Config;
-import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -143,18 +139,12 @@ public abstract class MobSpawnerBaseLogic
                     double d2 = j >= 3 ? nbttaglist.getDoubleAt(2) : (double)blockpos.getZ() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double)this.spawnRange + 0.5D;
                     
                     Entity entity = EntityUtil.getEntityJockey(nbttagcompound, world, d0, d1, d2, true, false, this);
-
+                    
                     if (entity == null)
                     {
                     	this.resetTimer();
                         return;
                     }
-            		
-                    List<Entity> list = EntityUtil.getEntList(entity);
-            		for(Entity entry : list)
-            		{
-            			entry.world.removeEntityDangerously(entry);
-            		}
                     
                     entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, world.rand.nextFloat() * 360.0F, 0.0F);
 
@@ -178,10 +168,6 @@ public abstract class MobSpawnerBaseLogic
                         	living.spawnExplosionParticle();
                         }
                         flag = true;
-                    }
-                    else if(entity != null)
-                    {
-                    	EntityUtil.removeJockey(entity);
                     }
                 }
 

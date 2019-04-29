@@ -64,8 +64,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	public void render(ItemStack stack, IBakedModel model, TransformType type, float partialTicks) 
 	{
 		IItemRendererHandler.renderItemStack(stack, model);
-//		IItemRendererHandler.();
-        
+		IItemRendererHandler.applyTransformPreset(model);
+		
 		//make the entities render inside of the center of the block to start out with
 		GlStateManager.translate(0.5F, 0.5F, 0.5F);
 
@@ -103,26 +103,26 @@ public class MobSpawnerItemRender implements IItemRenderer{
         }
         catch(Exception e)
         {
-            if(RenderUtil.isDrawing(Tessellator.getInstance().getBuffer()))
-                Tessellator.getInstance().draw();
-            
-            System.out.println("exception drawing:" + stack.getItem().getRegistryName() + " with NBT:" + stack.getTagCompound());   
+            throw new RuntimeException(e);//make people crash so I know if it's broken
+//            if(RenderUtil.isDrawing(Tessellator.getInstance().getBuffer()))
+//                Tessellator.getInstance().draw();
+//            System.out.println("exception drawing:" + stack.getItem().getRegistryName() + " with NBT:" + stack.getTagCompound());   
         }
         
-       RenderUtil.setLightmapDisabled(type == type.GUI);
+       RenderUtil.setLightmapDisabled(IItemRendererHandler.isGui(type) || IItemRendererHandler.isUnkown(type));
 	}
 	
 	public void renderEntity(Entity entity, float scale, World world, double offset, TransformType type, float partialTicks) 
 	{	
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
         
-        RenderUtil.setLightmapDisabled(type == type.GUI);//always keep lighting enabled for rendering entities
+        RenderUtil.setLightmapDisabled(IItemRendererHandler.isGui(type) || IItemRendererHandler.isUnkown(type));//always keep lighting enabled for rendering entities
         
         entity.setWorld(world);
-        GL11.glRotatef((float) (RenderUtil.getRenderTime()*10), 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(-20F, 1.0F, 0.0F, 0.0F);
-        GL11.glTranslatef(0.0F, -0.4F, 0.0F);
-        GL11.glScalef(scale, scale, scale);
+        GlStateManager.rotate((float) (RenderUtil.getRenderTime()*10), 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-20F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.translate(0.0F, -0.4F, 0.0F);
+        GlStateManager.scale(scale, scale, scale);
    
         partialTicks = Config.animationItem ? partialTicks : 0;
         
@@ -131,7 +131,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         	entity.setLocationAndAngles(IItemRendererHandler.lastX, IItemRendererHandler.lastY, IItemRendererHandler.lastZ, 0.0F, 0.0F);
         }
         
-        if(type != type.GUI && Config.dynamicLightingItem)
+        if(!IItemRendererHandler.isGui(type) && Config.dynamicLightingItem)
         {
         	RenderUtil.setLightMap(entity);
         }
@@ -143,7 +143,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
         
         entity.setRotationYawHead(0.0F);//fixes head bugs
         RenderUtil.renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, Config.renderShadows);
-        GL11.glPopMatrix();
+        
+        GlStateManager.popMatrix();
         
         resetOpenGL(type);
 	}
@@ -177,7 +178,16 @@ public class MobSpawnerItemRender implements IItemRenderer{
         GlStateManager.depthMask(true);
         GlStateManager.enableLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
-//        IItemRendererHandler.restoreLastBlurMipmap();
+	}
+
+	/**
+	 * return the model so the entity has the same scaling, rotation, and transitioning as the IBakedModel. 
+	 * For normal non hooks of IItemRenderers return FIXED(1.7.10 transforms) or NONE(no transforms)
+	 */
+	@Override
+	public TransformPreset getTransformPreset() 
+	{
+		return TransformPreset.NONE;
 	}
 
 }

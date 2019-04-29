@@ -69,18 +69,22 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 
 	public void renderSpawnerEntity(Entity entity, float scale, double offset, MobSpawnerBaseLogic mobSpawnerLogic, double offsetX, double offsetY, double offsetZ, float partialTicks, float lastX, float lastY) 
 	{
-		GL11.glPushMatrix();
+		GlStateManager.pushMatrix();
 		
         RenderUtil.setLightmapDisabled(false);
     	
         entity.setWorld(mobSpawnerLogic.getSpawnerWorld());
         
-    	GL11.glTranslatef((float)offsetX + 0.5F, (float)offsetY, (float)offsetZ + 0.5F);
-        GL11.glTranslatef(0.0F, 0.4F, 0.0F);
+        GlStateManager.translate((float)offsetX + 0.5F, (float)offsetY, (float)offsetZ + 0.5F);
+        GlStateManager.translate(0.0F, 0.4F, 0.0F);
         GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(-30.0F, 1.0F, 0.0F, 0.0F);
-        GL11.glTranslatef(0.0F, -0.4F, 0.0F);
-        GL11.glScalef(scale, scale, scale);
+        if(Config.dynamicScalingBlock)
+        {
+        	GlStateManager.translate(0.0F, -0.2F, 0.0F);//keep 1.10.2+ extra translate here found on TileEntityMobSpawnerRenderer#L41
+        }
+        GlStateManager.rotate(-30.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.translate(0.0F, -0.4F, 0.0F);
+        GlStateManager.scale(scale, scale, scale);
         
         if(!mobSpawnerLogic.active || !Config.animationSpawner)
         {
@@ -111,7 +115,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         RenderUtil.renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, Config.renderShadows);
         resetOpenGl(lastX, lastY);
         
-    	GL11.glPopMatrix();
+        GlStateManager.popMatrix();
 	}
 	
 	/**
@@ -128,6 +132,5 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         GlStateManager.cullFace(GlStateManager.CullFace.BACK);
         GlStateManager.depthMask(true);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
-        IItemRendererHandler.restoreLastBlurMipmap();
 	}
 }

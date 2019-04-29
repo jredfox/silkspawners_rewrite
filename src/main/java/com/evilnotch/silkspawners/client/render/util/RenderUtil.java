@@ -3,8 +3,8 @@ package com.evilnotch.silkspawners.client.render.util;
 import java.util.List;
 
 import com.evilnotch.lib.api.ReflectionUtil;
+import com.evilnotch.lib.main.eventhandler.LibEvents;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
-import com.evilnotch.lib.minecraft.util.MinecraftUtil;
 import com.evilnotch.lib.minecraft.util.NBTUtil;
 import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.client.ToolTipEvent;
@@ -18,12 +18,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.monster.EntityShulker;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class RenderUtil {
@@ -184,13 +182,10 @@ public class RenderUtil {
 	
 	public static Entity getEntityJockey(NBTTagCompound compound,World worldIn, double x, double y, double z,boolean useInterface) 
 	{
+		LibEvents.setSpawn(worldIn, false);
 		Entity e = getEntityStack(compound, worldIn, x, y, z, useInterface);
-		EntityUtil.removeJockeyAndUpdate(e);
-		List<Entity> list = EntityUtil.getEntList(e);
-		for(Entity entry : list)
-		{
-			entry.world.removeEntityDangerously(entry);
-		}
+		LibEvents.setSpawn(worldIn, true);
+		EntityUtil.updateJockey(e);
 		return e;
 	}
 
@@ -289,18 +284,15 @@ public class RenderUtil {
 	}
 
 	/**
-	 * render enitites with control whether or not shadows are allowed to render
+	 * render entities with control whether or not shadows are allowed to render
 	 */
     public static void renderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean allowShadow)
     {
     	RenderManager rf = Minecraft.getMinecraft().getRenderManager();
-    	boolean shadowCached = rf.options.entityShadows;
-    	if(!allowShadow)
-    	{
-    		rf.options.entityShadows = false;
-    	}
+    	boolean shadowCached = rf.isRenderShadow();
+    	rf.setRenderShadow(allowShadow);
     	rf.renderEntity(entityIn, x, y, z, yaw, partialTicks, false);
-    	rf.options.entityShadows = shadowCached;
+    	rf.setRenderShadow(shadowCached);
     }
 
 }
