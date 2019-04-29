@@ -43,8 +43,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     	MobSpawnerBaseLogic logic = ((TileEntityMobSpawner)te).getSpawnerBaseLogic();
     	List<Entity> ents = logic.getCachedEntities();
     	
-    	boolean old = !Config.dynamicScalingBlock;
-    	float scale = RenderUtil.getBlockScale(ents, old);
+    	float scale = RenderUtil.getBlockScale(ents, !Config.dynamicScalingBlock);
     	float lastX = OpenGlHelper.lastBrightnessX;
     	float lastY = OpenGlHelper.lastBrightnessY;
     	
@@ -66,34 +65,24 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         			System.out.println("why you here you pig:" + TileEntityUtil.getTileNBT(te));
         	}
         	
-        	renderSpawnerEntity(e, scale, logic.offsets[i], logic, partialTicks, lastX, lastY, old);
+        	renderSpawnerEntity(e, scale, logic.offsets[i], logic, partialTicks, lastX, lastY);
         }
         GlStateManager.popMatrix();
     }
 
-	public void renderSpawnerEntity(Entity entity, float scale, double offset, MobSpawnerBaseLogic mobSpawnerLogic, float partialTicks, float lastX, float lastY, boolean old) 
+	public void renderSpawnerEntity(Entity entity, float scale, double offset, MobSpawnerBaseLogic mobSpawnerLogic, float partialTicks, float lastX, float lastY) 
 	{
 		GlStateManager.pushMatrix();
 		
         RenderUtil.setLightmapDisabled(false);
         entity.setWorld(mobSpawnerLogic.getSpawnerWorld());
         
-        if(old)
-        {
-        	GlStateManager.translate(0.0F, 0.4F, 0.0F);
-        	GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
-        	GlStateManager.rotate(-30.0F, 1.0F, 0.0F, 0.0F);
-        	GlStateManager.translate(0.0F, -0.4F, 0.0F);
-        	GlStateManager.scale(scale, scale, scale);
-        }
-        else
-        {
-            GlStateManager.translate(0.0F, 0.4F, 0.0F);
-            GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.translate(0.0F, -0.2F, 0.0F);
-            GlStateManager.rotate(-30.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.scale(scale, scale, scale);
-        }
+        //newer code has the translate down -0.2F missing but, doesn't fully revert the initial 0.4F up so I don't like the newer code and won't be used with silkspawners installed
+        GlStateManager.translate(0.0F, 0.4F, 0.0F);
+        GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-30.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.translate(0.0F, -0.4F, 0.0F);
+        GlStateManager.scale(scale, scale, scale);
         
         if(!mobSpawnerLogic.active || !Config.animationSpawner)
         {
