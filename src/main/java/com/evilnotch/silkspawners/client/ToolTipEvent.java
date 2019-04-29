@@ -8,9 +8,13 @@ import java.util.Random;
 import org.apache.logging.log4j.util.Strings;
 import org.lwjgl.input.Keyboard;
 
+import com.evilnotch.lib.main.capability.CapRegDefaultHandler;
 import com.evilnotch.lib.main.eventhandler.LibEvents;
+import com.evilnotch.lib.minecraft.capability.primitive.CapBoolean;
+import com.evilnotch.lib.minecraft.capability.registry.CapabilityRegistry;
 import com.evilnotch.lib.minecraft.event.DynamicTranslationEvent;
 import com.evilnotch.lib.minecraft.event.client.ClientDisconnectEvent;
+import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.minecraft.util.EnumChatFormatting;
 import com.evilnotch.lib.util.simple.PairObj;
 import com.evilnotch.silkspawners.Config;
@@ -18,14 +22,17 @@ import com.evilnotch.silkspawners.MainJava;
 import com.evilnotch.silkspawners.SpawnerUtil;
 import com.evilnotch.silkspawners.client.render.item.MobSpawnerItemRender;
 import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
+import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityShulker;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.translation.I18n;
@@ -61,9 +68,13 @@ public class ToolTipEvent {
     				continue;
     			if(Config.initialSpawnRandom && ent.ticksExisted % Config.initialSpawnRandomTime == 0 && ent.ticksExisted != 0 && ent instanceof EntityLiving)
     			{
-    				LibEvents.setSpawn(ent.world, false);
-    				((EntityLiving)ent).onInitialSpawn(ent.world.getDifficultyForLocation(ent.getPosition()), null);
-    				LibEvents.setSpawn(ent.world, true);
+                    CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(ent, CapRegDefaultHandler.initSpawned);
+                    if(cap.value)
+                    {
+                    	Entity base = MobSpawnerCache.getSilkEnt(EntityUtil.getEntityResourceLocation(ent));
+                    	NBTTagCompound nbt = EntityUtil.getEntityNBT(base);
+                    	ent.readFromNBT(nbt);
+                    }
     			}
 				ent.ticksExisted++;
 			}
@@ -75,17 +86,21 @@ public class ToolTipEvent {
         				continue;
         			if(Config.initialSpawnRandom && ent.ticksExisted % Config.initialSpawnRandomTime == 0 && ent.ticksExisted != 0 && ent instanceof EntityLiving)
         			{
-        				LibEvents.setSpawn(ent.world, false);
-        				((EntityLiving)ent).onInitialSpawn(ent.world.getDifficultyForLocation(ent.getPosition()), null);
-        				LibEvents.setSpawn(ent.world, true);
+                        CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(ent, CapRegDefaultHandler.initSpawned);
+                        if(cap.value)
+                        {
+                        	Entity base = MobSpawnerCache.getSilkEnt(EntityUtil.getEntityResourceLocation(ent));
+                        	NBTTagCompound nbt = EntityUtil.getEntityNBT(base);
+                        	ent.readFromNBT(nbt);
+                        }
         			}
 					ent.ticksExisted++;
 				}
 			}
 		}
 	}
-	
-    public static int renderTime;
+
+	public static int renderTime;
     public static float renderFrame;
 
     @SubscribeEvent

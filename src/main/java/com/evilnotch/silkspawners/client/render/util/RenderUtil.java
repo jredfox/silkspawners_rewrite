@@ -250,9 +250,11 @@ public class RenderUtil {
 			{
 				((EntityLiving) e).onInitialSpawn(world.getDifficultyForLocation(pos), (IEntityLivingData)null);
 			}
+			EntityUtil.setInitSpawned(e);
 		}
 		return e;
 	}
+	
 	/**
 	 * create an entity from nbt with full rendering capabilities
 	 */

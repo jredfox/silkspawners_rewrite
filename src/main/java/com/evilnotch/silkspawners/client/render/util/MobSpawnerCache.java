@@ -93,6 +93,17 @@ public class MobSpawnerCache {
 	
 	protected static void cacheEnt(ResourceLocation entity, HashMap<ResourceLocation, String[]> map) 
 	{
+		Entity e = getSilkEnt(entity);
+		if(e == null)
+		{
+			System.out.println("error caching entity to silkspawners render:" + entity);
+			return;
+		}
+		ents.put(entity, e);
+	}
+	
+	public static Entity getSilkEnt(ResourceLocation entity)
+	{
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setString("id", entity.toString());
 		Entity e = RenderUtil.getEntityJockey(nbt, Minecraft.getMinecraft().world, 0, 0, 0, Config.renderUseInitSpawn);
@@ -106,9 +117,9 @@ public class MobSpawnerCache {
 			catch(Throwable t)
 			{
 				System.out.println("error cacheing entity to find out if it's a child:" + entity);
-				return;
+				return null;
 			}
-			if(e instanceof EntitySlime)
+			if(!Config.initialSpawnRandom && e instanceof EntitySlime)
 			{
 				try 
 				{
@@ -121,12 +132,7 @@ public class MobSpawnerCache {
 				}
 			}
 		}
-		if(e == null)
-		{
-			System.out.println("error caching entity to silkspawners render:" + entity);
-			return;
-		}
-		ents.put(entity, e);
+		return e;
 	}
 	
 	/**

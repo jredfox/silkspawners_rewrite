@@ -5,15 +5,21 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.evilnotch.lib.main.capability.CapRegDefaultHandler;
 import com.evilnotch.lib.main.eventhandler.LibEvents;
+import com.evilnotch.lib.minecraft.capability.primitive.CapBoolean;
+import com.evilnotch.lib.minecraft.capability.registry.CapabilityRegistry;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.silkspawners.Config;
+import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityShulker;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumParticleTypes;
@@ -192,9 +198,13 @@ public abstract class MobSpawnerBaseLogic
     			int time = e.ticksExisted;
     			if(Config.initialSpawnRandom && time % Config.initialSpawnRandomTime == 0 && time != 0 && e instanceof EntityLiving)
     			{
-    				LibEvents.setSpawn(e.world, false);
-    				((EntityLiving)e).onInitialSpawn(e.world.getDifficultyForLocation(e.getPosition()), null);
-    				LibEvents.setSpawn(e.world, true);
+                    CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(e, CapRegDefaultHandler.initSpawned);
+                    if(cap.value)
+                    {
+                    	Entity base = MobSpawnerCache.getSilkEnt(EntityUtil.getEntityResourceLocation(e));
+                    	NBTTagCompound nbt = EntityUtil.getEntityNBT(base);
+                    	e.readFromNBT(nbt);
+                    }
     			}
     			e.ticksExisted++;
     		}
