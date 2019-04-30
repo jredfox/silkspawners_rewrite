@@ -1,55 +1,25 @@
 package com.evilnotch.silkspawners.client.render.item;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
-
-import org.lwjgl.opengl.GL11;
 
 import com.evilnotch.iitemrender.handlers.IItemRenderer;
 import com.evilnotch.iitemrender.handlers.IItemRendererHandler;
-import com.evilnotch.lib.api.ReflectionUtil;
-import com.evilnotch.lib.main.loader.LoaderFields;
-import com.evilnotch.lib.minecraft.util.EntityUtil;
-import com.evilnotch.lib.util.JavaUtil;
 import com.evilnotch.lib.util.simple.PairObj;
 import com.evilnotch.silkspawners.Config;
-import com.evilnotch.silkspawners.client.ToolTipEvent;
-import com.evilnotch.silkspawners.client.proxy.ClientProxy;
-import com.evilnotch.silkspawners.client.render.tileentity.MobSpawnerStackBase;
+import com.evilnotch.silkspawners.EntityPos;
 import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.MobSpawnerBaseLogic;
-import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 /**
  * this is the copied modified class of NEISpawnerRender port
@@ -83,13 +53,13 @@ public class MobSpawnerItemRender implements IItemRenderer{
             NBTTagCompound data = nbt.hasKey("SpawnData") ? nbt.getCompoundTag("SpawnData") : nbt.getCompoundTag("BlockEntityTag").getCompoundTag("SpawnData");
             ResourceLocation loc = new ResourceLocation(data.getString("id"));
             
-            PairObj<List<Entity>,Double[]> pair = MobSpawnerCache.getCachedList(loc, data);
+            PairObj<List<Entity>,EntityPos[]> pair = MobSpawnerCache.getCachedList(loc, data);
             if(pair == null)
             {
             	return;
             }
         	List<Entity> toRender = pair.getKey();
-        	Double[] offsets = pair.getValue();
+        	EntityPos[] offsets = pair.getValue();
             float f1 = RenderUtil.getItemScale(toRender, !Config.dynamicScalingItem);
             for(int i=0;i<toRender.size();i++)
             {
@@ -112,7 +82,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
        RenderUtil.setLightmapDisabled(IItemRendererHandler.isGui(type) || IItemRendererHandler.isUnkown(type));
 	}
 	
-	public void renderEntity(Entity entity, float scale, World world, double offset, TransformType type, float partialTicks) 
+	public void renderEntity(Entity entity, float scale, World world, EntityPos offset, TransformType type, float partialTicks) 
 	{	
         GlStateManager.pushMatrix();
         
@@ -142,7 +112,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         }
         
         entity.setRotationYawHead(0.0F);//fixes head bugs
-        RenderUtil.renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, Config.renderShadows);
+        RenderUtil.renderEntity(entity, offset.x, offset.y, offset.z, 0.0F, partialTicks, Config.renderShadows);
         
         GlStateManager.popMatrix();
         
@@ -159,13 +129,13 @@ public class MobSpawnerItemRender implements IItemRenderer{
         GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(516, 0.1F);
         
-        if(type == TransformType.THIRD_PERSON_LEFT_HAND || type == TransformType.THIRD_PERSON_RIGHT_HAND)
+        if(IItemRendererHandler.isThirdPerson(type))
         {
         	GlStateManager.disableCull();
         }
         
         GlStateManager.enableBlend();
-        if(type == type.GUI)
+        if(IItemRendererHandler.isGui(type))
         {
         	GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         }

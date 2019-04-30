@@ -2,28 +2,20 @@ package com.evilnotch.silkspawners.client.render.tileentity;
 
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
-import com.evilnotch.silkspawners.client.render.item.MobSpawnerItemRender;
-import com.evilnotch.silkspawners.client.render.util.RenderUtil;
-import com.evilnotch.iitemrender.handlers.IItemRendererHandler;
 import com.evilnotch.lib.minecraft.util.TileEntityUtil;
 import com.evilnotch.silkspawners.Config;
+import com.evilnotch.silkspawners.EntityPos;
+import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 
 public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 	
@@ -71,7 +63,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         GlStateManager.popMatrix();
     }
 
-	public void renderSpawnerEntity(Entity entity, float scale, double offset, MobSpawnerBaseLogic mobSpawnerLogic, float partialTicks, float lastX, float lastY) 
+	public void renderSpawnerEntity(Entity entity, float scale, EntityPos offset, MobSpawnerBaseLogic mobSpawnerLogic, float partialTicks, float lastX, float lastY) 
 	{
 		GlStateManager.pushMatrix();
 		
@@ -108,7 +100,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         }
         
         entity.setRotationYawHead(0.0F);//fix head bugs
-        RenderUtil.renderEntity(entity, 0.0D, offset, 0.0D, 0.0F, partialTicks, Config.renderShadows);
+        RenderUtil.renderEntity(entity, offset.x, offset.y, offset.z, 0.0F, partialTicks, Config.renderShadows);
         resetOpenGl(lastX, lastY);
         
         GlStateManager.popMatrix();

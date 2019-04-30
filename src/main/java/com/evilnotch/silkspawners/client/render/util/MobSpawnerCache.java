@@ -11,7 +11,9 @@ import com.evilnotch.lib.main.loader.LoaderFields;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.util.JavaUtil;
 import com.evilnotch.lib.util.simple.PairObj;
+import com.evilnotch.lib.util.simple.PointId;
 import com.evilnotch.silkspawners.Config;
+import com.evilnotch.silkspawners.EntityPos;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -26,12 +28,12 @@ public class MobSpawnerCache {
 	
 	public static boolean entCached = false;
 	public static HashMap<ResourceLocation,Entity> ents = new LinkedHashMap();
-	public static HashMap<NBTTagCompound,PairObj<List<Entity>,Double[]>> entsNBT = new HashMap();
+	public static HashMap<NBTTagCompound,PairObj<List<Entity>,EntityPos[]>> entsNBT = new HashMap();
 	
 	public static final List<Entity> li = new ArrayList();
-	public static final PairObj<List<Entity>,Double[]> defaultPair = new PairObj<List<Entity>,Double[]>(li,new Double[]{0D});
+	public static final PairObj<List<Entity>,EntityPos[]> defaultPair = new PairObj<List<Entity>,EntityPos[]>(li,new EntityPos[]{new EntityPos(0D,0.0D,0.0D)});
 	
-	public static PairObj<List<Entity>,Double[]> getCachedList(ResourceLocation loc, NBTTagCompound data) 
+	public static PairObj<List<Entity>,EntityPos[]> getCachedList(ResourceLocation loc, NBTTagCompound data) 
 	{
 		if(data.getSize() > 1)
 		{
@@ -55,9 +57,9 @@ public class MobSpawnerCache {
 		return defaultPair;
 	}
 	
-	private static PairObj<List<Entity>, Double[]> getCachedData(NBTTagCompound data) 
+	private static PairObj<List<Entity>, EntityPos[]> getCachedData(NBTTagCompound data) 
 	{
-		PairObj<List<Entity>,Double[]> ents = entsNBT.get(data);
+		PairObj<List<Entity>,EntityPos[]> ents = entsNBT.get(data);
 		if(ents == null)
 		{
 			Entity e = RenderUtil.getEntityJockey(data, Minecraft.getMinecraft().world, Config.renderUseInitSpawn, Config.additionalPassengers);
@@ -138,17 +140,17 @@ public class MobSpawnerCache {
 	/**
 	 * returns a pair of List<Entity>(passengers and entity base) as well as offsets array
 	 */
-	public static PairObj<List<Entity>,Double[]> getMounts(Entity entity) 
+	public static PairObj<List<Entity>,EntityPos[]> getMounts(Entity entity) 
 	{
 		List<Entity> toRender = EntityUtil.getEntList(entity);
         
-        Double[] offsets = new Double[toRender.size()];
+		EntityPos[] offsets = new EntityPos[toRender.size()];
     	for(int i=0;i<toRender.size();i++)
     	{
     		Entity e = toRender.get(i);
-    		offsets[i] = e.posY;
+    		offsets[i] = new EntityPos(e.posX, e.posY, e.posZ);
     	}
     	
-		return new PairObj<List<Entity>,Double[]>(toRender, offsets);
+		return new PairObj<List<Entity>,EntityPos[]>(toRender, offsets);
 	}
 }

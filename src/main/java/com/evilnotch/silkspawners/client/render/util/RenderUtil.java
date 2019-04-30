@@ -187,8 +187,8 @@ public class RenderUtil {
 	{
 		LibEvents.setSpawn(worldIn, false);
 		Entity e = getEntityStack(compound, worldIn, useInterface, additionalMounts);
-		LibEvents.setSpawn(worldIn, true);
 		EntityUtil.updateJockey(e);
+		LibEvents.setSpawn(worldIn, true);
 		return e;
 	}
 
@@ -242,6 +242,7 @@ public class RenderUtil {
 			{
 				e.removePassengers();
 			}
+			e.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);//make sure after everything the offsets are calculated at 0,0,0
 		}
 		else
 		{
@@ -250,9 +251,7 @@ public class RenderUtil {
 			if(e == null)
 				return null;
 			
-			e.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
 			NBTTagCompound tag = EntityUtil.getEntityNBT(e);
-			
 			e.readFromNBT(tag);
 			
 			if(useInterface && e instanceof EntityLiving || e instanceof EntityShulker)
@@ -264,6 +263,8 @@ public class RenderUtil {
 			{
 				e.removePassengers();
 			}
+			e.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);//make sure after everything the offsets are calculated at 0,0,0
+			
 			EntityUtil.setInitSpawned(e);
 		}
 		return e;
@@ -272,12 +273,11 @@ public class RenderUtil {
 	/**
 	 * create an entity from nbt with full rendering capabilities
 	 */
-	public static Entity createEntityFromNBTRender(NBTTagCompound nbt,BlockPos pos, World world) 
+	public static Entity createEntityFromNBTRender(NBTTagCompound nbt, BlockPos pos, World world) 
 	{
 		Entity e = EntityUtil.createEntityByNameQuietly(new ResourceLocation(nbt.getString("id")),world);
 		if(e == null)
 			return null;
-		e.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
 		e.readFromNBT(nbt);
 		//hard coded dynamic fix for a shitty thing now it doesn't change it's type only it's render stuffs
 		if(e instanceof EntityShulker)

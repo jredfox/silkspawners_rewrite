@@ -9,18 +9,16 @@ import org.apache.logging.log4j.util.Strings;
 import org.lwjgl.input.Keyboard;
 
 import com.evilnotch.lib.main.capability.CapRegDefaultHandler;
-import com.evilnotch.lib.main.eventhandler.LibEvents;
 import com.evilnotch.lib.minecraft.capability.primitive.CapBoolean;
 import com.evilnotch.lib.minecraft.capability.registry.CapabilityRegistry;
 import com.evilnotch.lib.minecraft.event.DynamicTranslationEvent;
 import com.evilnotch.lib.minecraft.event.client.ClientDisconnectEvent;
-import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.minecraft.util.EnumChatFormatting;
 import com.evilnotch.lib.util.simple.PairObj;
 import com.evilnotch.silkspawners.Config;
+import com.evilnotch.silkspawners.EntityPos;
 import com.evilnotch.silkspawners.MainJava;
 import com.evilnotch.silkspawners.SpawnerUtil;
-import com.evilnotch.silkspawners.client.render.item.MobSpawnerItemRender;
 import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -29,10 +27,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityShulker;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.translation.I18n;
@@ -43,7 +38,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
 public class ToolTipEvent {
 	
@@ -71,7 +65,7 @@ public class ToolTipEvent {
     				RenderUtil.onInitialSpawnUpdate(ent, Config.renderInitSpawnRndTime);
 				ent.ticksExisted++;
 			}
-			for(PairObj<List<Entity>,Double[]> pair : MobSpawnerCache.entsNBT.values())
+			for(PairObj<List<Entity>,EntityPos[]> pair : MobSpawnerCache.entsNBT.values())
 			{
 				for(Entity ent : pair.obj1)
 				{

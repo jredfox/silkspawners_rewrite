@@ -5,21 +5,15 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.evilnotch.lib.main.capability.CapRegDefaultHandler;
-import com.evilnotch.lib.main.eventhandler.LibEvents;
-import com.evilnotch.lib.minecraft.capability.primitive.CapBoolean;
-import com.evilnotch.lib.minecraft.capability.registry.CapabilityRegistry;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.silkspawners.Config;
-import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
+import com.evilnotch.silkspawners.EntityPos;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityShulker;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumParticleTypes;
@@ -61,7 +55,7 @@ public abstract class MobSpawnerBaseLogic
 	public boolean active = false;
 	//client only
 	public List<Entity> cachedEntities = new ArrayList();
-	public double[] offsets;
+	public EntityPos[] offsets;
 
     @Nullable
     public ResourceLocation getEntityId()
@@ -167,7 +161,6 @@ public abstract class MobSpawnerBaseLogic
 
                     if (living == null || ForgeEventFactory.canEntitySpawnSpawner(living, getSpawnerWorld(), (float)entity.posX, (float)entity.posY, (float)entity.posZ, this))
                     {
-                    	EntityUtil.updateJockey(entity);
                         AnvilChunkLoader.spawnEntity(entity, world);
                         world.playEvent(2004, blockpos, 0);
                         if(living != null)
@@ -207,7 +200,7 @@ public abstract class MobSpawnerBaseLogic
 	{
 		this.cachedEntity = null;
 		this.cachedEntities.clear();
-		this.offsets = new double[0];
+		this.offsets = new EntityPos[0];
 		this.getCachedEntity();
 	}
 
@@ -275,11 +268,9 @@ public abstract class MobSpawnerBaseLogic
 
         if (this.getSpawnerWorld() != null)
         {
-            this.cachedEntity = null;
             if(this.getSpawnerWorld().isRemote)
             {
-            	this.cachedEntities.clear();
-            	this.offsets = new double[0];
+            	this.clearMobs();
             }
         }
     }
@@ -347,10 +338,11 @@ public abstract class MobSpawnerBaseLogic
             {
             	List<Entity> ents = EntityUtil.getEntList(this.cachedEntity);
             	
-            	offsets = new double[ents.size()];
+            	offsets = new EntityPos[ents.size()];
             	for(int i=0;i<ents.size();i++)
             	{
-            		offsets[i] = ents.get(i).posY;
+            		Entity e = ents.get(i);
+            		offsets[i] = new EntityPos(e.posX, e.posY, e.posZ);
             	}
             	this.cachedEntities = ents;
             }
