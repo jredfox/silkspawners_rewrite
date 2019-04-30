@@ -6,18 +6,23 @@ import com.evilnotch.lib.minecraft.basicmc.auto.lang.LangEntry;
 import com.evilnotch.lib.minecraft.basicmc.client.creativetab.BasicCreativeTab;
 import com.evilnotch.lib.minecraft.event.PickEvent;
 import com.evilnotch.lib.minecraft.event.tileentity.BlockDataEvent;
+import com.evilnotch.lib.minecraft.network.NetWorkHandler;
 import com.evilnotch.lib.minecraft.registry.GeneralRegistry;
 import com.evilnotch.lib.minecraft.util.BlockUtil;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.minecraft.util.EnumChatFormatting;
 import com.evilnotch.silkspawners.client.proxy.ServerProxy;
 import com.evilnotch.silkspawners.commands.CommandMTHand;
+import com.evilnotch.silkspawners.packet.PacketAddPass;
+import com.evilnotch.silkspawners.packet.handler.PacketAddPassHandler;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -39,9 +44,10 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = MainJava.MODID, name = "silkspawners", version = MainJava.VERSION,acceptableRemoteVersions = "*", dependencies = "required-after:evilnotchlib@[1.2.3,]")
 public class MainJava
@@ -88,6 +94,7 @@ public class MainJava
     {
     	proxy.init();
     	MinecraftForge.EVENT_BUS.register(new MainJava());
+	    NetWorkHandler.registerMessage(PacketAddPassHandler.class, PacketAddPass.class, Side.CLIENT);
     }
     @EventHandler
     public void postinit(FMLPostInitializationEvent event)
@@ -99,6 +106,12 @@ public class MainJava
     public void postinit(FMLLoadCompleteEvent event)
     {
     	proxy.onLoadComplete();
+    }
+    
+    @SubscribeEvent
+    public void playLogin(PlayerLoggedInEvent event)
+    {
+    	NetWorkHandler.INSTANCE.sendTo(new PacketAddPass(Config.additionalPassengers), (EntityPlayerMP) event.player);//sync server side config for client rendering
     }
    
 	@SubscribeEvent

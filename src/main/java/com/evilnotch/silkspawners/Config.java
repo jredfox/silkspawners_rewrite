@@ -1,11 +1,14 @@
 package com.evilnotch.silkspawners;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.evilnotch.lib.minecraft.util.EnumChatFormatting;
 import com.evilnotch.lib.util.JavaUtil;
 
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -38,8 +41,12 @@ public class Config {
 	public static boolean dynamicSetPositioning = true;
 	public static boolean renderShadows = false;
 	public static boolean mergeOldNewScaling = true;
-	public static boolean initialSpawnRandom = true;
-	public static int initialSpawnRandomTime = 20;
+	public static boolean renderInitSpawnRnd = false;
+	public static int renderInitSpawnRndTime = 20;
+	/**
+	 * if you create a king spider from twilight forest allow the spider itself to create the druid.
+	 */
+	public static boolean additionalPassengers = false;
 	
 	public static boolean tooltip_spawncount = true;
 	public static boolean tooltip_maxnearbyents = true;
@@ -70,15 +77,20 @@ public class Config {
 	public static String text_creature = EnumChatFormatting.LIGHT_PURPLE;
 	public static String text_default = EnumChatFormatting.WHITE;
 	
+	public static List<ResourceLocation> redundantBlacklist = new ArrayList(0);
+	
 	public static void loadConfig(FMLPreInitializationEvent event)
 	{
 		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(),"silkspawners.cfg") );
 		config.load();
+		
+		redundantBlacklist.clear();
 		isDev = config.get("general", "isDev", false).getBoolean();
 		maxSpawnerName = config.get("general", "maxCharSpawnerName", maxSpawnerName).getInt();
 		default_Delay = config.get("general", "defaultDelay", default_Delay).getInt();
 		spawnerBlockName =  config.get("general", "spawnerBlockName", spawnerBlockName).getString();
 		nonLivingTab = config.get("general", "nonLivingEntsInTab", nonLivingTab).getBoolean();
+		additionalPassengers = config.get("general", "additionalPassengers", additionalPassengers).getBoolean();
 		
 		config.addCustomCategoryComment("gamerules", "this is the default gamerule values for when a world is created it's not set in stone here");
 		grPosSpawner =  config.get("gamerules", "CustomPosSpawner", grPosSpawner).getBoolean();
@@ -87,7 +99,7 @@ public class Config {
 		
 		coloredSpawners = config.get("render", "coloredSpawnerNames", coloredSpawners).getBoolean();
 		creativeTabSpawners = config.get("render", "creativeTabSpawners", creativeTabSpawners).getBoolean();
-		renderUseInitSpawn = config.get("render", "renderUseInitSpawn", renderUseInitSpawn).getBoolean();
+		renderUseInitSpawn = config.get("render", "renderUseInitialSpawn", renderUseInitSpawn).getBoolean();
 		spawnerCacheItem = config.get("render", "spawnerCacheItemTime", spawnerCacheItem).getInt();
 		slimeSize = config.get("render", "slimeSize", 2).getInt();
 		animationSpawner = config.get("render", "animationSpawnerBlock", animationSpawner).getBoolean();
@@ -100,13 +112,18 @@ public class Config {
 		dynamicLightingBlock = config.get("render", "dynamicLightingBlock", dynamicLightingBlock).getBoolean();
 		dynamicSetPositioning = config.get("render", "dynamicSetPositioning", dynamicSetPositioning, "allows light emitting entities and other sturborn entities to work properly if this causes ghost enities simply disable it").getBoolean();
 		renderShadows = config.get("render", "renderShadows", renderShadows).getBoolean();
-		initialSpawnRandom = config.get("render", "initialSpawnRandom", initialSpawnRandom).getBoolean();
-		initialSpawnRandomTime =  config.get("render", "initialSpawnRandomTime", initialSpawnRandomTime).getInt();
-		if(initialSpawnRandomTime < 10)
-			initialSpawnRandomTime = 10;//limit the frames to 0.5 frames per second to prevent epilisy attacks
+		renderInitSpawnRnd = config.get("render", "renderInitialSpawnRandom", renderInitSpawnRnd).getBoolean();
+		renderInitSpawnRndTime =  config.get("render", "renderInitialSpawnRandomTime", renderInitSpawnRndTime).getInt();
+		if(renderInitSpawnRndTime < 10)
+			renderInitSpawnRndTime = 10;//limit the frames to 0.5 frames per second to prevent epilisy attacks
+		String[] strs = config.get("render", "RedundantBlacklist", new String[]{""}).getStringList();
+		for(String s : strs)
+			redundantBlacklist.add(new ResourceLocation(s));
 		
 		if(!JavaUtil.toWhiteSpaced(spawnerBlockName).equals(""))
 			hasCustomName = true;
+		else
+			hasCustomName = false;
 		
 		tooltip_spawncount = config.get("tooltip", "spawnCount", true).getBoolean();
 		tooltip_maxnearbyents = config.get("tooltip", "maxNearbyEntities", true).getBoolean();

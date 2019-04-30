@@ -145,7 +145,7 @@ public abstract class MobSpawnerBaseLogic
                     double d1 = j >= 2 ? nbttaglist.getDoubleAt(1) : (double)(blockpos.getY() + world.rand.nextInt(3) - 1);
                     double d2 = j >= 3 ? nbttaglist.getDoubleAt(2) : (double)blockpos.getZ() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double)this.spawnRange + 0.5D;
                     
-                    Entity entity = EntityUtil.getEntityJockey(nbttagcompound, world, d0, d1, d2, true, false, this);
+                    Entity entity = EntityUtil.getEntityJockey(nbttagcompound, world, d0, d1, d2, true, false, this, Config.additionalPassengers);
                     
                     if (entity == null)
                     {
@@ -196,8 +196,8 @@ public abstract class MobSpawnerBaseLogic
     			if(e instanceof EntityShulker)
     				continue;
     			int time = e.ticksExisted;
-    			if(Config.initialSpawnRandom)
-    				RenderUtil.onInitialSpawnUpdate(e, Config.initialSpawnRandomTime);
+    			if(Config.renderInitSpawnRnd)
+    				RenderUtil.onInitialSpawnUpdate(e, Config.renderInitSpawnRndTime);
     			e.ticksExisted++;
     		}
     	}
@@ -342,7 +342,7 @@ public abstract class MobSpawnerBaseLogic
     {
         if (this.cachedEntity == null)
         {	
-            this.cachedEntity = RenderUtil.getEntityJockey(this.spawnData.getNbt(), this.getSpawnerWorld(), Config.renderUseInitSpawn);
+            this.cachedEntity = RenderUtil.getEntityJockey(this.spawnData.getNbt(), this.getSpawnerWorld(), Config.renderUseInitSpawn, Config.additionalPassengers);
             if(this.cachedEntity != null)
             {
             	List<Entity> ents = EntityUtil.getEntList(this.cachedEntity);

@@ -67,8 +67,8 @@ public class ToolTipEvent {
     			if(ent instanceof EntityShulker)
     				continue;
     			CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(ent, CapRegDefaultHandler.initSpawned);
-    			if(Config.initialSpawnRandom)
-    				RenderUtil.onInitialSpawnUpdate(ent, Config.initialSpawnRandomTime);
+    			if(Config.renderInitSpawnRnd)
+    				RenderUtil.onInitialSpawnUpdate(ent, Config.renderInitSpawnRndTime);
 				ent.ticksExisted++;
 			}
 			for(PairObj<List<Entity>,Double[]> pair : MobSpawnerCache.entsNBT.values())
@@ -77,8 +77,8 @@ public class ToolTipEvent {
 				{
         			if(ent instanceof EntityShulker)
         				continue;
-        			if(Config.initialSpawnRandom)
-        				RenderUtil.onInitialSpawnUpdate(ent, Config.initialSpawnRandomTime);
+        			if(Config.renderInitSpawnRnd)
+        				RenderUtil.onInitialSpawnUpdate(ent, Config.renderInitSpawnRndTime);
 					ent.ticksExisted++;
 				}
 			}
@@ -138,10 +138,13 @@ public class ToolTipEvent {
 		String ent = I18n.translateToLocal(unlocal);
 		String block = Config.hasCustomName ? Config.spawnerBlockName : I18n.translateToLocal(e.stack.getItem().getUnlocalizedName() + ".name");
 		String name = ent;
+		if(block.startsWith(name) || Config.redundantBlacklist.contains(e.stack.getItem().getRegistryName()))
+			name = "";//prevent redundant names?
 		if(display.getBoolean("isJockey"))
 			name += " " + I18n.translateToLocal("silkspawners.jockey.name");
 		if((name + " " + block).length() < Config.maxSpawnerName)
 			name += " " + block;
+		name = name.trim();
 		if(Config.coloredSpawners)
 		{
 			String color = display.getString("EntColor");
@@ -149,7 +152,7 @@ public class ToolTipEvent {
 				name = Config.configToColor.get(color) + name + EnumChatFormatting.RESET;
 			else if(color.equals("rainbow"))
 			{
-				name = toRainbow(name,pattern) + EnumChatFormatting.RESET;
+				name = toRainbow(name, pattern) + EnumChatFormatting.RESET;
 			}
 			else
 				name = color + name + EnumChatFormatting.RESET;

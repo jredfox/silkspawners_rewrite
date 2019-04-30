@@ -60,7 +60,7 @@ public class MobSpawnerCache {
 		PairObj<List<Entity>,Double[]> ents = entsNBT.get(data);
 		if(ents == null)
 		{
-			Entity e = RenderUtil.getEntityJockey(data, Minecraft.getMinecraft().world, Config.renderUseInitSpawn);
+			Entity e = RenderUtil.getEntityJockey(data, Minecraft.getMinecraft().world, Config.renderUseInitSpawn, Config.additionalPassengers);
 			if(e == null)
 				return null;
 			ents = getMounts(e);
@@ -106,7 +106,7 @@ public class MobSpawnerCache {
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setString("id", entity.toString());
-		Entity e = RenderUtil.getEntityJockey(nbt, Minecraft.getMinecraft().world, Config.renderUseInitSpawn);
+		Entity e = RenderUtil.getEntityJockey(nbt, Minecraft.getMinecraft().world, Config.renderUseInitSpawn, Config.additionalPassengers);
 		if(e instanceof EntityLiving)
 		{
 			EntityLiving living = (EntityLiving)e;
@@ -119,7 +119,7 @@ public class MobSpawnerCache {
 				System.out.println("error cacheing entity to find out if it's a child:" + entity);
 				return null;
 			}
-			if(!Config.initialSpawnRandom && e instanceof EntitySlime)
+			if(!Config.renderInitSpawnRnd && e instanceof EntitySlime)
 			{
 				try 
 				{
