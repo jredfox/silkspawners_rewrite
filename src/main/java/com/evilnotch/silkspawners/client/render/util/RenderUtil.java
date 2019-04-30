@@ -3,7 +3,10 @@ package com.evilnotch.silkspawners.client.render.util;
 import java.util.List;
 
 import com.evilnotch.lib.api.ReflectionUtil;
+import com.evilnotch.lib.main.capability.CapRegDefaultHandler;
 import com.evilnotch.lib.main.eventhandler.LibEvents;
+import com.evilnotch.lib.minecraft.capability.primitive.CapBoolean;
+import com.evilnotch.lib.minecraft.capability.registry.CapabilityRegistry;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.minecraft.util.NBTUtil;
 import com.evilnotch.silkspawners.Config;
@@ -296,5 +299,22 @@ public class RenderUtil {
     	rf.renderEntity(entityIn, x, y, z, yaw, partialTicks, false);
     	rf.setRenderShadow(shadowCached);
     }
+
+    /**
+     * update an entity equalivlent to calling onInitialSpawn() over and over again just without breaking
+     */
+	public static void onInitialSpawnUpdate(Entity ent, int ticks)
+	{
+		if(ent.ticksExisted % ticks == 0 && ent.ticksExisted != 0 && ent instanceof EntityLiving)
+		{
+            CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(ent, CapRegDefaultHandler.initSpawned);
+            if(cap.value)
+            {
+            	Entity base = MobSpawnerCache.getSilkEnt(EntityUtil.getEntityResourceLocation(ent));
+            	NBTTagCompound nbt = EntityUtil.getEntityNBT(base);
+            	ent.readFromNBT(nbt);
+            }
+		}
+	}
 
 }

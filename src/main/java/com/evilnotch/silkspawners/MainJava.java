@@ -47,7 +47,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class MainJava
 {
     public static final String MODID = "silkspawners";
-    public static final String VERSION = "1.8.2";
+    public static final String VERSION = "1.8.2";//build 11
 	@SidedProxy(clientSide = "com.evilnotch.silkspawners.client.proxy.ClientProxy", serverSide = "com.evilnotch.silkspawners.client.proxy.ServerProxy")
 	public static ServerProxy proxy;
 	public static String[] versionType = {"Beta","Alpha","Release","Indev","WIPING"};
@@ -321,7 +321,7 @@ public class MainJava
 		if(e.isVanilla || !(e.tile instanceof TileEntityMobSpawner))
 			return;
 		
-		if(SpawnerUtil.isCustomSpawnerPos(e.nbt,"offsets"))
+		if(SpawnerUtil.isCustomSpawnerPos(e.nbt, "offsets"))
 		   SpawnerUtil.reAlignSpawnerPos(e.nbt, e.pos.getX(), e.pos.getY(), e.pos.getZ() );
     }
 	

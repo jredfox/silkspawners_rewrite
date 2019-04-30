@@ -196,16 +196,8 @@ public abstract class MobSpawnerBaseLogic
     			if(e instanceof EntityShulker)
     				continue;
     			int time = e.ticksExisted;
-    			if(Config.initialSpawnRandom && time % Config.initialSpawnRandomTime == 0 && time != 0 && e instanceof EntityLiving)
-    			{
-                    CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(e, CapRegDefaultHandler.initSpawned);
-                    if(cap.value)
-                    {
-                    	Entity base = MobSpawnerCache.getSilkEnt(EntityUtil.getEntityResourceLocation(e));
-                    	NBTTagCompound nbt = EntityUtil.getEntityNBT(base);
-                    	e.readFromNBT(nbt);
-                    }
-    			}
+    			if(Config.initialSpawnRandom)
+    				RenderUtil.onInitialSpawnUpdate(e, Config.initialSpawnRandomTime);
     			e.ticksExisted++;
     		}
     	}

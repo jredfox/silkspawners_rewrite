@@ -34,23 +34,33 @@ public class ItemSpawner implements ICreativeTabHook{
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
     {
     	if(!Config.creativeTabSpawners)
+    	{
     		return;
+    	}
         if(tab == MainJava.tab_living)
-        	populateTab(tab,EntityUtil.living, items);
+        {
+        	populateTab(tab, EntityUtil.living, items);
+        }
         else if(tab == MainJava.tab_nonliving)
         {
         	populateTab(MainJava.tab_nonliving, EntityUtil.livingbase,items);
         	if(Config.nonLivingTab)
-        		populateTab(tab,EntityUtil.nonliving, items);
+        	{
+        		populateTab(tab, EntityUtil.nonliving, items);
+        	}
         }
         else if(tab == MainJava.tab_custom)
+        {
         	populateCustomSpawnerEntries(items);
+        }
         else if(tab == CreativeTabs.SEARCH)
         {
         	populateTab(tab,EntityUtil.living, items);
         	populateTab(tab,EntityUtil.livingbase, items);
         	if(Config.nonLivingTab)
-        		populateTab(tab,EntityUtil.nonliving, items);
+        	{
+        		populateTab(tab, EntityUtil.nonliving, items);
+        	}
         	populateCustomSpawnerEntries(items);
         }
     }
@@ -103,7 +113,9 @@ public class ItemSpawner implements ICreativeTabHook{
 	        	items.add(spawner);
 	        }
 	}
-	public static void populateCustomSpawnerEntries(List<ItemStack> tabList) {
+	
+	public static void populateCustomSpawnerEntries(List<ItemStack> tabList) 
+	{
 		List<ItemStack> stacks = new ArrayList(17);
 		
     	ItemStack skele = new ItemStack(Blocks.MOB_SPAWNER,1);

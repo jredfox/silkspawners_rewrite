@@ -66,16 +66,9 @@ public class ToolTipEvent {
 			{
     			if(ent instanceof EntityShulker)
     				continue;
-    			if(Config.initialSpawnRandom && ent.ticksExisted % Config.initialSpawnRandomTime == 0 && ent.ticksExisted != 0 && ent instanceof EntityLiving)
-    			{
-                    CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(ent, CapRegDefaultHandler.initSpawned);
-                    if(cap.value)
-                    {
-                    	Entity base = MobSpawnerCache.getSilkEnt(EntityUtil.getEntityResourceLocation(ent));
-                    	NBTTagCompound nbt = EntityUtil.getEntityNBT(base);
-                    	ent.readFromNBT(nbt);
-                    }
-    			}
+    			CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(ent, CapRegDefaultHandler.initSpawned);
+    			if(Config.initialSpawnRandom)
+    				RenderUtil.onInitialSpawnUpdate(ent, Config.initialSpawnRandomTime);
 				ent.ticksExisted++;
 			}
 			for(PairObj<List<Entity>,Double[]> pair : MobSpawnerCache.entsNBT.values())
@@ -84,16 +77,8 @@ public class ToolTipEvent {
 				{
         			if(ent instanceof EntityShulker)
         				continue;
-        			if(Config.initialSpawnRandom && ent.ticksExisted % Config.initialSpawnRandomTime == 0 && ent.ticksExisted != 0 && ent instanceof EntityLiving)
-        			{
-                        CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(ent, CapRegDefaultHandler.initSpawned);
-                        if(cap.value)
-                        {
-                        	Entity base = MobSpawnerCache.getSilkEnt(EntityUtil.getEntityResourceLocation(ent));
-                        	NBTTagCompound nbt = EntityUtil.getEntityNBT(base);
-                        	ent.readFromNBT(nbt);
-                        }
-        			}
+        			if(Config.initialSpawnRandom)
+        				RenderUtil.onInitialSpawnUpdate(ent, Config.initialSpawnRandomTime);
 					ent.ticksExisted++;
 				}
 			}
