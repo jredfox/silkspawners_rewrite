@@ -155,7 +155,7 @@ public class RenderUtil {
 	{
 		if(old)
 		{
-			float scale = 0.4375F;
+			float scale = oldScale;
 			if(EntityUtil.getShadowSize(e) > 1.5)
 			{
 				scale = 0.1F;
