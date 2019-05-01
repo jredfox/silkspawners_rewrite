@@ -96,12 +96,14 @@ public class MainJava
     	MinecraftForge.EVENT_BUS.register(new MainJava());
 	    NetWorkHandler.registerMessage(PacketAddPassHandler.class, PacketAddPass.class, Side.CLIENT);
     }
+    
     @EventHandler
     public void postinit(FMLPostInitializationEvent event)
     {
     	EntityUtil.cacheEnts();
     	proxy.postinit();
     }
+    
     @EventHandler
     public void postinit(FMLLoadCompleteEvent event)
     {
@@ -111,7 +113,7 @@ public class MainJava
     @SubscribeEvent
     public void playLogin(PlayerLoggedInEvent event)
     {
-    	NetWorkHandler.INSTANCE.sendTo(new PacketAddPass(Config.additionalPassengers), (EntityPlayerMP) event.player);//sync server side config for client rendering
+    	NetWorkHandler.INSTANCE.sendTo(new PacketAddPass(Config.addPass), (EntityPlayerMP) event.player);//sync server side config for client rendering
     }
    
 	@SubscribeEvent

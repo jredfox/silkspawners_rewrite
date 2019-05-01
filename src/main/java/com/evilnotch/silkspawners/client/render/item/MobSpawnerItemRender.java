@@ -79,14 +79,14 @@ public class MobSpawnerItemRender implements IItemRenderer{
 //            System.out.println("exception drawing:" + stack.getItem().getRegistryName() + " with NBT:" + stack.getTagCompound());   
         }
         
-       RenderUtil.setLightmapDisabled(IItemRendererHandler.isGui(type) || IItemRendererHandler.isUnkown(type));
+       RenderUtil.setLightmapDisabled(IItemRendererHandler.isGui(type));
 	}
 	
 	public void renderEntity(Entity entity, float scale, World world, EntityPos offset, TransformType type, float partialTicks) 
 	{	
         GlStateManager.pushMatrix();
         
-        RenderUtil.setLightmapDisabled(IItemRendererHandler.isGui(type) || IItemRendererHandler.isUnkown(type));//always keep lighting enabled for rendering entities
+        RenderUtil.setLightmapDisabled(IItemRendererHandler.isGui(type));//always keep lighting enabled for rendering entities
         
         entity.setWorld(world);
         GlStateManager.rotate((float) (RenderUtil.getRenderTime()*10), 0.0F, 1.0F, 0.0F);

@@ -47,6 +47,10 @@ public class Config {
 	 * if you create a king spider from twilight forest allow the spider itself to create the druid.
 	 */
 	public static boolean additionalPassengers = false;
+	/**
+	 * imuttable config option additionalPassengers gets overriden by a packet
+	 */
+	public static boolean addPass = false;
 	
 	public static boolean tooltip_spawncount = true;
 	public static boolean tooltip_maxnearbyents = true;
@@ -57,6 +61,7 @@ public class Config {
 	public static boolean tooltip_RequiredPlayerRange = false;
 	public static boolean tooltip_CustomNames = false;
 	public static boolean tooltip_CustomPos = false;
+	public static boolean tooltip_displayModOwner = true;
 	
 	/**
 	 * gets the array list of types then returns them in an order which makes since
@@ -78,6 +83,7 @@ public class Config {
 	public static String text_default = EnumChatFormatting.WHITE;
 	
 	public static List<ResourceLocation> redundantBlacklist = new ArrayList(0);
+
 	
 	public static void loadConfig(FMLPreInitializationEvent event)
 	{
@@ -90,7 +96,7 @@ public class Config {
 		default_Delay = config.get("general", "defaultDelay", default_Delay).getInt();
 		spawnerBlockName =  config.get("general", "spawnerBlockName", spawnerBlockName).getString();
 		nonLivingTab = config.get("general", "nonLivingEntsInTab", nonLivingTab).getBoolean();
-		additionalPassengers = config.get("general", "additionalPassengers", additionalPassengers).getBoolean();
+		addPass = config.get("general", "additionalPassengers", addPass).getBoolean();
 		
 		config.addCustomCategoryComment("gamerules", "this is the default gamerule values for when a world is created it's not set in stone here");
 		grPosSpawner =  config.get("gamerules", "CustomPosSpawner", grPosSpawner).getBoolean();
@@ -116,6 +122,7 @@ public class Config {
 		renderInitSpawnRndTime =  config.get("render", "renderInitialSpawnRandomTime", renderInitSpawnRndTime).getInt();
 		if(renderInitSpawnRndTime < 10)
 			renderInitSpawnRndTime = 10;//limit the frames to 0.5 frames per second to prevent epilisy attacks
+		
 		String[] strs = config.get("render", "RedundantBlacklist", new String[]{""}).getStringList();
 		for(String s : strs)
 			redundantBlacklist.add(new ResourceLocation(s));
@@ -125,6 +132,7 @@ public class Config {
 		else
 			hasCustomName = false;
 		
+		tooltip_displayModOwner = config.get("tooltip", "displayModOwner", tooltip_displayModOwner).getBoolean();
 		tooltip_spawncount = config.get("tooltip", "spawnCount", true).getBoolean();
 		tooltip_maxnearbyents = config.get("tooltip", "maxNearbyEntities", true).getBoolean();
 		tooltip_delay = config.get("tooltip", "delay", true).getBoolean();

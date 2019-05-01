@@ -140,14 +140,12 @@ public abstract class MobSpawnerBaseLogic
                     double d2 = j >= 3 ? nbttaglist.getDoubleAt(2) : (double)blockpos.getZ() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double)this.spawnRange + 0.5D;
                     
                     Entity entity = EntityUtil.getEntityJockey(nbttagcompound, world, d0, d1, d2, true, false, this, Config.additionalPassengers);
-                    
+                   
                     if (entity == null)
                     {
                     	this.resetTimer();
                         return;
                     }
-                    
-                    entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, world.rand.nextFloat() * 360.0F, 0.0F);
 
                     int k = world.getEntitiesWithinAABB(entity.getClass(), (new AxisAlignedBB((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ(), (double)(blockpos.getX() + 1), (double)(blockpos.getY() + 1), (double)(blockpos.getZ() + 1))).grow((double)this.spawnRange)).size();
 
@@ -158,7 +156,7 @@ public abstract class MobSpawnerBaseLogic
                     }
 
                     EntityLiving living = entity instanceof EntityLiving ? (EntityLiving)entity : null;
-
+                    
                     if (living == null || ForgeEventFactory.canEntitySpawnSpawner(living, getSpawnerWorld(), (float)entity.posX, (float)entity.posY, (float)entity.posZ, this))
                     {
                         AnvilChunkLoader.spawnEntity(entity, world);

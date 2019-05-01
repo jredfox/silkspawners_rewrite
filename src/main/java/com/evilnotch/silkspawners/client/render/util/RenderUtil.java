@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.nbt.NBTTagCompound;
@@ -187,7 +188,9 @@ public class RenderUtil {
 	{
 		LibEvents.setSpawn(worldIn, false);
 		Entity e = getEntityStack(compound, worldIn, useInterface, additionalMounts);
-		EntityUtil.updateJockey(e);
+		List<Entity> li = EntityUtil.getEntList(e);
+		EntityUtil.updateJockeyPos(li, 0, 0, 0, 0.0F, 0.0F);
+		EntityUtil.updateJockey(li);
 		LibEvents.setSpawn(worldIn, true);
 		return e;
 	}
@@ -219,10 +222,10 @@ public class RenderUtil {
              for (int i = 0; i < nbttaglist.tagCount(); ++i)
              {
                  Entity entity1 = getEntityStack(nbttaglist.getCompoundTagAt(i), worldIn, useInterface, additionalMounts);
-                  if (entity1 != null)
-                  {
-                      entity1.startRiding(toMount, true);
-                  }
+                 if (entity1 != null)
+                 {
+                     entity1.startRiding(toMount, true);
+                 }
              }
         }
 
@@ -242,7 +245,6 @@ public class RenderUtil {
 			{
 				e.removePassengers();
 			}
-			e.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);//make sure after everything the offsets are calculated at 0,0,0
 		}
 		else
 		{
@@ -263,8 +265,6 @@ public class RenderUtil {
 			{
 				e.removePassengers();
 			}
-			e.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);//make sure after everything the offsets are calculated at 0,0,0
-			
 			EntityUtil.setInitSpawned(e);
 		}
 		return e;
@@ -278,12 +278,12 @@ public class RenderUtil {
 		Entity e = EntityUtil.createEntityByNameQuietly(new ResourceLocation(nbt.getString("id")),world);
 		if(e == null)
 			return null;
-		e.readFromNBT(nbt);
 		//hard coded dynamic fix for a shitty thing now it doesn't change it's type only it's render stuffs
 		if(e instanceof EntityShulker)
 		{
 			((EntityLiving) e).onInitialSpawn(world.getDifficultyForLocation(pos), (IEntityLivingData)null);
 		}
+		e.readFromNBT(nbt);
 		return e;
 	}
 

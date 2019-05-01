@@ -30,6 +30,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -221,6 +222,8 @@ public class ToolTipEvent {
 			 advanced.add(ChatFormatting.YELLOW +  offset + "Y:" + getOffset(nbt,1) );
 			 advanced.add(ChatFormatting.YELLOW +  offset + "Z:" + getOffset(nbt,2) );
 		}
+		if(Config.tooltip_displayModOwner)
+			advanced.add(EnumChatFormatting.BLUE + "Domain:" + new ResourceLocation(data.getString("id")).getResourceDomain() );
 		if(nbt.hasKey("SpawnCount") && Config.tooltip_spawncount)
 			advanced.add(ChatFormatting.DARK_AQUA + I18n.translateToLocal("silkspawners.SpawnCount.name") + ":" + nbt.getInteger("SpawnCount"));
 		if(nbt.hasKey("MaxNearbyEntities")&& Config.tooltip_maxnearbyents)
@@ -236,7 +239,7 @@ public class ToolTipEvent {
 		if(nbt.hasKey("RequiredPlayerRange") && Config.tooltip_RequiredPlayerRange)
 			advanced.add(ChatFormatting.DARK_GRAY + I18n.translateToLocal("silkspawners.RequiredPlayerRange.name") + ":" + ChatFormatting.WHITE + nbt.getInteger("RequiredPlayerRange"));
 		
-		//if enabled and shifing add advanced tooltips
+		//if enabled and shifting add advanced tooltips
 		for(String s : advanced)
 			if(shift)
 				list.add(s);
