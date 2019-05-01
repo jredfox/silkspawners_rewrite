@@ -99,7 +99,6 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	entity.setLocationAndAngles(0, 0, 0, entity.rotationYaw, entity.rotationPitch);
         }
         
-        entity.setRotationYawHead(0.0F);//fix head bugs
         RenderUtil.renderEntity(entity, offset.x, offset.y, offset.z, 0.0F, partialTicks, Config.renderShadows);
         resetOpenGl(lastX, lastY);
         
