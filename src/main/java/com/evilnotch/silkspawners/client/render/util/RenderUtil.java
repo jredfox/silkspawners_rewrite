@@ -188,6 +188,11 @@ public class RenderUtil {
 	{
 		LibEvents.setSpawn(worldIn, false);
 		Entity e = getEntityStack(compound, worldIn, useInterface, additionalMounts);
+		if(e == null)
+		{
+			LibEvents.setSpawn(worldIn, true);
+			return null;
+		}
 		List<Entity> li = EntityUtil.getEntList(e);
 		EntityUtil.updateJockeyPos(li, 0, 0, 0, e.rotationYaw, e.rotationPitch, true);
 		EntityUtil.updateJockey(li);
