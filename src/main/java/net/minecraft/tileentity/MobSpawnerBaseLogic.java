@@ -184,8 +184,8 @@ public abstract class MobSpawnerBaseLogic
     		int exist = this.cachedEntity.ticksExisted;
     		for(Entity e : this.cachedEntities)
     		{
-    			if(e instanceof EntityShulker)
-    				continue;
+				if(e instanceof EntityShulker)
+					continue;
     			int time = e.ticksExisted;
     			if(Config.renderInitSpawnRnd)
     				RenderUtil.onInitialSpawnUpdate(e, Config.renderInitSpawnRndTime);

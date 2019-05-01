@@ -96,7 +96,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     	
         if(!Config.dynamicSetPositioning)
         {
-        	entity.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
+        	entity.setLocationAndAngles(0, 0, 0, entity.rotationYaw, entity.rotationPitch);
         }
         
         entity.setRotationYawHead(0.0F);//fix head bugs

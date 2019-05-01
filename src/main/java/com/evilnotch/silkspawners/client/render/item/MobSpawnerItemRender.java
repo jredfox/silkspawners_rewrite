@@ -98,7 +98,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         
         if(Config.dynamicSetPositioning || Config.dynamicLightingItem)
         {
-        	entity.setLocationAndAngles(IItemRendererHandler.lastX, IItemRendererHandler.lastY, IItemRendererHandler.lastZ, 0.0F, 0.0F);
+        	entity.setLocationAndAngles(IItemRendererHandler.lastX, IItemRendererHandler.lastY, IItemRendererHandler.lastZ, entity.rotationYaw, entity.rotationPitch);
         }
         
         if(!IItemRendererHandler.isGui(type) && Config.dynamicLightingItem)
@@ -108,10 +108,9 @@ public class MobSpawnerItemRender implements IItemRenderer{
         
         if(!Config.dynamicSetPositioning)
         {
-        	entity.setLocationAndAngles(0, 0, 0, 0.0F, 0.0F);
+        	entity.setLocationAndAngles(0, 0, 0, entity.rotationYaw, entity.rotationPitch);
         }
         
-        entity.setRotationYawHead(0.0F);//fixes head bugs
         RenderUtil.renderEntity(entity, offset.x, offset.y, offset.z, 0.0F, partialTicks, Config.renderShadows);
         
         GlStateManager.popMatrix();
