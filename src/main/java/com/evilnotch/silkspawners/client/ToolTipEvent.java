@@ -59,8 +59,6 @@ public class ToolTipEvent {
 		{
 			for(Entity ent : MobSpawnerCache.ents.values())
 			{
-				if(ent instanceof EntityShulker)
-					continue;
     			CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(ent, CapRegDefaultHandler.initSpawned);
     			if(Config.renderInitSpawnRnd)
     				RenderUtil.onInitialSpawnUpdate(ent, Config.renderInitSpawnRndTime);
@@ -70,8 +68,6 @@ public class ToolTipEvent {
 			{
 				for(Entity ent : pair.obj1)
 				{
-					if(ent instanceof EntityShulker)
-						continue;
         			if(Config.renderInitSpawnRnd)
         				RenderUtil.onInitialSpawnUpdate(ent, Config.renderInitSpawnRndTime);
 					ent.ticksExisted++;

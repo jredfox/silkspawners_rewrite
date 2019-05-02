@@ -184,8 +184,6 @@ public abstract class MobSpawnerBaseLogic
     		int exist = this.cachedEntity.ticksExisted;
     		for(Entity e : this.cachedEntities)
     		{
-				if(e instanceof EntityShulker)
-					continue;
     			int time = e.ticksExisted;
     			if(Config.renderInitSpawnRnd)
     				RenderUtil.onInitialSpawnUpdate(e, Config.renderInitSpawnRndTime);
@@ -331,7 +329,8 @@ public abstract class MobSpawnerBaseLogic
     {
         if (this.cachedEntity == null)
         {	
-            this.cachedEntity = RenderUtil.getEntityJockey(this.spawnData.getNbt(), this.getSpawnerWorld(), Config.renderUseInitSpawn, Config.additionalPassengers);
+        	BlockPos pos = this.getSpawnerPosition();
+            this.cachedEntity = RenderUtil.getEntityJockey(this.spawnData.getNbt(), this.getSpawnerWorld(), pos.getX() + 0.5F, pos.getY(), pos.getZ() + 0.5F, Config.renderUseInitSpawn, Config.additionalPassengers);
             if(this.cachedEntity != null)
             {
             	List<Entity> ents = EntityUtil.getEntList(this.cachedEntity);

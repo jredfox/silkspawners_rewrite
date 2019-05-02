@@ -2,6 +2,8 @@ package com.evilnotch.silkspawners.client.render.tileentity;
 
 import java.util.List;
 
+import org.lwjgl.opengl.GL11;
+
 import com.evilnotch.lib.minecraft.util.TileEntityUtil;
 import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.EntityPos;
@@ -114,10 +116,12 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         GlStateManager.enableRescaleNormal();
         GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(516, 0.1F);
+        GL11.glEnable(GL11.GL_BLEND);//for people stupid and don't follow 1.8+ rules
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.cullFace(GlStateManager.CullFace.BACK);
         GlStateManager.depthMask(true);
+        GlStateManager.enableNormalize();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
 	}
 }

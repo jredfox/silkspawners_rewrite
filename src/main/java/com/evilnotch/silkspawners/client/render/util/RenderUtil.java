@@ -9,6 +9,7 @@ import com.evilnotch.lib.minecraft.capability.primitive.CapBoolean;
 import com.evilnotch.lib.minecraft.capability.registry.CapabilityRegistry;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.minecraft.util.NBTUtil;
+import com.evilnotch.lib.util.JavaUtil;
 import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.client.ToolTipEvent;
 import com.evilnotch.silkspawners.client.proxy.ClientProxy;
@@ -184,10 +185,10 @@ public class RenderUtil {
 		return ToolTipEvent.getRenderTime();
 	}
 	
-	public static Entity getEntityJockey(NBTTagCompound compound, World worldIn, boolean useInterface, boolean additionalMounts) 
+	public static Entity getEntityJockey(NBTTagCompound compound, World worldIn, double x, double y, double z, boolean useInterface, boolean additionalMounts) 
 	{
 		LibEvents.setSpawn(worldIn, false);
-		Entity e = getEntityStack(compound, worldIn, useInterface, additionalMounts);
+		Entity e = getEntityStack(compound, worldIn, x, y, z, useInterface, additionalMounts);
 		if(e == null)
 		{
 			LibEvents.setSpawn(worldIn, true);
@@ -204,9 +205,9 @@ public class RenderUtil {
 	 * Doesn't force nbt on anything unlike vanilla's methods.
 	 * Supports silkspawners rendering for skeleton traps
 	 */
-	public static Entity getEntityStack(NBTTagCompound compound,World worldIn, boolean useInterface, boolean additionalMounts) 
+	public static Entity getEntityStack(NBTTagCompound compound, World worldIn, double x, double y, double z, boolean useInterface, boolean additionalMounts) 
 	{	
-        Entity entity = getEntity(compound, worldIn, BlockPos.ORIGIN, useInterface, additionalMounts);
+        Entity entity = getEntity(compound, worldIn, x, y, z, useInterface, additionalMounts);
         if(entity == null)
         	return null;
 		
@@ -226,7 +227,7 @@ public class RenderUtil {
              NBTTagList nbttaglist = compound.getTagList("Passengers", 10);
              for (int i = 0; i < nbttaglist.tagCount(); ++i)
              {
-                 Entity entity1 = getEntityStack(nbttaglist.getCompoundTagAt(i), worldIn, useInterface, additionalMounts);
+                 Entity entity1 = getEntityStack(nbttaglist.getCompoundTagAt(i), worldIn, x, y, z, useInterface, additionalMounts);
                  if (entity1 != null)
                  {
                      entity1.startRiding(toMount, true);
@@ -240,12 +241,16 @@ public class RenderUtil {
 	/**
 	 * first index is to determine if your on the first part of the opening of the nbt if so treat nbt like normal
 	 */
-	public static Entity getEntity(NBTTagCompound nbt, World world, BlockPos pos, boolean useInterface, boolean additionalMounts) 
+	public static Entity getEntity(NBTTagCompound nbt, World world, double x, double y, double z, boolean useInterface, boolean additionalMounts) 
 	{
 		Entity e = null;
 		if(getEntityProps(nbt) > 0)
 		{
-			e = createEntityFromNBTRender(nbt, pos, world);
+			e = createEntityFromNBTRender(nbt, world);
+			
+			if(e == null)
+				return null;
+			
 			if(!additionalMounts)
 			{
 				e.removePassengers();
@@ -261,16 +266,24 @@ public class RenderUtil {
 			NBTTagCompound tag = EntityUtil.getEntityNBT(e);
 			e.readFromNBT(tag);
 			
-			if(useInterface && e instanceof EntityLiving || e instanceof EntityShulker)
+			if(useInterface && e instanceof EntityLiving)
 			{
-				((EntityLiving) e).onInitialSpawn(world.getDifficultyForLocation(pos), (IEntityLivingData)null);
+				e.setLocationAndAngles(x, y, z, e.rotationYaw, e.rotationPitch);
+				if (!net.minecraftforge.event.ForgeEventFactory.doSpecialSpawn((EntityLiving)e, world, JavaUtil.castFloat(e.posX), JavaUtil.castFloat(e.posY), JavaUtil.castFloat(e.posZ), null))
+				{
+					((EntityLiving) e).onInitialSpawn(world.getDifficultyForLocation(e.getPosition()), (IEntityLivingData)null);
+				}
 			}
 			
 			if(!additionalMounts)
 			{
 				e.removePassengers();
 			}
-			EntityUtil.setInitSpawned(e);
+			
+			if(useInterface)
+			{
+				EntityUtil.setInitSpawned(e);
+			}
 		}
 		return e;
 	}
@@ -278,16 +291,11 @@ public class RenderUtil {
 	/**
 	 * create an entity from nbt with full rendering capabilities
 	 */
-	public static Entity createEntityFromNBTRender(NBTTagCompound nbt, BlockPos pos, World world) 
+	public static Entity createEntityFromNBTRender(NBTTagCompound nbt, World world) 
 	{
 		Entity e = EntityUtil.createEntityByNameQuietly(new ResourceLocation(nbt.getString("id")),world);
 		if(e == null)
 			return null;
-		//hard coded dynamic fix for a shitty thing now it doesn't change it's type only it's render stuffs
-		if(e instanceof EntityShulker)
-		{
-			((EntityLiving) e).onInitialSpawn(world.getDifficultyForLocation(pos), (IEntityLivingData)null);
-		}
 		e.readFromNBT(nbt);
 		return e;
 	}

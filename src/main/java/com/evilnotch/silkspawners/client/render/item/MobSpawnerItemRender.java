@@ -143,6 +143,11 @@ public class MobSpawnerItemRender implements IItemRenderer{
         	GlStateManager.disableCull();
         }
         
+        if(!IItemRendererHandler.isGui(type))
+        {
+            GlStateManager.enableNormalize();
+        }
+        
         GL11.glEnable(GL11.GL_BLEND);//for people stupid and don't follow 1.8+ rules
         GlStateManager.enableBlend();
         if(IItemRendererHandler.isGui(type))
