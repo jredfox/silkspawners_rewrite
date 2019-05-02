@@ -87,6 +87,11 @@ public class MobSpawnerItemRender implements IItemRenderer{
         GlStateManager.pushMatrix();
         
         RenderUtil.setLightmapDisabled(IItemRendererHandler.isGui(type));//always keep lighting enabled for rendering entities
+        boolean flag = IItemRendererHandler.isGui(type);
+        if(flag)
+        {
+        	GlStateManager.enableNormalize();
+        }
         
         entity.setWorld(world);
         GlStateManager.rotate((float) (RenderUtil.getRenderTime()*10), 0.0F, 1.0F, 0.0F);
@@ -112,7 +117,10 @@ public class MobSpawnerItemRender implements IItemRenderer{
         }
         
         RenderUtil.renderEntity(entity, offset.x, offset.y, offset.z, 0.0F, partialTicks, Config.renderShadows);
-        
+        if(flag)
+        {
+        	GlStateManager.disableNormalize();
+        }
         GlStateManager.popMatrix();
         
         resetOpenGL(type);
