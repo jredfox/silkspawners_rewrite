@@ -88,8 +88,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	{	
         GlStateManager.pushMatrix();
         
-        RenderUtil.setLightmapDisabled(IItemRendererHandler.isGui(type));//always keep lighting enabled for rendering entities
         boolean flag = IItemRendererHandler.isGui(type);
+        RenderUtil.setLightmapDisabled(flag);//always keep lighting enabled for rendering entities
         if(flag)
         {
         	GlStateManager.enableNormalize();
@@ -119,10 +119,6 @@ public class MobSpawnerItemRender implements IItemRenderer{
         }
         
         RenderUtil.renderEntity(entity, offset.x, offset.y, offset.z, 0.0F, partialTicks, Config.renderShadows);
-        if(flag)
-        {
-        	GlStateManager.disableNormalize();
-        }
         GlStateManager.popMatrix();
         
         resetOpenGL(type);
@@ -143,20 +139,17 @@ public class MobSpawnerItemRender implements IItemRenderer{
         	GlStateManager.disableCull();
         }
         
-        if(!IItemRendererHandler.isGui(type))
-        {
-            GlStateManager.enableNormalize();
-        }
-        
         GL11.glEnable(GL11.GL_BLEND);//for people stupid and don't follow 1.8+ rules
         GlStateManager.enableBlend();
         if(IItemRendererHandler.isGui(type))
         {
         	GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        	GlStateManager.disableNormalize();
         }
         else
         {
         	GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        	GlStateManager.enableNormalize();
         }
         
         GlStateManager.cullFace(GlStateManager.CullFace.BACK);

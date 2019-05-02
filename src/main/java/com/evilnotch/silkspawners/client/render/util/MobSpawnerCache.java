@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.evilnotch.iitemrender.handlers.IItemRendererHandler;
 import com.evilnotch.lib.main.loader.LoaderFields;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.util.JavaUtil;
@@ -62,7 +63,7 @@ public class MobSpawnerCache {
 		PairObj<List<Entity>,EntityPos[]> ents = entsNBT.get(data);
 		if(ents == null)
 		{
-			Entity e = RenderUtil.getEntityJockey(data, Minecraft.getMinecraft().world, 0, 64, 0, Config.renderUseInitSpawn, Config.additionalPassengers);
+			Entity e = RenderUtil.getEntityJockey(data, Minecraft.getMinecraft().world, IItemRendererHandler.lastX, IItemRendererHandler.lastY, IItemRendererHandler.lastZ, Config.renderUseInitSpawn, Config.additionalPassengers);
 			if(e == null)
 				return null;
 			ents = getMounts(e);
@@ -108,7 +109,7 @@ public class MobSpawnerCache {
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setString("id", entity.toString());
-		Entity e = RenderUtil.getEntityJockey(nbt, Minecraft.getMinecraft().world, 0, 64, 0, Config.renderUseInitSpawn, Config.additionalPassengers);
+		Entity e = RenderUtil.getEntityJockey(nbt, Minecraft.getMinecraft().world, IItemRendererHandler.lastX, IItemRendererHandler.lastY, IItemRendererHandler.lastZ, Config.renderUseInitSpawn, Config.additionalPassengers);
 		if(e instanceof EntityLiving)
 		{
 			EntityLiving living = (EntityLiving)e;
