@@ -2,6 +2,8 @@ package com.evilnotch.silkspawners.client.render.item;
 
 import java.util.List;
 
+import org.lwjgl.opengl.GL11;
+
 import com.evilnotch.iitemrender.handlers.IItemRenderer;
 import com.evilnotch.iitemrender.handlers.IItemRendererHandler;
 import com.evilnotch.lib.util.simple.PairObj;
@@ -141,6 +143,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         	GlStateManager.disableCull();
         }
         
+        GL11.glEnable(GL11.GL_BLEND);//for people stupid and don't follow 1.8+ rules
         GlStateManager.enableBlend();
         if(IItemRendererHandler.isGui(type))
         {
