@@ -2,7 +2,6 @@ package com.evilnotch.silkspawners.client.render.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,9 +9,7 @@ import java.util.List;
 import com.evilnotch.iitemrender.handlers.IItemRendererHandler;
 import com.evilnotch.lib.main.loader.LoaderFields;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
-import com.evilnotch.lib.util.JavaUtil;
 import com.evilnotch.lib.util.simple.PairObj;
-import com.evilnotch.lib.util.simple.PointId;
 import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.EntityPos;
 
@@ -20,21 +17,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 
 public class MobSpawnerCache {
 	
 	public static boolean entCached = false;
 	public static HashMap<ResourceLocation,Entity> ents = new LinkedHashMap();
-	public static HashMap<NBTTagCompound,PairObj<List<Entity>,EntityPos[]>> entsNBT = new HashMap();
+	public static HashMap<NBTTagCompound,PairObj<List<Entity>,Vec3d[]>> entsNBT = new HashMap();
 	
 	public static final List<Entity> li = new ArrayList();
-	public static final PairObj<List<Entity>,EntityPos[]> defaultPair = new PairObj<List<Entity>,EntityPos[]>(li,new EntityPos[]{new EntityPos(0D,0.0D,0.0D)});
+	public static final PairObj<List<Entity>,Vec3d[]> defaultPair = new PairObj<List<Entity>,Vec3d[]>(li,new Vec3d[]{new Vec3d(0D,0.0D,0.0D)});
 	
-	public static PairObj<List<Entity>,EntityPos[]> getCachedList(ResourceLocation loc, NBTTagCompound data) 
+	public static PairObj<List<Entity>,Vec3d[]> getCachedList(ResourceLocation loc, NBTTagCompound data) 
 	{
 		if(data.getSize() > 1)
 		{
@@ -58,9 +54,9 @@ public class MobSpawnerCache {
 		return defaultPair;
 	}
 	
-	private static PairObj<List<Entity>, EntityPos[]> getCachedData(NBTTagCompound data) 
+	private static PairObj<List<Entity>, Vec3d[]> getCachedData(NBTTagCompound data) 
 	{
-		PairObj<List<Entity>,EntityPos[]> ents = entsNBT.get(data);
+		PairObj<List<Entity>,Vec3d[]> ents = entsNBT.get(data);
 		if(ents == null)
 		{
 			Entity e = RenderUtil.getEntityJockey(data, Minecraft.getMinecraft().world, IItemRendererHandler.lastX, IItemRendererHandler.lastY, IItemRendererHandler.lastZ, Config.renderUseInitSpawn, Config.additionalPassengers);
@@ -141,17 +137,17 @@ public class MobSpawnerCache {
 	/**
 	 * returns a pair of List<Entity>(passengers and entity base) as well as offsets array
 	 */
-	public static PairObj<List<Entity>,EntityPos[]> getMounts(Entity entity) 
+	public static PairObj<List<Entity>,Vec3d[]> getMounts(Entity entity) 
 	{
 		List<Entity> toRender = EntityUtil.getEntList(entity);
         
-		EntityPos[] offsets = new EntityPos[toRender.size()];
+		Vec3d[] offsets = new Vec3d[toRender.size()];
     	for(int i=0;i<toRender.size();i++)
     	{
     		Entity e = toRender.get(i);
-    		offsets[i] = new EntityPos(e.posX, e.posY, e.posZ);
+    		offsets[i] = new Vec3d(e.posX, e.posY, e.posZ);
     	}
     	
-		return new PairObj<List<Entity>,EntityPos[]>(toRender, offsets);
+		return new PairObj<List<Entity>,Vec3d[]>(toRender, offsets);
 	}
 }

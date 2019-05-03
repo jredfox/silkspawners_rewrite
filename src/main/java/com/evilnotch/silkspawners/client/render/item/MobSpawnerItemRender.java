@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
@@ -55,13 +56,13 @@ public class MobSpawnerItemRender implements IItemRenderer{
             NBTTagCompound data = nbt.hasKey("SpawnData") ? nbt.getCompoundTag("SpawnData") : nbt.getCompoundTag("BlockEntityTag").getCompoundTag("SpawnData");
             ResourceLocation loc = new ResourceLocation(data.getString("id"));
             
-            PairObj<List<Entity>,EntityPos[]> pair = MobSpawnerCache.getCachedList(loc, data);
+            PairObj<List<Entity>,Vec3d[]> pair = MobSpawnerCache.getCachedList(loc, data);
             if(pair == null)
             {
             	return;
             }
         	List<Entity> toRender = pair.getKey();
-        	EntityPos[] offsets = pair.getValue();
+        	Vec3d[] offsets = pair.getValue();
             float f1 = RenderUtil.getItemScale(toRender, !Config.dynamicScalingItem);
             for(int i=0;i<toRender.size();i++)
             {
@@ -84,7 +85,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
        RenderUtil.setLightmapDisabled(IItemRendererHandler.isGui(type));
 	}
 	
-	public void renderEntity(Entity entity, float scale, World world, EntityPos offset, TransformType type, float partialTicks) 
+	public void renderEntity(Entity entity, float scale, World world, Vec3d offset, TransformType type, float partialTicks) 
 	{	
         GlStateManager.pushMatrix();
         

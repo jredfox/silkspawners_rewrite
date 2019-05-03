@@ -13,7 +13,6 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumParticleTypes;
@@ -23,6 +22,7 @@ import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.WeightedSpawnerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -55,7 +55,7 @@ public abstract class MobSpawnerBaseLogic
 	public boolean active = false;
 	//client only
 	public List<Entity> cachedEntities = new ArrayList();
-	public EntityPos[] offsets;
+	public Vec3d[] offsets;
 
     @Nullable
     public ResourceLocation getEntityId()
@@ -72,7 +72,7 @@ public abstract class MobSpawnerBaseLogic
         }
     }
 
-    /**
+	/**
      * Returns true if there's a player close enough to this mob spawner to activate it.
      */
     public boolean isActivated()
@@ -176,28 +176,34 @@ public abstract class MobSpawnerBaseLogic
             }
         }
     }
-	
+	/**
+	 * client side only ticker
+	 */
+    public int ticksExisted = 0;
+	public boolean isBlank;
 	public void animateEntities() 
     {
-    	if(this.cachedEntity != null && Config.animationSpawner)
+    	if(this.cachedEntity != null)
     	{
-    		int exist = this.cachedEntity.ticksExisted;
+    		boolean hasTicks = Config.animationSpawner;
     		for(Entity e : this.cachedEntities)
     		{
-    			int time = e.ticksExisted;
     			if(Config.renderInitSpawnRnd)
-    				RenderUtil.onInitialSpawnUpdate(e, Config.renderInitSpawnRndTime);
-    			e.ticksExisted++;
+    				RenderUtil.onInitialSpawnUpdate(e, hasTicks ? e.ticksExisted : this.ticksExisted, Config.renderInitSpawnRndTime);
+    			if(hasTicks)
+    				e.ticksExisted++;
     		}
     	}
+    	ticksExisted++;
 	}
 	
 	public void clearMobs()
 	{
 		this.cachedEntity = null;
 		this.cachedEntities.clear();
-		this.offsets = new EntityPos[0];
+		this.offsets = new Vec3d[0];
 		this.getCachedEntity();
+		this.isBlank = false;
 	}
 
 	public void resetTimer()
@@ -327,19 +333,22 @@ public abstract class MobSpawnerBaseLogic
     @SideOnly(Side.CLIENT)
     public Entity getCachedEntity()
     {
+    	if(this.isBlank)
+    		return null;
         if (this.cachedEntity == null)
         {	
         	BlockPos pos = this.getSpawnerPosition();
             this.cachedEntity = RenderUtil.getEntityJockey(this.spawnData.getNbt(), this.getSpawnerWorld(), pos.getX() + 0.5F, pos.getY(), pos.getZ() + 0.5F, Config.renderUseInitSpawn, Config.additionalPassengers);
+            this.isBlank = this.cachedEntity == null;
             if(this.cachedEntity != null)
             {
             	List<Entity> ents = EntityUtil.getEntList(this.cachedEntity);
             	
-            	offsets = new EntityPos[ents.size()];
+            	offsets = new Vec3d[ents.size()];
             	for(int i=0;i<ents.size();i++)
             	{
             		Entity e = ents.get(i);
-            		offsets[i] = new EntityPos(e.posX, e.posY, e.posZ);
+            		offsets[i] = new Vec3d(e.posX, e.posY, e.posZ);
             	}
             	this.cachedEntities = ents;
             }

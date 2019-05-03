@@ -2,6 +2,7 @@ package com.evilnotch.silkspawners.client.render.util;
 
 import java.util.List;
 
+import com.evilnotch.iitemrender.handlers.IItemRendererHandler;
 import com.evilnotch.lib.api.ReflectionUtil;
 import com.evilnotch.lib.main.capability.CapRegDefaultHandler;
 import com.evilnotch.lib.main.eventhandler.LibEvents;
@@ -11,11 +12,14 @@ import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.minecraft.util.NBTUtil;
 import com.evilnotch.lib.util.JavaUtil;
 import com.evilnotch.silkspawners.Config;
+import com.evilnotch.silkspawners.EntityPos;
 import com.evilnotch.silkspawners.client.ToolTipEvent;
 import com.evilnotch.silkspawners.client.proxy.ClientProxy;
+import com.evilnotch.silkspawners.client.render.item.MobSpawnerItemRender;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
@@ -64,6 +68,25 @@ public class RenderUtil {
         {
         	Minecraft.getMinecraft().entityRenderer.enableLightmap();
         }
+    }
+    
+	/**
+	 * since light map for entities is pre-enabled for TE's render enabling it whould cause a slight scaling issue barley noticeable but, still a thing
+	 */
+    public static void setLightmapDisabledTE(boolean disabled)
+    {
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+
+        if (disabled)
+        {
+            GlStateManager.disableTexture2D();
+        }
+        else
+        {
+            GlStateManager.enableTexture2D();
+        }
+
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
     
     /**
@@ -325,18 +348,20 @@ public class RenderUtil {
     }
 
     /**
-     * update an entity equalivlent to calling onInitialSpawn() over and over again just without breaking
+     * update an entity equivalent to calling onInitialSpawn() over and over again just without breaking
      */
-	public static void onInitialSpawnUpdate(Entity ent, int ticks)
+	public static void onInitialSpawnUpdate(Entity ent, int currentTicks, int ticks)
 	{
-		if(ent.ticksExisted % ticks == 0 && ent.ticksExisted != 0 && ent instanceof EntityLiving)
+		if(currentTicks % ticks == 0 && currentTicks != 0 && ent instanceof EntityLiving)
 		{
             CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(ent, CapRegDefaultHandler.initSpawned);
             if(cap.value)
             {
+            	EntityPos pos = new EntityPos(ent);
             	Entity base = MobSpawnerCache.getSilkEnt(EntityUtil.getEntityResourceLocation(ent));
             	NBTTagCompound nbt = EntityUtil.getEntityNBT(base);
             	ent.readFromNBT(nbt);
+            	pos.applyPos(ent);
             }
 		}
 	}

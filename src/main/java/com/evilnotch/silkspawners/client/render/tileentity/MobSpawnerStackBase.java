@@ -6,7 +6,6 @@ import org.lwjgl.opengl.GL11;
 
 import com.evilnotch.lib.minecraft.util.TileEntityUtil;
 import com.evilnotch.silkspawners.Config;
-import com.evilnotch.silkspawners.EntityPos;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,6 +17,7 @@ import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 	
@@ -65,11 +65,11 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         GlStateManager.popMatrix();
     }
 
-	public void renderSpawnerEntity(Entity entity, float scale, EntityPos offset, MobSpawnerBaseLogic mobSpawnerLogic, float partialTicks, float lastX, float lastY) 
+	public void renderSpawnerEntity(Entity entity, float scale, Vec3d offset, MobSpawnerBaseLogic mobSpawnerLogic, float partialTicks, float lastX, float lastY) 
 	{
 		GlStateManager.pushMatrix();
 		
-        RenderUtil.setLightmapDisabled(false);
+        RenderUtil.setLightmapDisabledTE(false);
         entity.setWorld(mobSpawnerLogic.getSpawnerWorld());
         
         //newer code has the translate down -0.2F missing but, doesn't fully revert the initial 0.4F up so I don't like the newer code and won't be used with silkspawners installed

@@ -16,7 +16,6 @@ import com.evilnotch.lib.minecraft.event.client.ClientDisconnectEvent;
 import com.evilnotch.lib.minecraft.util.EnumChatFormatting;
 import com.evilnotch.lib.util.simple.PairObj;
 import com.evilnotch.silkspawners.Config;
-import com.evilnotch.silkspawners.EntityPos;
 import com.evilnotch.silkspawners.MainJava;
 import com.evilnotch.silkspawners.SpawnerUtil;
 import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
@@ -27,10 +26,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -48,32 +47,34 @@ public class ToolTipEvent {
 	{
 		if(e.phase != Phase.END || Minecraft.getMinecraft().world == null)
 			return;
-		if(time >=(20*Config.spawnerCacheItem))
+		if(time % (20*Config.spawnerCacheItem) == 0 && time != 0)
 		{
 			MainJava.proxy.clear();
-			time = 0;
+		}
+		
+		if(!Config.animationSpawner && !Config.renderInitSpawnRnd)
+			return;
+		
+		boolean hasTick = Config.animationItem;
+		for(Entity ent : MobSpawnerCache.ents.values())
+		{
+    		CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(ent, CapRegDefaultHandler.initSpawned);
+    		if(Config.renderInitSpawnRnd)
+    			RenderUtil.onInitialSpawnUpdate(ent, hasTick ? ent.ticksExisted : time, Config.renderInitSpawnRndTime);
+    		if(hasTick)
+    			ent.ticksExisted++;
+		}
+		for(PairObj<List<Entity>,Vec3d[]> pair : MobSpawnerCache.entsNBT.values())
+		{
+			for(Entity ent : pair.obj1)
+			{
+        		if(Config.renderInitSpawnRnd)
+        			RenderUtil.onInitialSpawnUpdate(ent, hasTick ? ent.ticksExisted : time, Config.renderInitSpawnRndTime);
+        		if(hasTick)
+        			ent.ticksExisted++;
+			}
 		}
 		time++;
-		
-		if(Config.animationItem)
-		{
-			for(Entity ent : MobSpawnerCache.ents.values())
-			{
-    			CapBoolean cap = (CapBoolean) CapabilityRegistry.getCapability(ent, CapRegDefaultHandler.initSpawned);
-    			if(Config.renderInitSpawnRnd)
-    				RenderUtil.onInitialSpawnUpdate(ent, Config.renderInitSpawnRndTime);
-				ent.ticksExisted++;
-			}
-			for(PairObj<List<Entity>,EntityPos[]> pair : MobSpawnerCache.entsNBT.values())
-			{
-				for(Entity ent : pair.obj1)
-				{
-        			if(Config.renderInitSpawnRnd)
-        				RenderUtil.onInitialSpawnUpdate(ent, Config.renderInitSpawnRndTime);
-					ent.ticksExisted++;
-				}
-			}
-		}
 	}
 
 	public static int renderTime;
