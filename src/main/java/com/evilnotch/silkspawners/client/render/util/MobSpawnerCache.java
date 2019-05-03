@@ -23,7 +23,6 @@ import net.minecraft.util.math.Vec3d;
 
 public class MobSpawnerCache {
 	
-	public static boolean entCached = false;
 	public static HashMap<ResourceLocation,Entity> ents = new LinkedHashMap();
 	public static HashMap<NBTTagCompound,PairObj<List<Entity>,Vec3d[]>> entsNBT = new HashMap();
 	
@@ -78,11 +77,11 @@ public class MobSpawnerCache {
 		if(e == null)
 		{
 			if(EntityUtil.living.containsKey(loc))
-				cacheEnt(loc, EntityUtil.living);
+				cacheEnt(loc);
 			else if(EntityUtil.livingbase.containsKey(loc))
-				cacheEnt(loc, EntityUtil.livingbase);
+				cacheEnt(loc);
 			else if(EntityUtil.nonliving.containsKey(loc))
-				cacheEnt(loc, EntityUtil.nonliving);
+				cacheEnt(loc);
 			else
 				return null;//if it doesn't contain the location it's assumed to be blacklisted
 			e = ents.get(loc);
@@ -90,7 +89,7 @@ public class MobSpawnerCache {
 		return e;
 	}
 	
-	protected static void cacheEnt(ResourceLocation entity, HashMap<ResourceLocation, String[]> map) 
+	protected static void cacheEnt(ResourceLocation entity) 
 	{
 		Entity e = getSilkEnt(entity);
 		if(e == null)

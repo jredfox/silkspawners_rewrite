@@ -140,7 +140,7 @@ public abstract class MobSpawnerBaseLogic
                     double d2 = j >= 3 ? nbttaglist.getDoubleAt(2) : (double)blockpos.getZ() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double)this.spawnRange + 0.5D;
                     
                     Entity entity = EntityUtil.getEntityJockey(nbttagcompound, world, d0, d1, d2, true, false, this, Config.additionalPassengers);
-                   
+                    
                     if (entity == null)
                     {
                     	this.resetTimer();

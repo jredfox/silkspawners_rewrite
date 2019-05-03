@@ -323,7 +323,7 @@ public class RenderUtil {
 		return e;
 	}
 
-	private static int getEntityProps(NBTTagCompound nbt) 
+	public static int getEntityProps(NBTTagCompound nbt) 
 	{
 		if(nbt == null)
 			return 0;
