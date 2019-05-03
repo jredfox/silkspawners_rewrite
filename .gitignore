@@ -5,3 +5,4 @@ src/main/resources/META-INF/MANIFEST.MF
 src/main/resources/silkspawners_at.cfg
 src/main/java/net/minecraft/world/World.java
 src/main/java/net/minecraft/client/multiplayer/WorldClient.java
+src/main/java/net/minecraft/client/renderer/GlStateManager.java

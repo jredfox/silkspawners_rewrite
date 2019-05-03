@@ -61,6 +61,11 @@ public class EntityPos{
 			EntityLivingBase living = (EntityLivingBase) entity;
 			living.prevRenderYawOffset = living.renderYawOffset;
 			living.prevRotationYawHead = living.rotationYawHead;
+			
+			//additional code not sure if really needed or not
+			living.prevCameraPitch = living.cameraPitch;
+			living.prevSwingProgress = living.swingProgress;
+			living.prevLimbSwingAmount = living.limbSwingAmount;
 		}
 	}
 
