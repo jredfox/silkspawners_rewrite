@@ -38,7 +38,6 @@ public class Config {
 	public static boolean dynamicScalingItem = false;
 	public static boolean dynamicLightingItem = true;
 	public static boolean dynamicLightingBlock = true;
-	public static boolean dynamicSetPositioning = true;
 	public static boolean renderShadows = false;
 	public static boolean mergeOldNewScaling = true;
 	public static boolean renderInitSpawnRnd = false;
@@ -116,7 +115,6 @@ public class Config {
 		mergeOldNewScaling = config.get("render", "mergeOldNewScaling", mergeOldNewScaling, "if enabled default new scaling is applied for enitties less then a block width and height").getBoolean();
 		dynamicLightingItem = config.get("render", "dynamicLightingItem", dynamicLightingItem).getBoolean();
 		dynamicLightingBlock = config.get("render", "dynamicLightingBlock", dynamicLightingBlock).getBoolean();
-		dynamicSetPositioning = config.get("render", "dynamicSetPositioning", dynamicSetPositioning, "allows light emitting entities and other sturborn entities to work properly if this causes ghost enities simply disable it").getBoolean();
 		renderShadows = config.get("render", "renderShadows", renderShadows).getBoolean();
 		renderInitSpawnRnd = config.get("render", "renderInitialSpawnRandom", renderInitSpawnRnd).getBoolean();
 		renderInitSpawnRndTime =  config.get("render", "renderInitialSpawnRandomTime", renderInitSpawnRndTime).getInt();

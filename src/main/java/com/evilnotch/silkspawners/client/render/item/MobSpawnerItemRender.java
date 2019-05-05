@@ -104,19 +104,11 @@ public class MobSpawnerItemRender implements IItemRenderer{
    
         partialTicks = Config.animationItem ? partialTicks : 0;
         
-        if(Config.dynamicSetPositioning || Config.dynamicLightingItem)
-        {
-        	entity.setLocationAndAngles(IItemRendererHandler.lastX, IItemRendererHandler.lastY, IItemRendererHandler.lastZ, entity.rotationYaw, entity.rotationPitch);
-        }
+        entity.setLocationAndAngles(IItemRendererHandler.lastX, IItemRendererHandler.lastY, IItemRendererHandler.lastZ, entity.rotationYaw, entity.rotationPitch);
         
         if(!IItemRendererHandler.isGui(type) && Config.dynamicLightingItem)
         {
         	RenderUtil.setLightMap(entity);
-        }
-        
-        if(!Config.dynamicSetPositioning)
-        {
-        	entity.setLocationAndAngles(0, 0, 0, entity.rotationYaw, entity.rotationPitch);
         }
         
         RenderUtil.renderEntity(entity, offset.x, offset.y, offset.z, 0.0F, partialTicks, Config.renderShadows);
@@ -171,6 +163,15 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	public TransformPreset getTransformPreset() 
 	{
 		return TransformPreset.NONE;
+	}
+	
+	@Override
+	public void restoreLastOpenGl()
+	{
+		if(IItemRendererHandler.isThirdPerson(IItemRendererHandler.cachedTransformType))
+		{
+			GlStateManager.disableCull();
+		}
 	}
 
 }

@@ -277,6 +277,11 @@ public class RenderUtil {
 			if(!additionalMounts)
 			{
 				e.removePassengers();
+				e.dismountRidingEntity();
+			}
+			else
+			{
+				e = e.getLowestRidingEntity();
 			}
 		}
 		else
@@ -301,6 +306,11 @@ public class RenderUtil {
 			if(!additionalMounts)
 			{
 				e.removePassengers();
+				e.dismountRidingEntity();
+			}
+			else
+			{
+				e = e.getLowestRidingEntity();
 			}
 			
 			if(useInterface)

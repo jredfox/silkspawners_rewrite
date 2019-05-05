@@ -87,20 +87,12 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
             
         BlockPos pos = mobSpawnerLogic.getSpawnerPosition();
         
-        if(Config.dynamicSetPositioning || Config.dynamicLightingBlock)
-        {
-        	entity.moveToBlockPosAndAngles(pos, entity.rotationYaw, entity.rotationPitch);
-        }
+        entity.moveToBlockPosAndAngles(pos, entity.rotationYaw, entity.rotationPitch);
         
     	if(Config.dynamicLightingBlock)
     	{
     		RenderUtil.setLightMap(entity);//set the lighting to the entitie's lighting for glowing textures like blazes
     	}
-    	
-        if(!Config.dynamicSetPositioning)
-        {
-        	entity.setLocationAndAngles(0, 0, 0, entity.rotationYaw, entity.rotationPitch);
-        }
         
         RenderUtil.renderEntity(entity, offset.x, offset.y, offset.z, 0.0F, partialTicks, Config.renderShadows);
         resetOpenGl(lastX, lastY);
