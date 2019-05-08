@@ -8,7 +8,6 @@ import com.evilnotch.iitemrender.handlers.IItemRenderer;
 import com.evilnotch.iitemrender.handlers.IItemRendererHandler;
 import com.evilnotch.lib.util.simple.PairObj;
 import com.evilnotch.silkspawners.Config;
-import com.evilnotch.silkspawners.EntityPos;
 import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 
@@ -56,7 +55,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
             NBTTagCompound data = nbt.hasKey("SpawnData") ? nbt.getCompoundTag("SpawnData") : nbt.getCompoundTag("BlockEntityTag").getCompoundTag("SpawnData");
             ResourceLocation loc = new ResourceLocation(data.getString("id"));
             
-            PairObj<List<Entity>,Vec3d[]> pair = MobSpawnerCache.getCachedList(loc, data);
+            PairObj<List<Entity>, Vec3d[]> pair = MobSpawnerCache.getCachedList(loc, data);
             if(pair == null)
             {
             	return;
@@ -89,21 +88,21 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	{	
         GlStateManager.pushMatrix();
         
+        GlStateManager.rotate((float) (RenderUtil.getRenderTime()*10), 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-20F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.translate(0.0F, -0.4F, 0.0F);
+        GlStateManager.scale(scale, scale, scale);
+        
         boolean flag = IItemRendererHandler.isGui(type);
         RenderUtil.setLightmapDisabled(flag);//always keep lighting enabled for rendering entities
         if(flag)
         {
         	GlStateManager.enableNormalize();
         }
-        
-        entity.setWorld(world);
-        GlStateManager.rotate((float) (RenderUtil.getRenderTime()*10), 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(-20F, 1.0F, 0.0F, 0.0F);
-        GlStateManager.translate(0.0F, -0.4F, 0.0F);
-        GlStateManager.scale(scale, scale, scale);
    
         partialTicks = Config.animationItem ? partialTicks : 0;
-        
+        entity.setWorld(world);
+        entity.dimension = world.provider.getDimension();
         entity.setLocationAndAngles(IItemRendererHandler.lastX, IItemRendererHandler.lastY, IItemRendererHandler.lastZ, entity.rotationYaw, entity.rotationPitch);
         
         if(!IItemRendererHandler.isGui(type) && Config.dynamicLightingItem)

@@ -183,6 +183,8 @@ public abstract class MobSpawnerBaseLogic
 	public boolean isBlank;
 	public void animateEntities() 
     {
+		if(!Config.renderInitSpawnRnd && !Config.animationSpawner)
+			return;
     	if(this.cachedEntity != null)
     	{
     		boolean hasTicks = Config.animationSpawner;

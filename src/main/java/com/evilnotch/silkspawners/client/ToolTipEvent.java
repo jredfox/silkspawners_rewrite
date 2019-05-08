@@ -52,7 +52,7 @@ public class ToolTipEvent {
 			MainJava.proxy.clear();
 		}
 		
-		if(!Config.animationSpawner && !Config.renderInitSpawnRnd)
+		if(!Config.animationItem && !Config.renderInitSpawnRnd)
 			return;
 		
 		boolean hasTick = Config.animationItem;

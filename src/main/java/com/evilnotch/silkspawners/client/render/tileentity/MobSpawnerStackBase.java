@@ -19,6 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 	
@@ -70,9 +71,6 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 	{
 		GlStateManager.pushMatrix();
 		
-        RenderUtil.setLightmapDisabledTE(false);
-        entity.setWorld(mobSpawnerLogic.getSpawnerWorld());
-        
         //newer code has the translate down -0.2F missing but, doesn't fully revert the initial 0.4F up so I don't like the newer code and won't be used with silkspawners installed
         GlStateManager.translate(0.0F, 0.4F, 0.0F);
         GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
@@ -85,8 +83,11 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
           	partialTicks = 0;
         }
             
+        RenderUtil.setLightmapDisabledTE(false);
+        World world = mobSpawnerLogic.getSpawnerWorld();
+        entity.setWorld(world);
+        entity.dimension = world.provider.getDimension();
         BlockPos pos = mobSpawnerLogic.getSpawnerPosition();
-        
         entity.moveToBlockPosAndAngles(pos, entity.rotationYaw, entity.rotationPitch);
         
     	if(Config.dynamicLightingBlock)
