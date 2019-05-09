@@ -14,6 +14,7 @@ import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.entity.Entity;
@@ -88,7 +89,8 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	{	
         GlStateManager.pushMatrix();
         
-        GlStateManager.rotate((float) (RenderUtil.getRenderTime()*10), 0.0F, 1.0F, 0.0F);
+        if(!Config.debugRotation)
+        	GlStateManager.rotate((float) (RenderUtil.getRenderTime()*10), 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(-20F, 1.0F, 0.0F, 0.0F);
         GlStateManager.translate(0.0F, -0.4F, 0.0F);
         GlStateManager.scale(scale, scale, scale);
@@ -152,6 +154,9 @@ public class MobSpawnerItemRender implements IItemRenderer{
         GlStateManager.depthMask(true);
         GlStateManager.enableLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
+//        GlStateManager.enableOutlineMode(0);
+//        GlStateManager.enableColorMaterial();
+//        RenderHelper.enableStandardItemLighting();
 	}
 
 	/**

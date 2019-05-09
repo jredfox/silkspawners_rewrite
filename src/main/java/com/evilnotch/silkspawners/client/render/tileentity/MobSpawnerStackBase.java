@@ -73,7 +73,8 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 		
         //newer code has the translate down -0.2F missing but, doesn't fully revert the initial 0.4F up so I don't like the newer code and won't be used with silkspawners installed
         GlStateManager.translate(0.0F, 0.4F, 0.0F);
-        GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
+        if(!Config.debugRotation)
+        	GlStateManager.rotate((float)(mobSpawnerLogic.getPrevMobRotation() + (mobSpawnerLogic.getMobRotation() - mobSpawnerLogic.getPrevMobRotation()) * (double)partialTicks) * 10.0F, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(-30.0F, 1.0F, 0.0F, 0.0F);
         GlStateManager.translate(0.0F, -0.4F, 0.0F);
         GlStateManager.scale(scale, scale, scale);

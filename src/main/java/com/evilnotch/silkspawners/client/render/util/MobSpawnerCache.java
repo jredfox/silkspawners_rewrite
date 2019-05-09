@@ -105,6 +105,7 @@ public class MobSpawnerCache {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setString("id", entity.toString());
 		Entity e = RenderUtil.getEntityJockey(nbt, Minecraft.getMinecraft().world, IItemRendererHandler.lastX, IItemRendererHandler.lastY, IItemRendererHandler.lastZ, Config.renderUseInitSpawn, Config.additionalPassengers);
+		
 		if(e instanceof EntityLiving)
 		{
 			EntityLiving living = (EntityLiving)e;

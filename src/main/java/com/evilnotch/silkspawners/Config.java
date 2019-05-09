@@ -13,7 +13,6 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class Config {
-	public static boolean isDev = false;
 	
 	public static int maxSpawnerName = 34;
 	public static int default_Delay = 20;
@@ -42,6 +41,7 @@ public class Config {
 	public static boolean mergeOldNewScaling = true;
 	public static boolean renderInitSpawnRnd = false;
 	public static int renderInitSpawnRndTime = 20;
+	public static boolean debugRotation = false;
 	/**
 	 * if you create a king spider from twilight forest allow the spider itself to create the druid.
 	 */
@@ -90,7 +90,6 @@ public class Config {
 		config.load();
 		
 		redundantBlacklist.clear();
-		isDev = config.get("general", "isDev", false).getBoolean();
 		maxSpawnerName = config.get("general", "maxCharSpawnerName", maxSpawnerName).getInt();
 		default_Delay = config.get("general", "defaultDelay", default_Delay).getInt();
 		spawnerBlockName =  config.get("general", "spawnerBlockName", spawnerBlockName).getString();
@@ -116,6 +115,7 @@ public class Config {
 		dynamicLightingItem = config.get("render", "dynamicLightingItem", dynamicLightingItem).getBoolean();
 		dynamicLightingBlock = config.get("render", "dynamicLightingBlock", dynamicLightingBlock).getBoolean();
 		renderShadows = config.get("render", "renderShadows", renderShadows).getBoolean();
+		debugRotation = config.get("render", "debugRotation", debugRotation).getBoolean();
 		renderInitSpawnRnd = config.get("render", "renderInitialSpawnRandom", renderInitSpawnRnd).getBoolean();
 		renderInitSpawnRndTime =  config.get("render", "renderInitialSpawnRandomTime", renderInitSpawnRndTime).getInt();
 		if(renderInitSpawnRndTime < 10)

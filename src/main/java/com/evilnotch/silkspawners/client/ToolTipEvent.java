@@ -62,7 +62,9 @@ public class ToolTipEvent {
     		if(Config.renderInitSpawnRnd)
     			RenderUtil.onInitialSpawnUpdate(ent, hasTick ? ent.ticksExisted : time, Config.renderInitSpawnRndTime);
     		if(hasTick)
+    		{
     			ent.ticksExisted++;
+    		}
 		}
 		for(PairObj<List<Entity>,Vec3d[]> pair : MobSpawnerCache.entsNBT.values())
 		{
@@ -71,7 +73,9 @@ public class ToolTipEvent {
         		if(Config.renderInitSpawnRnd)
         			RenderUtil.onInitialSpawnUpdate(ent, hasTick ? ent.ticksExisted : time, Config.renderInitSpawnRndTime);
         		if(hasTick)
+        		{
         			ent.ticksExisted++;
+        		}
 			}
 		}
 		time++;
@@ -98,13 +102,6 @@ public class ToolTipEvent {
     }
 	public static double getRenderTime() {
 	    return renderTime + getRenderFrame();
-	}
-	    
-	@SubscribeEvent
-	public void devText(RenderGameOverlayEvent.Text e)
-	{
-		if(Config.isDev)
-			e.getLeft().add(ChatFormatting.DARK_PURPLE + "SilkSpawners " + MainJava.versionType[0] + ChatFormatting.WHITE + ":" + ChatFormatting.AQUA + MainJava.VERSION);
 	}
 	
 	@SubscribeEvent
