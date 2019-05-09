@@ -208,14 +208,15 @@ public class RenderUtil {
 		return ToolTipEvent.getRenderTime();
 	}
 	
+	private static long worldTime;
+	private static long worldTotalTime;
+	
 	public static Entity getEntityJockey(NBTTagCompound compound, World worldIn, double x, double y, double z, boolean useInterface, boolean additionalMounts) 
 	{
 		LibEvents.setSpawn(worldIn, false);
-		long worldTime = worldIn.getWorldTime();
-		long worldTotalTime = worldIn.getTotalWorldTime();//fix abyssalcraft stupidity
+		worldTime = worldIn.getWorldTime();
+		worldTotalTime = worldIn.getTotalWorldTime();//fix abyssalcraft stupidity
 		Entity e = getEntityStack(compound, worldIn, x, y, z, useInterface, additionalMounts);
-		worldIn.setWorldTime(worldTime);
-		worldIn.setTotalWorldTime(worldTotalTime);
 		if(e == null)
 		{
 			LibEvents.setSpawn(worldIn, true);
@@ -322,6 +323,8 @@ public class RenderUtil {
 				EntityUtil.setInitSpawned(e);
 			}
 		}
+		world.setWorldTime(worldTime);
+		world.setTotalWorldTime(worldTotalTime);
 		return e;
 	}
 	
