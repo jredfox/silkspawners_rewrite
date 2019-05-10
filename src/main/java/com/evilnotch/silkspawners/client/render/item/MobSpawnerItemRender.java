@@ -154,9 +154,11 @@ public class MobSpawnerItemRender implements IItemRenderer{
         GlStateManager.depthMask(true);
         GlStateManager.enableLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
+        IItemRendererHandler.restoreCachedTransforms();//if an entity renders head or items the IItemRendererHandler.currentTrasnformType will not be incorrect reset this now after rendering to continue rendering the mob stack
 //        GlStateManager.enableOutlineMode(0);
 //        GlStateManager.enableColorMaterial();
 //        RenderHelper.enableStandardItemLighting();
+//        GlStateManager.enableDepth();
 	}
 
 	/**
