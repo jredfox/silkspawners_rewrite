@@ -208,24 +208,25 @@ public class RenderUtil {
 		return ToolTipEvent.getRenderTime();
 	}
 	
-	private static long worldTime;
-	private static long worldTotalTime;
-	
 	public static Entity getEntityJockey(NBTTagCompound compound, World worldIn, double x, double y, double z, boolean useInterface, boolean additionalMounts) 
 	{
+		boolean cachedSpawn = LibEvents.getSpawn(worldIn);
+		boolean cachedSound = LibEvents.getSound(worldIn);
+		boolean cachedMsg = LibEvents.getMsg(worldIn);
+		
 		LibEvents.setSpawn(worldIn, false);
-		worldTime = worldIn.getWorldTime();
-		worldTotalTime = worldIn.getTotalWorldTime();//fix abyssalcraft stupidity
+		LibEvents.setSound(worldIn, false);
+		LibEvents.setCanSendMsg(worldIn, false);
 		Entity e = getEntityStack(compound, worldIn, x, y, z, useInterface, additionalMounts);
+		LibEvents.setSpawn(worldIn, cachedSpawn);
+		LibEvents.setSound(worldIn, cachedSound);
+		LibEvents.setCanSendMsg(worldIn, cachedMsg);
+		
 		if(e == null)
-		{
-			LibEvents.setSpawn(worldIn, true);
 			return null;
-		}
 		List<Entity> li = EntityUtil.getEntList(e);
 		EntityUtil.updateJockeyPos(li, 0, 0, 0, e.rotationYaw, e.rotationPitch, true);
 		EntityUtil.updateJockey(li);
-		LibEvents.setSpawn(worldIn, true);
 		return e;
 	}
 
@@ -271,6 +272,8 @@ public class RenderUtil {
 	 */
 	public static Entity getEntity(NBTTagCompound nbt, World world, double x, double y, double z, boolean useInterface, boolean additionalMounts) 
 	{
+		long worldTime = world.getWorldTime();
+		long worldTotalTime = world.getTotalWorldTime();
 		Entity e = null;
 		if(getEntityProps(nbt) > 0)
 		{

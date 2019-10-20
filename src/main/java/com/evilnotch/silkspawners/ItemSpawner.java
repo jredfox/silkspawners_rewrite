@@ -69,7 +69,7 @@ public class ItemSpawner implements ICreativeTabHook{
 	{
 	       Iterator<Map.Entry<ResourceLocation,String[]>> it = living.entrySet().iterator();
        		NBTTagCompound tags = new NBTTagCompound();
-       		new TileEntityMobSpawner().writeToNBT(tags);
+       		TileUtil.create(new ResourceLocation("mob_spawner")).writeToNBT(tags);
        		
 	        while(it.hasNext())
 	        {

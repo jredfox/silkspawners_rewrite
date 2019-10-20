@@ -29,7 +29,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     @Override
     public void render(TileEntity te, double offsetX, double offsetY, double offsetZ, float partialTicks, int destroyStage, float alpha)
     {
-    	if(te.getWorld() == null)
+    	if(!Config.mobBlockRender)
     	{
     		return;
     	}
@@ -47,11 +47,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         for(int i=0;i<ents.size();i++)
         {
         	Entity e = ents.get(i);
-        	if(e == null)
-        	{
-        		continue;
-        	}
-        	else if(e instanceof EntityPig && !logic.updated)
+        	if(e instanceof EntityPig && !logic.updated)
         	{
         		System.out.println("returning from render isPig with no update:");
         		break;

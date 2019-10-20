@@ -17,22 +17,25 @@ public class Config {
 	public static int maxSpawnerName = 34;
 	public static int default_Delay = 20;
 	
-	public static boolean creativeTabSpawners = true;
 	public static boolean hasCustomName = false;
 	public static String spawnerBlockName = "";
-	public static boolean coloredSpawners = true;
-	public static boolean renderUseInitSpawn = true;
-	public static int slimeSize = 2;
-	public static int spawnerCacheItem = 100;
-	public static boolean nonLivingTab = false;
+
 	
 	public static boolean grPosSpawner = true;
 	public static boolean grCurrentIndex = false;
 	public static boolean grDelay = false;
 	
+	public static boolean creativeTabSpawners = true;
+	public static boolean mobItemRender = true;
+	public static boolean mobBlockRender = true;
+	public static boolean nonLivingTab = false;
+	
+	public static boolean coloredSpawners = true;
+	public static boolean renderUseInitSpawn = true;
+	public static int slimeSize = 2;
+	public static int spawnerCacheItem = 100;
 	public static boolean animationSpawner = true;
 	public static boolean animationItem = true;
-	public static boolean mobItemRender = true;
 	public static boolean dynamicScalingBlock = false;
 	public static boolean dynamicScalingItem = false;
 	public static boolean dynamicLightingItem = true;
@@ -93,7 +96,6 @@ public class Config {
 		maxSpawnerName = config.get("general", "maxCharSpawnerName", maxSpawnerName).getInt();
 		default_Delay = config.get("general", "defaultDelay", default_Delay).getInt();
 		spawnerBlockName =  config.get("general", "spawnerBlockName", spawnerBlockName).getString();
-		nonLivingTab = config.get("general", "nonLivingEntsInTab", nonLivingTab).getBoolean();
 		addPass = config.get("general", "additionalPassengers", addPass).getBoolean();
 		
 		config.addCustomCategoryComment("gamerules", "this is the default gamerule values for when a world is created it's not set in stone here");
@@ -101,6 +103,7 @@ public class Config {
 		grCurrentIndex =  config.get("gamerules", "MultiIndexCurrent", grCurrentIndex).getBoolean();
 		grDelay =  config.get("gamerules", "SpawnerSaveDelay", grDelay).getBoolean();
 		
+		nonLivingTab = config.get("render", "creativeTabNonLiving", nonLivingTab).getBoolean();
 		coloredSpawners = config.get("render", "coloredSpawnerNames", coloredSpawners).getBoolean();
 		creativeTabSpawners = config.get("render", "creativeTabSpawners", creativeTabSpawners).getBoolean();
 		renderUseInitSpawn = config.get("render", "renderUseInitialSpawn", renderUseInitSpawn).getBoolean();
@@ -109,6 +112,7 @@ public class Config {
 		animationSpawner = config.get("render", "animationSpawnerBlock", animationSpawner).getBoolean();
 		animationItem = config.get("render", "animationSpawnerItem", animationItem).getBoolean();
 		mobItemRender = config.get("render", "mobItemRender", mobItemRender).getBoolean();
+		mobBlockRender = config.get("render", "mobBlockRender", mobBlockRender).getBoolean();
 		dynamicScalingBlock = config.get("render", "dynamicScalingBlock", dynamicScalingBlock).getBoolean();
 		dynamicScalingItem = config.get("render", "dynamicScalingItem", dynamicScalingItem).getBoolean();
 		mergeOldNewScaling = config.get("render", "mergeOldNewScaling", mergeOldNewScaling, "if enabled default new scaling is applied for enitties less then a block width and height").getBoolean();
