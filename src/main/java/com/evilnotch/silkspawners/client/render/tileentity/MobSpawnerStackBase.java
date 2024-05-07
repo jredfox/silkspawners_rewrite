@@ -29,7 +29,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     @Override
     public void render(TileEntity te, double offsetX, double offsetY, double offsetZ, float partialTicks, int destroyStage, float alpha)
     {
-    	if(!Config.mobBlockRender)
+    	if(te.getWorld() == null)
     	{
     		return;
     	}

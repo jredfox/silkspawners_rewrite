@@ -2,7 +2,6 @@ package com.evilnotch.silkspawners.client.render.util;
 
 import java.util.List;
 
-import com.evilnotch.iitemrender.handlers.IItemRendererHandler;
 import com.evilnotch.lib.api.ReflectionUtil;
 import com.evilnotch.lib.main.capability.CapRegDefaultHandler;
 import com.evilnotch.lib.main.eventhandler.LibEvents;
@@ -15,7 +14,6 @@ import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.EntityPos;
 import com.evilnotch.silkspawners.client.ToolTipEvent;
 import com.evilnotch.silkspawners.client.proxy.ClientProxy;
-import com.evilnotch.silkspawners.client.render.item.MobSpawnerItemRender;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -24,13 +22,10 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class RenderUtil {
@@ -211,16 +206,16 @@ public class RenderUtil {
 	public static Entity getEntityJockey(NBTTagCompound compound, World worldIn, double x, double y, double z, boolean useInterface, boolean additionalMounts) 
 	{
 		boolean cachedSpawn = LibEvents.getSpawn(worldIn);
-		boolean cachedSound = LibEvents.getSound(worldIn);
-		boolean cachedMsg = LibEvents.getMsg(worldIn);
+//		boolean cachedSound = LibEvents.getSound(worldIn);
+//		boolean cachedMsg = LibEvents.getMsg(worldIn);
 		
 		LibEvents.setSpawn(worldIn, false);
-		LibEvents.setSound(worldIn, false);
-		LibEvents.setCanSendMsg(worldIn, false);
+//		LibEvents.setSound(worldIn, false);
+//		LibEvents.setCanSendMsg(worldIn, false);
 		Entity e = getEntityStack(compound, worldIn, x, y, z, useInterface, additionalMounts);
 		LibEvents.setSpawn(worldIn, cachedSpawn);
-		LibEvents.setSound(worldIn, cachedSound);
-		LibEvents.setCanSendMsg(worldIn, cachedMsg);
+//		LibEvents.setSound(worldIn, cachedSound);
+//		LibEvents.setCanSendMsg(worldIn, cachedMsg);
 		
 		if(e == null)
 			return null;

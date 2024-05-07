@@ -29,6 +29,7 @@ public class ClientProxy extends ServerProxy{
 	@Override
 	public void init()
 	{
+		if(Config.mobBlockRender)
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMobSpawner.class, new MobSpawnerStackBase());
 		if(Config.mobItemRender)
 			IItemRendererHandler.register(Item.getItemFromBlock(Blocks.MOB_SPAWNER), new MobSpawnerItemRender());
