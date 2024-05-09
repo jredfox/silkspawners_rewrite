@@ -30,7 +30,7 @@ public class ClientProxy extends ServerProxy{
 	public void init()
 	{
 		if(Config.mobBlockRender)
-		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMobSpawner.class, new MobSpawnerStackBase());
+			ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMobSpawner.class, new MobSpawnerStackBase());
 		if(Config.mobItemRender)
 			IItemRendererHandler.register(Item.getItemFromBlock(Blocks.MOB_SPAWNER), new MobSpawnerItemRender());
 		MinecraftForge.EVENT_BUS.register(new ToolTipEvent());

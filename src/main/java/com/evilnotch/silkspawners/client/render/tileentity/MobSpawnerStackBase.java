@@ -52,11 +52,6 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         		System.out.println("returning from render isPig with no update:");
         		break;
         	}
-        	else if(e instanceof EntityPig)
-        	{
-        		if(com.evilnotch.lib.main.Config.debug)
-        			System.out.println("why you here you pig:" + TileEntityUtil.getTileNBT(te));
-        	}
         	
         	renderSpawnerEntity(e, scale, logic.offsets[i], logic, partialTicks, lastX, lastY);
         }
@@ -89,7 +84,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         
     	if(Config.dynamicLightingBlock)
     	{
-    		RenderUtil.setLightMap(entity);//set the lighting to the entitie's lighting for glowing textures like blazes
+    		RenderUtil.setLightMap(entity);//set the lighting to the entity's lighting for glowing textures like blazes
     	}
         
         RenderUtil.renderEntity(entity, offset.x, offset.y, offset.z, 0.0F, partialTicks, Config.renderShadows);

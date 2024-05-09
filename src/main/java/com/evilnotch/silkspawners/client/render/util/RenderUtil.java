@@ -66,7 +66,7 @@ public class RenderUtil {
     }
     
 	/**
-	 * since light map for entities is pre-enabled for TE's render enabling it whould cause a slight scaling issue barley noticeable but, still a thing
+	 * since light map for entities is pre-enabled for TE's render enabling it would cause a slight scaling issue barley noticeable but, still a thing
 	 */
     public static void setLightmapDisabledTE(boolean disabled)
     {
@@ -205,17 +205,13 @@ public class RenderUtil {
 	
 	public static Entity getEntityJockey(NBTTagCompound compound, World worldIn, double x, double y, double z, boolean useInterface, boolean additionalMounts) 
 	{
-		boolean cachedSpawn = LibEvents.getSpawn(worldIn);
-//		boolean cachedSound = LibEvents.getSound(worldIn);
-//		boolean cachedMsg = LibEvents.getMsg(worldIn);
-		
-		LibEvents.setSpawn(worldIn, false);
-//		LibEvents.setSound(worldIn, false);
-//		LibEvents.setCanSendMsg(worldIn, false);
+		LibEvents.setSpawn(false);
+		LibEvents.setSound(false);
+		LibEvents.setMsg(false);
 		Entity e = getEntityStack(compound, worldIn, x, y, z, useInterface, additionalMounts);
-		LibEvents.setSpawn(worldIn, cachedSpawn);
-//		LibEvents.setSound(worldIn, cachedSound);
-//		LibEvents.setCanSendMsg(worldIn, cachedMsg);
+		LibEvents.setSpawn(true);
+		LibEvents.setSound(true);
+		LibEvents.setMsg(true);
 		
 		if(e == null)
 			return null;
