@@ -1,6 +1,7 @@
 package com.evilnotch.silkspawners;
 
 import com.evilnotch.lib.api.ReflectionUtil;
+import com.evilnotch.lib.api.mcp.MCPSidedString;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -9,7 +10,7 @@ import net.minecraft.world.World;
 
 public class TileUtil {
 	
-	public static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> tileRegistry = (RegistryNamespaced<ResourceLocation, Class<? extends TileEntity>>) ReflectionUtil.getObject(null, TileEntity.class, "REGISTRY");
+	public static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> tileRegistry = (RegistryNamespaced<ResourceLocation, Class<? extends TileEntity>>) ReflectionUtil.getObject(null, TileEntity.class, new MCPSidedString("REGISTRY", "field_190562_f").toString());
 	public static final ResourceLocation mob_spawner = new ResourceLocation("mob_spawner");
 	
 	/**
@@ -24,7 +25,7 @@ public class TileUtil {
             {
 				return (TileEntity) oclass.newInstance();
 			} 
-            catch (InstantiationException | IllegalAccessException e)
+            catch (Throwable e)
             {
 				return null;
 			}
