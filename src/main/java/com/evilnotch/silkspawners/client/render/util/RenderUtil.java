@@ -205,13 +205,17 @@ public class RenderUtil {
 	
 	public static Entity getEntityJockey(NBTTagCompound compound, World worldIn, double x, double y, double z, boolean useInterface, boolean additionalMounts) 
 	{
-		LibEvents.setSpawn(false);
-		LibEvents.setSound(false);
-		LibEvents.setMsg(false);
+		boolean cachedSound = LibEvents.disableSound.get();
+		boolean cachedMsg = LibEvents.disableMsg.get();
+		boolean cachedSpawn = LibEvents.disableSpawn.get();
+		
+		LibEvents.setSpawnDisable(true);
+		LibEvents.setSoundDisable(true);
+		LibEvents.setMsgDisable(true);
 		Entity e = getEntityStack(compound, worldIn, x, y, z, useInterface, additionalMounts);
-		LibEvents.setSpawn(true);
-		LibEvents.setSound(true);
-		LibEvents.setMsg(true);
+		LibEvents.setMsgDisable(cachedMsg);
+		LibEvents.setSoundDisable(cachedSound);
+		LibEvents.setSpawnDisable(cachedSpawn);
 		
 		if(e == null)
 			return null;
