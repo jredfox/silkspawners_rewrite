@@ -7,7 +7,6 @@ import com.evilnotch.lib.asm.util.ASMHelper;
 import com.evilnotch.lib.util.JavaUtil;
 
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraftforge.fml.crashy.CrashySilk;
 
 public class SilkTransformer implements IClassTransformer{
 	
@@ -35,9 +34,9 @@ public class SilkTransformer implements IClassTransformer{
 						return ASMHelper.replaceClass(inputBase + "MobSpawnerBaseLogic");
 			}
 		}
-		catch(Throwable e)
+		catch(Throwable t)
 		{
-			CrashySilk.crash("SilkSpawners Encountered an Error While Replace MobSpawnerBaseLogic", e);
+			t.printStackTrace();
 		}
 		return classToTransform;
 	}
