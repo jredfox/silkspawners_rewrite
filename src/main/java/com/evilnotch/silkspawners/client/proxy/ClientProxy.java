@@ -1,5 +1,7 @@
 package com.evilnotch.silkspawners.client.proxy;
 
+import java.io.IOException;
+
 import com.evilnotch.iitemrender.handlers.IItemRendererHandler;
 import com.evilnotch.lib.api.mcp.MCPSidedString;
 import com.evilnotch.silkspawners.Config;
@@ -16,15 +18,15 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.crashy.CrashySilk;
 
 public class ClientProxy extends ServerProxy{
-	public static String isDrawing;
 	
 	@Override
 	public void preinit()
 	{
 		super.preinit();
-		isDrawing = new MCPSidedString("isDrawing","field_179010_r").toString();
 	}
 	@Override
 	public void init()

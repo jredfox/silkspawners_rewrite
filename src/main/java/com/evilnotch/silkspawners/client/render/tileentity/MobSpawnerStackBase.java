@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import com.evilnotch.lib.api.ReflectionUtil;
-import com.evilnotch.lib.minecraft.util.TileEntityUtil;
 import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 

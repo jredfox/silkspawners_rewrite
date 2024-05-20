@@ -7,6 +7,7 @@ import com.evilnotch.lib.asm.util.ASMHelper;
 import com.evilnotch.lib.util.JavaUtil;
 
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.fml.crashy.CrashySilk;
 
 public class SilkTransformer implements IClassTransformer{
 	
@@ -21,6 +22,7 @@ public class SilkTransformer implements IClassTransformer{
 	    int index = clazzes.indexOf(transformedName);
 	    return index != -1 ? transform(index, classToTransform, FMLCorePlugin.isObf) : classToTransform;
 	}
+	
 	public static byte[] transform(int index, byte[] classToTransform,boolean obfuscated)
 	{
 		try
@@ -33,9 +35,9 @@ public class SilkTransformer implements IClassTransformer{
 						return ASMHelper.replaceClass(inputBase + "MobSpawnerBaseLogic");
 			}
 		}
-		catch(Exception e)
+		catch(Throwable e)
 		{
-			e.printStackTrace();
+			CrashySilk.crash("SilkSpawners Encountered an Error While Replace MobSpawnerBaseLogic", e);
 		}
 		return classToTransform;
 	}

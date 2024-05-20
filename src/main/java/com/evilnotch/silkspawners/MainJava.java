@@ -1,5 +1,7 @@
 package com.evilnotch.silkspawners;
 
+import java.io.IOException;
+
 import com.evilnotch.lib.api.ReflectionUtil;
 import com.evilnotch.lib.minecraft.basicmc.auto.creativetab.ICreativeTabHook;
 import com.evilnotch.lib.minecraft.basicmc.auto.lang.LangEntry;
@@ -18,6 +20,8 @@ import com.evilnotch.silkspawners.packet.handler.PacketAddPassHandler;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockMobSpawner;
+import net.minecraft.client.Minecraft;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,6 +39,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -46,9 +51,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.crashy.CrashySilk;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = MainJava.MODID, name = "silkspawners", version = MainJava.VERSION,acceptableRemoteVersions = "*", dependencies = "required-after:evilnotchlib@[1.2.3,]")
+@Mod(modid = MainJava.MODID, name = "silkspawners", version = MainJava.VERSION,acceptableRemoteVersions = "*", dependencies = "required-after:evilnotchlib@[1.2.3,];required-after-client:iitemrenderer")
 public class MainJava
 {
     public static final String MODID = "silkspawners";
@@ -64,6 +70,7 @@ public class MainJava
 	
 	public static ResourceLocation dungeonTweaksLoc;
 	public static boolean dungeonTweaksLegacy = false;
+	public static boolean hasIItemRenderer = true;
     
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent e)

@@ -8,10 +8,27 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 @IFMLLoadingPlugin.SortingIndex(1002)
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 public class SilkCorePlugin implements IFMLLoadingPlugin{
+	
+	public static boolean hasChecked = false;
+	public static boolean hasLib = true;
 
 	@Override
-	public String[] getASMTransformerClass() {
-		 return new String[] {"com.evilnotch.silkspawners.asm.SilkTransformer"};
+	public String[] getASMTransformerClass() 
+	{
+		if(!hasChecked)
+		{
+			try
+			{
+				Class.forName("com.evilnotch.lib.asm.util.ASMHelper");
+			}
+			catch(Throwable t)
+			{
+				t.printStackTrace();
+				hasLib = false;
+			}
+			hasChecked = true;
+		}
+		return hasLib ? new String[] {"com.evilnotch.silkspawners.asm.SilkTransformer"} : null;
 	}
 
 	@Override

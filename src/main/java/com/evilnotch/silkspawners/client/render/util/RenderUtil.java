@@ -2,7 +2,6 @@ package com.evilnotch.silkspawners.client.render.util;
 
 import java.util.List;
 
-import com.evilnotch.lib.api.ReflectionUtil;
 import com.evilnotch.lib.main.capability.CapRegDefaultHandler;
 import com.evilnotch.lib.main.eventhandler.LibEvents;
 import com.evilnotch.lib.minecraft.capability.primitive.CapBoolean;
@@ -195,7 +194,7 @@ public class RenderUtil {
 	
     public static boolean isDrawing(BufferBuilder buffer) 
 	{
-		return (Boolean)ReflectionUtil.getObject(buffer, BufferBuilder.class, ClientProxy.isDrawing);
+    	return buffer.isDrawing;
 	}
 
 	public static double getRenderTime() 
