@@ -8,7 +8,7 @@ import net.minecraft.crash.CrashReport;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 /**
- * Copy this class and GuiCrashReport.jar into your project to use
+ * Headless (NO GUI) version of Crashy Used for non EvilNotchLib
  */
 public class CrashySilk {
 	
