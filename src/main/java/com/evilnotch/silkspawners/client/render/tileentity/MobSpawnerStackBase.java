@@ -5,7 +5,9 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 
 import com.evilnotch.silkspawners.Config;
+import com.evilnotch.silkspawners.MainJava;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
+import com.evilnotch.silkspawners.compat.JITL;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -21,6 +23,8 @@ import net.minecraft.world.World;
 
 public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
 	
+	public static boolean hasJITL = MainJava.hasJITL;
+	
 	/**
 	 * this has the capability of rendering an entire stack of mobs via the tile entity with 1.9+ passenger support
 	 */
@@ -33,6 +37,7 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
     	}
     	
     	GlStateManager.pushMatrix();
+    	pre();
         GlStateManager.translate((float)offsetX + 0.5F, (float)offsetY, (float)offsetZ + 0.5F);//preset make sure it's lined up rendering inside of the center of the block
         
     	MobSpawnerBaseLogic logic = ((TileEntityMobSpawner)te).getSpawnerBaseLogic();
@@ -53,8 +58,21 @@ public class MobSpawnerStackBase extends TileEntitySpecialRenderer<TileEntity>{
         	
         	renderSpawnerEntity(e, scale, logic.offsets[i], logic, partialTicks, lastX, lastY);
         }
+        post();
         GlStateManager.popMatrix();
     }
+
+	public void pre()
+	{
+		if(hasJITL)
+			JITL.pre();
+	}
+	
+	public void post() 
+	{
+		if(hasJITL)
+			JITL.post();
+	}
 
 	public void renderSpawnerEntity(Entity entity, float scale, Vec3d offset, MobSpawnerBaseLogic mobSpawnerLogic, float partialTicks, float lastX, float lastY) 
 	{

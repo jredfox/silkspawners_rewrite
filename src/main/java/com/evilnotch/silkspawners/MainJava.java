@@ -12,6 +12,7 @@ import com.evilnotch.lib.minecraft.util.BlockUtil;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.lib.minecraft.util.EnumChatFormatting;
 import com.evilnotch.silkspawners.client.proxy.ServerProxy;
+import com.evilnotch.silkspawners.client.render.util.RenderUtil;
 import com.evilnotch.silkspawners.commands.CommandMTHand;
 import com.evilnotch.silkspawners.packet.PacketAddPass;
 import com.evilnotch.silkspawners.packet.handler.PacketAddPassHandler;
@@ -64,7 +65,7 @@ public class MainJava
 	
 	public static ResourceLocation dungeonTweaksLoc;
 	public static boolean dungeonTweaksLegacy = false;
-	public static boolean hasIItemRenderer = true;
+	public static boolean hasJITL;
     
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent e)
@@ -83,6 +84,7 @@ public class MainJava
 	 		dungeonTweaksLoc = new ResourceLocation("dungeontweaks" + ":" + "hasScanned");
 	 		dungeonTweaksLegacy = ReflectionUtil.classForName("com.EvilNotch.dungeontweeks.main.Events.EventDungeon$Post") != null;
 	 	}
+	 	hasJITL = RenderUtil.getField(null, ReflectionUtil.classForName("net.journey.util.JourneyBossStatus"), "bar") != null;
 	 	 
 	    tab_living = new BasicCreativeTab(new ResourceLocation("silkspawners:living"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("en_us","Living Mob Spawners"));
 	    tab_nonliving = new BasicCreativeTab(new ResourceLocation("silkspawners:nonliving"), new ItemStack(Blocks.MOB_SPAWNER),new LangEntry("en_us","NonLiving Mob Spawners"));

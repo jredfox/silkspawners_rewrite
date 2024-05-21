@@ -1,5 +1,7 @@
 package com.evilnotch.silkspawners.client.render.util;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import com.evilnotch.lib.main.capability.CapRegDefaultHandler;
@@ -26,6 +28,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class RenderUtil {
 	
@@ -378,6 +381,25 @@ public class RenderUtil {
             	pos.applyPos(ent);
             }
 		}
+	}
+	
+	public static Field getField(Object instance, Class clazz, String strfeild)
+	{
+		try
+		{
+			Field field = ReflectionHelper.findField(clazz,strfeild);
+			field.setAccessible(true);
+		
+			Field modifiersField = Field.class.getDeclaredField("modifiers");
+	    	modifiersField.setAccessible(true);
+	    	modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+	    	return field;
+		}
+		catch(Throwable t)
+		{
+			
+		}
+		return null;
 	}
 
 }

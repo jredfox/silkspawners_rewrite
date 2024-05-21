@@ -1,17 +1,23 @@
 package com.evilnotch.silkspawners.client.render.item;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
 import com.evilnotch.iitemrender.handlers.IItemRenderer;
 import com.evilnotch.iitemrender.handlers.IItemRendererHandler;
+import com.evilnotch.lib.api.ReflectionUtil;
 import com.evilnotch.lib.util.simple.PairObj;
 import com.evilnotch.silkspawners.Config;
+import com.evilnotch.silkspawners.MainJava;
 import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
+import com.evilnotch.silkspawners.compat.JITL;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -23,6 +29,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 /**
  * this is the copied modified class of NEISpawnerRender port
@@ -32,10 +39,12 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	
 	public static float lastX = 0.0F;
 	public static float lastY = 0.0F;
-	
+	public static boolean hasJITL = MainJava.hasJITL;
+
 	@Override
 	public void render(ItemStack stack, IBakedModel model, TransformType type, float partialTicks) 
 	{
+		compatPre();
 		IItemRendererHandler.renderItemStack(stack, model);
 		IItemRendererHandler.applyTransformPreset(model);
 		
@@ -83,8 +92,25 @@ public class MobSpawnerItemRender implements IItemRenderer{
         }
         
        RenderUtil.setLightmapDisabled(IItemRendererHandler.isGui(type));
+       compatPost();
 	}
 	
+	public void compatPre() 
+	{
+		if(hasJITL)
+		{
+			JITL.pre();
+		}
+	}
+	
+	public void compatPost()
+	{
+		if(hasJITL)
+		{
+			 JITL.post();
+		}
+	}
+
 	public void renderEntity(Entity entity, float scale, World world, Vec3d offset, TransformType type, float partialTicks) 
 	{	
         GlStateManager.pushMatrix();
