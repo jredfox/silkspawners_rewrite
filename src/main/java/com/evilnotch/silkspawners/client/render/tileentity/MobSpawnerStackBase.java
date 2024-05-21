@@ -6,8 +6,8 @@ import org.lwjgl.opengl.GL11;
 
 import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.MainJava;
+import com.evilnotch.silkspawners.client.render.compat.JITL;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
-import com.evilnotch.silkspawners.compat.JITL;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;

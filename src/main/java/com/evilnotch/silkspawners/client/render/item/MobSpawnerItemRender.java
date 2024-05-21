@@ -12,9 +12,9 @@ import com.evilnotch.lib.api.ReflectionUtil;
 import com.evilnotch.lib.util.simple.PairObj;
 import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.MainJava;
+import com.evilnotch.silkspawners.client.render.compat.JITL;
 import com.evilnotch.silkspawners.client.render.util.MobSpawnerCache;
 import com.evilnotch.silkspawners.client.render.util.RenderUtil;
-import com.evilnotch.silkspawners.compat.JITL;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
@@ -44,7 +44,6 @@ public class MobSpawnerItemRender implements IItemRenderer{
 	@Override
 	public void render(ItemStack stack, IBakedModel model, TransformType type, float partialTicks) 
 	{
-		compatPre();
 		IItemRendererHandler.renderItemStack(stack, model);
 		IItemRendererHandler.applyTransformPreset(model);
 		
@@ -53,6 +52,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
 
         try
         {
+    		compatPre();
     		lastX = OpenGlHelper.lastBrightnessX;
     		lastY = OpenGlHelper.lastBrightnessY;
     		
@@ -82,6 +82,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
             	}
             	renderEntity(e, f1, world, offsets[i], type, partialTicks);
             }
+            compatPost();
         }
         catch(Exception e)
         {
@@ -92,7 +93,6 @@ public class MobSpawnerItemRender implements IItemRenderer{
         }
         
        RenderUtil.setLightmapDisabled(IItemRendererHandler.isGui(type));
-       compatPost();
 	}
 	
 	public void compatPre() 
