@@ -1,0 +1,14 @@
+Renderers Light Map Scaling Issues?
+Renderers Lighting Issues???? 
+Applying Transformations wrong?
+Item Scaling issue with Entities always assumes 0.1 scale after over 3 blocks tall
+Config needs overhaul of both block and item seperation settings
+
+Additional Passengers NBT & Initial Spawn Versions
+Additional Passangers & random Initial spawn is broken af
+Make Spawner Blank When Placed if Server has Custom Logic
+
+IItemRenderer 1.0
+add boolean for if it's the first run of the method
+allow resource packs to completly override the renderer (if it returns true)
+fix orespawn transforms (1.7.10) legacy
