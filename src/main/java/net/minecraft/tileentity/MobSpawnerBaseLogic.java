@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.evilnotch.lib.main.loader.LoaderMain;
 import com.evilnotch.lib.minecraft.util.EntityUtil;
 import com.evilnotch.silkspawners.Config;
 import com.evilnotch.silkspawners.EntityPos;
@@ -56,6 +57,12 @@ public abstract class MobSpawnerBaseLogic
 	//client only
 	public List<Entity> cachedEntities = new ArrayList();
 	public Vec3d[] offsets;
+	public boolean server;
+	
+	public MobSpawnerBaseLogic()
+	{
+		this.server = !LoaderMain.isClient;
+	}
 
     @Nullable
     public ResourceLocation getEntityId()
@@ -183,7 +190,7 @@ public abstract class MobSpawnerBaseLogic
 	public boolean isBlank;
 	public void animateEntities() 
     {
-		if(!Config.renderInitSpawnRnd && !Config.animationSpawner)
+		if(this.server || !Config.renderInitSpawnRnd && !Config.animationSpawner)
 			return;
     	if(this.cachedEntity != null)
     	{
@@ -201,6 +208,8 @@ public abstract class MobSpawnerBaseLogic
 	
 	public void clearMobs()
 	{
+		if(this.server)
+			return;
 		this.cachedEntity = null;
 		this.cachedEntities.clear();
 		this.offsets = new Vec3d[0];

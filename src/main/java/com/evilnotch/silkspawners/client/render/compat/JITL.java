@@ -7,7 +7,7 @@ import net.journey.util.JourneyBossStatus;
 
 public class JITL {
 
-	//since begining of 1.12.2 it seems like (2019+)
+	//since beginning of 1.12.2 it seems like (2019+)
 	public static float healthScale;
 	public static int statusBarTime;
 	public static boolean hasColorModifier;
