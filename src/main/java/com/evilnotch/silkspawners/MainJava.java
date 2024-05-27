@@ -49,7 +49,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = MainJava.MODID, name = "silkspawners", version = MainJava.VERSION,acceptableRemoteVersions = "*", dependencies = "required-after:evilnotchlib@[1.2.3,];required-after-client:iitemrenderer")
+@Mod(modid = MainJava.MODID, name = "silkspawners", version = MainJava.VERSION,acceptableRemoteVersions = "*", dependencies = "required-after:evilnotchlib@[1.2.3.09,];required-after-client:iitemrenderer")
 public class MainJava
 {
     public static final String MODID = "silkspawners";

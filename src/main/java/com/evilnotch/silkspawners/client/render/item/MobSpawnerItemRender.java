@@ -86,7 +86,7 @@ public class MobSpawnerItemRender implements IItemRenderer{
         }
         catch(Exception e)
         {
-            throw new RuntimeException(e);//make people crash so I know if it's broken
+            throw e;//make people crash so I know if it's broken
 //            if(RenderUtil.isDrawing(Tessellator.getInstance().getBuffer()))
 //                Tessellator.getInstance().draw();
 //            System.out.println("exception drawing:" + stack.getItem().getRegistryName() + " with NBT:" + stack.getTagCompound());   
